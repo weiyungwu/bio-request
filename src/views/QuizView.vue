@@ -40,8 +40,11 @@ const submitHint = computed(() => {
 })
 
 function next() {
+  if (quiz.finished) return
   quiz.next()
-  if (quiz.finished) router.push(`/result/${courseId.value}`)
+  // replace: browser Back from the result goes to the map side, not into a quiz page that
+  // would start a new paper and drop the result being viewed (TASK-012 review S1).
+  if (quiz.finished) router.replace(`/result/${courseId.value}`)
 }
 </script>
 

@@ -40,6 +40,12 @@ describe('lesson route guard', () => {
     expect(router.currentRoute.value.fullPath).toBe('/map')
   })
 
+  it('blocks the result page of a locked stage', async () => {
+    const router = makeRouter()
+    await router.push('/result/bio-02')
+    expect(router.currentRoute.value.fullPath).toBe('/map')
+  })
+
   it.each(['bio-02', 'bio-08', 'does-not-exist'])('redirects /lesson/%s to the map', async (id) => {
     const router = makeRouter()
     await router.push(`/lesson/${id}`)

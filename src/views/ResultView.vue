@@ -47,7 +47,8 @@ const linkClass = {
     </BaseCard>
 
     <template v-else>
-      <BaseCard as="section" class="space-y-2" aria-label="本次成績">
+      <BaseCard as="section" class="space-y-2" aria-labelledby="result-score-title">
+        <h2 id="result-score-title" class="text-lg">本次成績</h2>
         <p data-testid="result-score" class="text-4xl font-bold">{{ quiz.score }} 分</p>
         <p
           data-testid="result-verdict"

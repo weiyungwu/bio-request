@@ -14,7 +14,7 @@
 | 3     | Phase 3 審查（Gemini）                                        | 已處理（commit a06fa0b）                   |
 | 4     | TASK-010 題庫資料結構與第一關 12 題                           | 完成，任務審查已處理                       |
 | 4     | TASK-011 測驗引擎（`/quiz/:courseId`）                        | 完成，任務審查已處理                       |
-| 4     | TASK-012 測驗結果頁（`/result/:courseId`）                    | 完成，待任務審查                           |
+| 4     | TASK-012 測驗結果頁（`/result/:courseId`）                    | 完成，任務審查已處理                       |
 | 5     | **TASK-013 LocalStorage 進度管理** ← 下一步；之後錯題本、成就 | 未開始                                     |
 
 第一關流程（`src/views/LessonView.vue`）：故事 → 探險者訓練（16 個知識點＋重點整理）→ 細胞城市探險（細胞互動圖）→ 互動挑戰（配對遊戲 → 分類遊戲）→ 關卡測驗（`QuizView`，5 題）。Phase 3 審查（Gemini）已處理。

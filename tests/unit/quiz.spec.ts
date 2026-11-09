@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
+import { useProgressStore } from '@/stores/progress'
 import { useQuizStore } from '@/stores/quiz'
 import type { Question } from '@/types/question'
 import {
@@ -144,6 +145,19 @@ describe('quiz store (TASK-011)', () => {
   })
 
   // Review S3: a fast double click on 下一題 must not skip an unanswered question.
+  // Review I1: 看成績 clicked twice must not pay EXP or log the attempt twice.
+  it('records a finished paper exactly once', () => {
+    const s = fresh()
+    answerAll(s)
+    const award = s.award
+    s.next()
+    s.next()
+    const progress = useProgressStore()
+    expect(progress.records).toHaveLength(1)
+    expect(progress.exp).toBe(award!.total)
+    expect(s.award).toBe(award)
+  })
+
   it('ignores a repeated submit or next', () => {
     const s = fresh()
     s.choose(0, 1)
