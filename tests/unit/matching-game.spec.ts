@@ -83,6 +83,16 @@ describe('MatchingGame (TASK-008)', () => {
   })
 
   // TASK-009: the lesson moves on to the classification game from the result.
+  // TASK-015 review S2: the game reward is paid when the result appears, like classification.
+  it('emits finished once, when the last pair is matched', async () => {
+    const w = mountGame()
+    for (const p of pairs.slice(0, -1)) await pair(w, p.pointId, p.pointId)
+    expect(w.emitted('finished')).toBeUndefined()
+    await pair(w, pairs[pairs.length - 1]!.pointId, pairs[pairs.length - 1]!.pointId)
+    expect(w.emitted('finished')).toHaveLength(1)
+    w.unmount()
+  })
+
   it('emits complete from the result, not before', async () => {
     const w = mountGame()
     expect(w.find('[data-testid="matching-done"]').exists()).toBe(false)

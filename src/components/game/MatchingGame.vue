@@ -10,7 +10,11 @@ const props = defineProps<{
   /** Knowledge points that give each structure its name and explanation. */
   points: KnowledgePoint[]
 }>()
-const emit = defineEmits<{ complete: [] }>()
+const emit = defineEmits<{
+  complete: []
+  /** All pairs matched (TASK-015: 完成互動小遊戲), before 下一個挑戰 is pressed. */
+  finished: []
+}>()
 
 const pointById = computed(() => new Map(props.points.map((p) => [p.id, p])))
 const pairById = computed(() => new Map(props.pairs.map((p) => [p.pointId, p])))
@@ -50,7 +54,10 @@ function pick(column: 'structure' | 'function', id: string) {
   if (structure === fn) {
     matched.value.add(structure)
     feedback.value = { correct: true, id: structure }
-    if (finished.value) nextTick(() => resultHeading.value?.focus())
+    if (finished.value) {
+      emit('finished')
+      nextTick(() => resultHeading.value?.focus())
+    }
   } else {
     wrongCount.value++
     feedback.value = { correct: false, structure, fn }

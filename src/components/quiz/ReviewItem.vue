@@ -104,11 +104,18 @@ function submit() {
       <p v-else-if="isCorrect(question, response) && !entry.mastered" class="text-sm text-muted">
         答對了！如果已經學會，可以把這題標記為已熟悉。
       </p>
-      <p v-if="reward > 0" data-testid="review-reward" class="text-sm font-semibold text-reward">
-        🎉 這一關的錯題全部重新答對，完成錯題補強：+{{ reward }} EXP
-      </p>
     </div>
 
+    <!-- Always present, so the reward is announced (focus sits on the verdict; review I2). -->
+    <p
+      data-testid="review-reward"
+      aria-live="polite"
+      class="text-sm font-semibold text-reward empty:hidden"
+    >
+      <template v-if="reward > 0"
+        >🎉 這一關的錯題全部重新答對，完成錯題補強：+{{ reward }} EXP</template
+      >
+    </p>
     <div class="flex flex-wrap gap-2">
       <BaseButton
         v-if="!retrying"

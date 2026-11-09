@@ -58,6 +58,32 @@ describe('rewards in the progress store (TASK-015)', () => {
     expect(p.badges).toEqual(['first-clear', 'quiz-ace', 'perfect-clear'])
   })
 
+  // Review I1: a save from before badges existed gets what it already earned, on load —
+  // not later as a "new" badge on an unrelated attempt.
+  it('awards badges an older save already meets when it loads', () => {
+    localStorage.setItem(
+      'bio-quest:progress',
+      JSON.stringify({
+        version: 1,
+        exp: 50,
+        records: [rec(80)],
+        courseProgress: cleared('bio-01'),
+        wrongQuestions: {},
+        badges: [],
+      }),
+    )
+    const p = reload()
+    expect(p.badges).toEqual(['first-clear'])
+    expect(p.recordQuizResult('bio-01', 60, [], new Date(2026, 10, 12, 9)).newBadges).toEqual([])
+  })
+
+  // Review S4: records saved before `exp` existed count as 0 toward today's cap.
+  it('counts an older record without exp as 0 toward the cap', () => {
+    const p = reload()
+    p.records.push({ ...rec(100), completedAt: new Date(2026, 10, 10, 8).toISOString() })
+    expect(p.recordQuizResult('bio-01', 100, [], new Date(2026, 10, 10, 9)).quiz).toBe(40)
+  })
+
   // Spec: 成就狀態重新載入後仍存在 — badges and claimed first-time rewards.
   it('keeps badges and claimed rewards across a reload', async () => {
     const p = reload()

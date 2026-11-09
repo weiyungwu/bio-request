@@ -29,6 +29,7 @@ const gameHeading = ref<HTMLElement | null>(null)
 watch(courseId, () => {
   phase.value = 'story'
   game.value = 'matching'
+  reward.value = ''
 })
 
 function enterLesson() {
@@ -48,7 +49,6 @@ function enterGame() {
 
 // ClassificationGame focuses its own title when it mounts.
 function enterClassification() {
-  rewardGame('matching', '細胞器配對')
   game.value = 'classification'
 }
 
@@ -126,6 +126,7 @@ function rewardGame(id: string, name: string) {
         :key="courseId"
         :pairs="lesson.matching.pairs"
         :points="points"
+        @finished="rewardGame('matching', '細胞器配對')"
         @complete="enterClassification"
       />
       <ClassificationGame

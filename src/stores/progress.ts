@@ -66,6 +66,9 @@ export const useProgressStore = defineStore('progress', () => {
     if (e.key === STORAGE_KEY || e.key === null) apply(parseProgress(e.newValue))
   })
 
+  // A save from before badges existed may already meet conditions (TASK-015 review I1).
+  awardBadges()
+
   const levelInfo = computed(() => levelFromExp(exp.value))
   /**
    * Wrong questions the 錯題本 can show: their question is still in its stage's bank.
