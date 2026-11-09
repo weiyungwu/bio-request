@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import StoryDialog from '@/components/lesson/StoryDialog.vue'
 import courses from '@/data/courses.json'
@@ -13,6 +13,15 @@ const lesson = computed(() => getLessonData(courseId.value))
 
 // story -> lesson (TASK-006 fills the lesson step)
 const phase = ref<'story' | 'lesson'>('story')
+const lessonHeading = ref<HTMLElement | null>(null)
+
+// The view is reused when only :courseId changes; restart the flow.
+watch(courseId, () => (phase.value = 'story'))
+
+function enterLesson() {
+  phase.value = 'lesson'
+  nextTick(() => lessonHeading.value?.focus())
+}
 </script>
 
 <template>
@@ -26,12 +35,13 @@ const phase = ref<'story' | 'lesson'>('story')
 
     <StoryDialog
       v-if="phase === 'story' && lesson"
+      :key="courseId"
       :story="lesson.story"
-      @complete="phase = 'lesson'"
+      @complete="enterLesson"
     />
     <section v-else data-testid="lesson-content" aria-labelledby="lesson-heading">
       <!-- Placeholder: lesson cards are TASK-006. -->
-      <h2 id="lesson-heading">探險者訓練</h2>
+      <h2 id="lesson-heading" ref="lessonHeading" tabindex="-1">探險者訓練</h2>
     </section>
   </main>
 </template>

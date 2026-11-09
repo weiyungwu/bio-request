@@ -10,10 +10,13 @@ vi.mock('@/data/courses.json', () => ({
   default: [{ id: 'bio-01', title: 'T', storyTitle: '測試用關卡名', description: '', order: 1 }],
 }))
 
-async function mountLesson() {
+async function mountLesson(attach = false) {
   const router = createAppRouter(createMemoryHistory())
   await router.push('/lesson/bio-01')
-  return mount(LessonView, { global: { plugins: [router] } })
+  return mount(LessonView, {
+    global: { plugins: [router] },
+    ...(attach ? { attachTo: document.body } : {}),
+  })
 }
 
 describe('LessonView', () => {
@@ -35,5 +38,14 @@ describe('LessonView', () => {
     await wrapper.vm.$nextTick()
     expect(wrapper.find('[data-testid="story-dialog"]').exists()).toBe(false)
     expect(wrapper.find('[data-testid="lesson-content"]').exists()).toBe(true)
+  })
+
+  it('moves focus to the lesson heading after the story', async () => {
+    const wrapper = await mountLesson(true)
+    wrapper.findComponent({ name: 'StoryDialog' }).vm.$emit('complete')
+    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick()
+    expect(document.activeElement?.id).toBe('lesson-heading')
+    wrapper.unmount()
   })
 })

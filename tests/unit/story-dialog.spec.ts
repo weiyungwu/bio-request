@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import StoryDialog from '@/components/lesson/StoryDialog.vue'
 import { STORY_ADVANCE_COOLDOWN_MS } from '@/components/lesson/storyDialog'
@@ -35,6 +36,34 @@ describe('StoryDialog', () => {
     expect(w.find('[data-testid="story-line"]').text()).toContain('助手')
     expect(w.find('[data-testid="story-line"]').text()).toContain('第二句')
     expect(w.text()).toContain('2 / 3')
+  })
+
+  // A double tap on the stage card in the map must not also skip line 1.
+  it('ignores a click right after the dialog appears', async () => {
+    const w = mount(StoryDialog, { props: { story } })
+    await next(w)
+    expect(w.find('[data-testid="story-line"]').text()).toContain('第一句')
+  })
+
+  // Screen readers must hear who is speaking on every line, even when the
+  // speaker doesn't change (only the text node would change otherwise).
+  it('announces speaker and text together', () => {
+    const line = mount(StoryDialog, { props: { story } }).find('[data-testid="story-line"]')
+    expect(line.attributes('aria-live')).toBe('polite')
+    expect(line.attributes('aria-atomic')).toBe('true')
+  })
+
+  // Keyboard / screen-reader users: the mission card replaces the dialog, so
+  // focus must move into it (to its heading, so the title is read first).
+  it('moves focus to the mission heading when the mission card appears', async () => {
+    const w = mount(StoryDialog, { props: { story }, attachTo: document.body })
+    for (let i = 0; i < story.lines.length; i++) {
+      wait()
+      await next(w)
+    }
+    await nextTick()
+    expect(document.activeElement).toBe(w.find('[data-testid="mission-card"] h2').element)
+    w.unmount()
   })
 
   // TASK-005: 不會因快速點擊而跳過必要流程

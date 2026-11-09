@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test'
+import { STORY_ADVANCE_COOLDOWN_MS } from '../../src/components/lesson/storyDialog'
 
-// Must exceed STORY_ADVANCE_COOLDOWN_MS (src/components/lesson/storyDialog.ts).
-const PAST_COOLDOWN_MS = 450
+const PAST_COOLDOWN_MS = STORY_ADVANCE_COOLDOWN_MS + 50
 
 async function openStory(page: Page) {
   // Fake clock: lets the test jump past the per-line cooldown deterministically.
@@ -28,10 +28,11 @@ test.describe('Stage 1 story (TASK-005)', () => {
     await page.clock.fastForward(PAST_COOLDOWN_MS)
     await page.getByTestId('story-next').click()
     await expect(page.getByTestId('mission-card')).toContainText('細胞城市大搜查')
+    await expect(page.getByRole('heading', { name: '細胞城市大搜查' })).toBeFocused()
 
     await page.clock.fastForward(PAST_COOLDOWN_MS)
     await page.getByTestId('mission-start').click()
-    await expect(page.getByRole('heading', { name: '探險者訓練' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '探險者訓練' })).toBeFocused()
     expect(errors).toEqual([])
   })
 

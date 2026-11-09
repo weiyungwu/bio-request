@@ -15,7 +15,8 @@ export interface Story {
   /** Mission name, e.g. "細胞城市大搜查" (spec.txt 5.1). */
   title: string
   characters: StoryCharacter[]
-  lines: StoryLine[]
+  /** At least one line. */
+  lines: [StoryLine, ...StoryLine[]]
   /** Mission objectives shown on the mission card (spec.txt FR-02). */
   objectives: string[]
 }

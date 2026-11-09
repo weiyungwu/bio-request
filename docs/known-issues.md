@@ -19,6 +19,8 @@
 ## 待 Human 確認（規格 1.2：教材正確性由 Human 驗收）
 
 - 第一關故事對白與角色（`src/data/lessons/bio-01.json` 的 `story`，賽爾隊長、米可）由 Claude 依 spec.txt 5.1 撰寫，需確認用語與知識正確性。（TASK-005）
+- 課程資料依 MVP 規格 §2 拆檔（`src/data/lessons/<id>.json`），偏離 spec.txt §8.1 把 lessons 放在 course 物件內的寫法；兩份規格互相矛盾，請確認。（TASK-005 審查 I2）
+- 「任務完成提示」解讀為開場故事後的任務指令卡；若原意是完成教學／遊戲後的提示，需調整。（TASK-005 審查 S8）
 
 ## 使用限制（設計上的取捨，已寫入 README）
 

@@ -63,3 +63,8 @@ Known issues and deferred review items: [`docs/known-issues.md`](docs/known-issu
   進行中 would be misleading), `locked` 🔒 未開放.
 - Lesson data: `src/data/lessons/<courseId>.json` (story now; lesson cards in TASK-006),
   loaded by `getLessonData()` in `src/data/lessons/index.ts`.
+  This follows the MVP spec §2 file layout and deviates from spec.txt §8.1, which nests `lessons`
+  inside the course object (the two specs conflict). `story` is an addition not in §8.1.
+  `passingScore` (§8.1) is decided in TASK-011 (spec rule: pass = score >= 80).
+- 「任務完成提示」(TASK-005) is read as the mission briefing card shown after the opening story
+  (title + objectives + 接受任務). Pending Human confirmation (see `docs/known-issues.md`).
