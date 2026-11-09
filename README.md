@@ -11,8 +11,11 @@ Requires Node `^22.18.0 || >=24.12.0`.
 npm install
 ```
 
-> npm 10.9.x crashes during install (`Cannot read properties of null (reading 'edgesOut')`,
-> an arborist peer-resolution bug). Use npm 11: `npx npm@11 install`.
+> Use npm 11 (`engines.npm >=11`). npm 10.9.x crashes when it has to resolve the
+> dependency tree from scratch (no lockfile, or adding a package):
+> `Cannot read properties of null (reading 'edgesOut')`, an arborist peer-resolution bug.
+> With the committed `package-lock.json`, `npm ci` works on npm 10 too.
+> Without a global npm 11: `npx npm@11 install`.
 
 ## Scripts
 

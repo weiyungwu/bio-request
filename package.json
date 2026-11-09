@@ -15,6 +15,7 @@
     "lint": "run-s \"lint:*\"",
     "lint:oxlint": "oxlint . --fix",
     "lint:eslint": "eslint . --fix --cache",
+    "lint:check": "oxlint . && eslint .",
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
@@ -52,6 +53,7 @@
     "vue-tsc": "^3.3.11"
   },
   "engines": {
-    "node": "^22.18.0 || >=24.12.0"
+    "node": "^22.18.0 || >=24.12.0",
+    "npm": ">=11"
   }
 }
