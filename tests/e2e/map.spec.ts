@@ -21,6 +21,15 @@ test.describe('Stage map (TASK-004)', () => {
     await expect(page.getByTestId('stage-card').nth(1).getByRole('link')).toHaveCount(0)
   })
 
+  test('can go back: lesson -> map -> home', async ({ page }) => {
+    await page.goto('/lesson/bio-01')
+    await page.getByRole('link', { name: /回關卡地圖/ }).click()
+    await expect(page).toHaveURL(/\/map$/)
+    await page.getByRole('link', { name: /回首頁/ }).click()
+    await expect(page).toHaveURL(/\/$/)
+    await expect(page.getByTestId('player-level')).toBeVisible()
+  })
+
   test('has no horizontal overflow', async ({ page }) => {
     await page.goto('/map')
     await expect(page.getByTestId('stage-card')).toHaveCount(8)

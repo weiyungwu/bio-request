@@ -62,6 +62,21 @@ describe('MapView', () => {
     expect(wrapper.findAll('[data-testid="stage-card"]')[0]!.text()).toContain('最佳 0 分')
   })
 
+  // Students who clear stage 1 must not think a low score kept stage 2 locked.
+  it('explains that locked stages are still being made, not earned by score', async () => {
+    const { wrapper } = await mountMap(pinia)
+    expect(wrapper.find('[data-testid="locked-notice"]').text()).toContain('製作中')
+  })
+
+  // Touch screens have no hover glow, so say in text that a cleared stage is replayable.
+  it('tells students a completed stage can be replayed', async () => {
+    useProgressStore().courseProgress = {
+      'bio-01': { courseId: 'bio-01', completed: true, bestScore: 90, latestScore: 90 },
+    }
+    const { wrapper } = await mountMap(pinia)
+    expect(wrapper.findAll('[data-testid="stage-card"]')[0]!.text()).toContain('再次挑戰')
+  })
+
   it('enters stage 1 when its card is clicked', async () => {
     const { wrapper, router } = await mountMap(pinia)
     await wrapper.findAll('[data-testid="stage-card"]')[0]!.find('a').trigger('click')

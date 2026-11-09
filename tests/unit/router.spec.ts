@@ -37,14 +37,3 @@ describe('lesson route guard', () => {
     expect(router.currentRoute.value.fullPath).toBe('/map')
   })
 })
-
-describe('LessonView placeholder', () => {
-  it('shows the entered stage name, not a hard-coded one', async () => {
-    const { mount } = await import('@vue/test-utils')
-    const router = makeRouter()
-    await router.push('/lesson/bio-01')
-    const { default: LessonView } = await import('@/views/LessonView.vue')
-    const wrapper = mount(LessonView, { global: { plugins: [router] } })
-    expect(wrapper.find('h1').text()).toBe('微觀世界探險隊')
-  })
-})

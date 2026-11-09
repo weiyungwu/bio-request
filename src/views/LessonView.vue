@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 import courses from '@/data/courses.json'
 import type { Course } from '@/types/course'
 
@@ -12,7 +12,12 @@ const course = computed(() =>
 
 <template>
   <!-- Placeholder: story and lessons are TASK-005/006. -->
-  <main class="page-container py-8">
+  <main class="page-container space-y-4 py-8">
+    <RouterLink
+      to="/map"
+      class="inline-flex min-h-11 items-center text-sm font-semibold text-muted hover:text-text"
+      >← 回關卡地圖</RouterLink
+    >
     <h1>{{ course?.storyTitle }}</h1>
   </main>
 </template>
