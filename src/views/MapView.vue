@@ -6,7 +6,7 @@ import ProgressBar from '@/components/common/ProgressBar.vue'
 import courses from '@/data/courses.json'
 import type { Course } from '@/types/course'
 import { useProgressStore } from '@/stores/progress'
-import { stageStatus, type StageStatus } from '@/utils/stages'
+import { stageStatus } from '@/utils/stages'
 
 const progress = useProgressStore()
 
@@ -27,7 +27,7 @@ const stages = computed(() =>
     .sort((a, b) => a.order - b.order)
     .map((course) => ({
       course,
-      status: stageStatus(course.id, progress.courseProgress) as StageStatus,
+      status: stageStatus(course.id, progress.courseProgress),
       bestScore: progress.courseProgress[course.id]?.bestScore,
     })),
 )
@@ -61,12 +61,13 @@ const cardInteractive =
             cardBase,
             status === 'locked' ? 'border-dashed border-border' : cardInteractive,
             status === 'completed' ? 'border-success' : '',
-            status === 'open' ? 'border-explore' : '',
+            status === 'open' || status === 'in-progress' ? 'border-explore' : '',
           ]"
         >
           <div class="flex items-center justify-between gap-2">
             <span class="text-sm font-semibold text-muted">第 {{ course.order }} 關</span>
             <BaseTag v-if="status === 'completed'" tone="success">✓ 已完成</BaseTag>
+            <BaseTag v-else-if="status === 'in-progress'" tone="explore">⏳ 進行中</BaseTag>
             <BaseTag v-else-if="status === 'open'" tone="explore">▶ 可挑戰</BaseTag>
             <BaseTag v-else>🔒 未開放</BaseTag>
           </div>

@@ -2,14 +2,14 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia, type Pinia } from 'pinia'
-import { createRouter, createMemoryHistory } from 'vue-router'
+import { createMemoryHistory } from 'vue-router'
 import MapView from '@/views/MapView.vue'
-import { routes } from '@/router'
+import { createAppRouter } from '@/router'
 import { useProgressStore } from '@/stores/progress'
 import courses from '@/data/courses.json'
 
 async function mountMap(pinia: Pinia) {
-  const router = createRouter({ history: createMemoryHistory(), routes })
+  const router = createAppRouter(createMemoryHistory())
   await router.push('/map')
   const wrapper = mount(MapView, { global: { plugins: [pinia, router] } })
   return { wrapper, router }
@@ -40,6 +40,26 @@ describe('MapView', () => {
       expect(card.find('a').exists()).toBe(false)
       expect(card.text()).toContain('🔒 未開放')
     }
+  })
+
+  it('labels an attempted but not completed stage 進行中', async () => {
+    useProgressStore().courseProgress = {
+      'bio-01': { courseId: 'bio-01', completed: false, bestScore: 50, latestScore: 50 },
+    }
+    const { wrapper } = await mountMap(pinia)
+    const first = wrapper.findAll('[data-testid="stage-card"]')[0]!
+    expect(first.text()).toContain('⏳ 進行中')
+    expect(first.find('a').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="map-progress"]').text()).toContain('已完成 0 / 8 關')
+  })
+
+  // A score of 0 is still a real best score; don't hide it as "missing".
+  it('shows a best score of 0', async () => {
+    useProgressStore().courseProgress = {
+      'bio-01': { courseId: 'bio-01', completed: true, bestScore: 0, latestScore: 0 },
+    }
+    const { wrapper } = await mountMap(pinia)
+    expect(wrapper.findAll('[data-testid="stage-card"]')[0]!.text()).toContain('最佳 0 分')
   })
 
   it('enters stage 1 when its card is clicked', async () => {

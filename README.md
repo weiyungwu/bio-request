@@ -56,4 +56,8 @@ Known issues and deferred review items: [`docs/known-issues.md`](docs/known-issu
 - Level / EXP / badge design: [`docs/progression.md`](docs/progression.md).
 - Stage unlocking: a stage is playable only if its id is in `OPEN_COURSE_IDS`
   (`src/utils/stages.ts`, MVP: `bio-01`). Add an id there when that stage's lesson and quiz
-  data ship. `/lesson/:courseId` redirects locked or unknown ids to `/map`.
+  data ship. A global router guard redirects `/lesson/:courseId` for locked or unknown ids to
+  `/map` (also on param-only changes); unknown URLs redirect to `/`.
+- Stage states map to spec FR-01 (已完成／進行中／尚未解鎖) plus one extra: `completed` ✓ 已完成,
+  `in-progress` ⏳ 進行中 (attempted, not cleared), `open` ▶ 可挑戰 (never attempted — calling it
+  進行中 would be misleading), `locked` 🔒 未開放.

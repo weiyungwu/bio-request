@@ -28,12 +28,14 @@ describe('stageStatus', () => {
     ).toBe('completed')
   })
 
-  it('keeps an open stage open when attempted but not completed', () => {
+  // spec FR-01: 已完成、進行中、尚未解鎖. An attempted-but-not-cleared stage is 進行中;
+  // a never-attempted open stage is not "in progress" yet.
+  it('marks an attempted but not completed stage as in-progress', () => {
     expect(
       stageStatus('bio-01', {
         'bio-01': { courseId: 'bio-01', completed: false, bestScore: 60, latestScore: 60 },
       }),
-    ).toBe('open')
+    ).toBe('in-progress')
   })
 
   // Stale or tampered storage must not unlock a stage that has no content.

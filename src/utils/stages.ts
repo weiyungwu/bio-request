@@ -6,7 +6,8 @@ import type { CourseProgress } from '@/types/progress'
  */
 export const OPEN_COURSE_IDS: readonly string[] = ['bio-01']
 
-export type StageStatus = 'locked' | 'open' | 'completed'
+/** spec FR-01: 已完成 (completed), 進行中 (in-progress), 尚未解鎖 (locked); plus open = not yet attempted. */
+export type StageStatus = 'locked' | 'open' | 'in-progress' | 'completed'
 
 export function isCourseOpen(courseId: string): boolean {
   return OPEN_COURSE_IDS.includes(courseId)
@@ -17,5 +18,7 @@ export function stageStatus(
   progress: Record<string, CourseProgress>,
 ): StageStatus {
   if (!isCourseOpen(courseId)) return 'locked'
-  return progress[courseId]?.completed ? 'completed' : 'open'
+  const course = progress[courseId]
+  if (!course) return 'open'
+  return course.completed ? 'completed' : 'in-progress'
 }
