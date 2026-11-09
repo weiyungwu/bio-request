@@ -49,11 +49,22 @@ test.describe('Stage quiz (TASK-011)', () => {
     // 同一題不會在同一份試卷中重複出現.
     expect(seen.size).toBe(5)
 
-    await expect(page.getByRole('heading', { name: '測驗完成' })).toBeFocused()
-    await expect(page.getByTestId('quiz-score')).toHaveText('80 分')
-    await expect(page.getByTestId('quiz-verdict')).toContainText('通過')
+    // TASK-012: the result page — score, counts, EXP and the wrong question explained.
+    await expect(page).toHaveURL(/\/result\/bio-01$/)
+    await expect(page.getByTestId('result-score')).toHaveText('80 分')
+    await expect(page.getByTestId('result-verdict')).toContainText('通過')
+    await expect(page.getByTestId('result-counts')).toContainText('答對 4 題 · 答錯 1 題')
+    await expect(page.getByTestId('result-exp')).toContainText('+50')
+    await expect(page.getByTestId('result-wrong')).toHaveCount(1)
+    await expect(page.getByTestId('result-wrong')).toContainText('解析：')
 
-    await page.getByTestId('quiz-restart').click()
+    // The cleared stage shows on the map (TASK-004: 完成第一關後，進度狀態正確更新).
+    await page.getByRole('link', { name: '回關卡地圖', exact: true }).click()
+    await expect(page).toHaveURL(/\/map$/)
+    await expect(page.getByText('✓ 已完成')).toBeVisible()
+    await page.goBack()
+
+    await page.getByTestId('result-retry').click()
     await expect(progress).toContainText('第 1 / 5 題 · 還剩 5 題')
     await expect(page.getByTestId('quiz-submit')).toBeDisabled()
     expect(errors).toEqual([])
@@ -69,6 +80,10 @@ test.describe('Stage quiz (TASK-011)', () => {
       expect(overflow).toBeLessThanOrEqual(0)
       await page.getByTestId('quiz-next').click()
     }
-    await expect(page.getByTestId('quiz-verdict')).toContainText('未通過')
+    await expect(page.getByTestId('result-verdict')).toContainText('未通過')
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    )
+    expect(overflow).toBeLessThanOrEqual(0)
   })
 })

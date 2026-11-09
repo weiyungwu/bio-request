@@ -1,7 +1,9 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { CourseProgress, LearningRecord } from '@/types/progress'
+import { FIRST_CLEAR_EXP, quizScoreExp, type QuizExpAward } from '@/utils/exp'
 import { levelFromExp } from '@/utils/level'
+import { isPassing } from '@/utils/quiz'
 
 const RECENT_LIMIT = 3
 
@@ -21,5 +23,25 @@ export const useProgressStore = defineStore('progress', () => {
       .map(({ record }) => record),
   )
 
-  return { exp, records, courseProgress, levelInfo, latestRecords }
+  /**
+   * Records one finished quiz (TASK-012): best/latest score, cleared status, activity
+   * log and EXP. The first-clear bonus is paid once per stage, never on a replay.
+   */
+  function recordQuizResult(courseId: string, score: number, now = new Date()): QuizExpAward {
+    const prev = courseProgress.value[courseId]
+    const passed = isPassing(score)
+    const quiz = quizScoreExp(score)
+    const firstClear = passed && !prev?.completed ? FIRST_CLEAR_EXP : 0
+    courseProgress.value[courseId] = {
+      courseId,
+      completed: (prev?.completed ?? false) || passed,
+      bestScore: Math.max(prev?.bestScore ?? 0, score),
+      latestScore: score,
+    }
+    records.value.push({ courseId, score, passed, completedAt: now.toISOString() })
+    exp.value += quiz + firstClear
+    return { quiz, firstClear, total: quiz + firstClear }
+  }
+
+  return { exp, records, courseProgress, levelInfo, latestRecords, recordQuizResult }
 })

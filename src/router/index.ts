@@ -23,6 +23,11 @@ export const routes: RouteRecordRaw[] = [
     name: 'quiz',
     component: () => import('../views/QuizView.vue'),
   },
+  {
+    path: '/result/:courseId',
+    name: 'result',
+    component: () => import('../views/ResultView.vue'),
+  },
   // Dev-only style guide; tree-shaken out of production builds.
   ...(import.meta.env.DEV
     ? [
@@ -41,7 +46,8 @@ export function createAppRouter(history: RouterHistory) {
   // 未開放關卡不可進入. A global guard also runs on typed URLs and on
   // param-only changes (/lesson/bio-01 -> /lesson/bio-02), which skip beforeEnter.
   router.beforeEach((to) =>
-    (to.name === 'lesson' || to.name === 'quiz') && !isCourseOpen(String(to.params.courseId))
+    ['lesson', 'quiz', 'result'].includes(String(to.name)) &&
+    !isCourseOpen(String(to.params.courseId))
       ? { name: 'map' }
       : true,
   )

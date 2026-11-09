@@ -1,6 +1,8 @@
 import { computed, ref, shallowRef } from 'vue'
 import { defineStore } from 'pinia'
+import { useProgressStore } from '@/stores/progress'
 import type { Question } from '@/types/question'
+import type { QuizExpAward } from '@/utils/exp'
 import {
   QUIZ_SIZE,
   drawQuestions,
@@ -21,6 +23,8 @@ export const useQuizStore = defineStore('quiz', () => {
   const submitted = ref<boolean[]>([])
   const index = ref(0)
   const finished = ref(false)
+  /** EXP paid for this attempt; set once, when the last question is passed. */
+  const award = ref<QuizExpAward | null>(null)
 
   const current = computed(() => questions.value[index.value])
   const response = computed(() => responses.value[index.value] ?? [])
@@ -44,6 +48,7 @@ export const useQuizStore = defineStore('quiz', () => {
     submitted.value = questions.value.map(() => false)
     index.value = 0
     finished.value = false
+    award.value = null
   }
 
   /** Forgets any attempt, e.g. when a course has no usable bank (review S1). */
@@ -54,6 +59,7 @@ export const useQuizStore = defineStore('quiz', () => {
     submitted.value = []
     index.value = 0
     finished.value = false
+    award.value = null
   }
 
   /** Sets one slot of the current answer; ignored once the question is submitted. */
@@ -69,9 +75,14 @@ export const useQuizStore = defineStore('quiz', () => {
   }
 
   function next() {
-    if (!isSubmitted.value) return
-    if (index.value < questions.value.length - 1) index.value++
-    else finished.value = true
+    if (finished.value || !isSubmitted.value) return
+    if (index.value < questions.value.length - 1) {
+      index.value++
+      return
+    }
+    finished.value = true
+    // Exactly once per attempt: the finished guard above stops a second call.
+    award.value = useProgressStore().recordQuizResult(courseId.value!, score.value)
   }
 
   return {
@@ -80,6 +91,7 @@ export const useQuizStore = defineStore('quiz', () => {
     responses,
     index,
     finished,
+    award,
     current,
     response,
     isSubmitted,

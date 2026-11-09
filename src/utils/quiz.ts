@@ -74,3 +74,18 @@ export function correctAnswerText(q: Question): string {
       return q.answer.map((i) => q.options[i]).join(' → ')
   }
 }
+
+/** The student's answer as text, for the 錯題補強 list. */
+export function responseText(q: Question, response: QuizResponse): string {
+  const pick = (list: readonly string[], i: number | null | undefined) =>
+    i === null || i === undefined ? '（未作答）' : (list[i] ?? '（未作答）')
+  switch (q.type) {
+    case 'single_choice':
+    case 'true_false':
+      return pick(q.options, response[0])
+    case 'matching':
+      return q.options.left.map((l, i) => `${l} → ${pick(q.options.right, response[i])}`).join('；')
+    case 'ordering':
+      return response.map((i) => pick(q.options, i)).join(' → ')
+  }
+}

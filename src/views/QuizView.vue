@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { computed, ref, watch } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
 import BaseCard from '@/components/common/BaseCard.vue'
 import ProgressBar from '@/components/common/ProgressBar.vue'
@@ -9,9 +9,10 @@ import courses from '@/data/courses.json'
 import { getQuestionBank } from '@/data/questions'
 import { useQuizStore } from '@/stores/quiz'
 import type { Course } from '@/types/course'
-import { PASS_SCORE, QUIZ_SIZE, hasRepeats } from '@/utils/quiz'
+import { QUIZ_SIZE, hasRepeats } from '@/utils/quiz'
 
 const route = useRoute()
+const router = useRouter()
 const quiz = useQuizStore()
 const courseId = computed(() => String(route.params.courseId))
 const course = computed(() => (courses as Course[]).find((c) => c.id === courseId.value))
@@ -19,7 +20,6 @@ const bank = computed(() => getQuestionBank(courseId.value))
 // spec 5.4 draws 5; with fewer valid questions the quiz can't be a fair 5-question paper.
 const canStart = computed(() => (bank.value?.questions.length ?? 0) >= QUIZ_SIZE)
 
-const resultHeading = ref<HTMLElement | null>(null)
 // Bumped per start so the question remounts (and takes focus) even when index stays 0.
 const round = ref(0)
 
@@ -41,7 +41,7 @@ const submitHint = computed(() => {
 
 function next() {
   quiz.next()
-  if (quiz.finished) nextTick(() => resultHeading.value?.focus())
+  if (quiz.finished) router.push(`/result/${courseId.value}`)
 }
 </script>
 
@@ -114,36 +114,6 @@ function next() {
       <BaseButton v-else data-testid="quiz-next" @click="next">
         {{ quiz.index < quiz.questions.length - 1 ? '下一題 →' : '看成績 →' }}
       </BaseButton>
-    </BaseCard>
-
-    <!-- Minimal score; the full result page (EXP, 錯題補強) is TASK-012. -->
-    <BaseCard
-      v-if="canStart && quiz.finished"
-      as="section"
-      data-testid="quiz-result"
-      class="space-y-3"
-      aria-labelledby="quiz-result-title"
-    >
-      <h2 id="quiz-result-title" ref="resultHeading" tabindex="-1">測驗完成</h2>
-      <p data-testid="quiz-score" class="text-3xl font-bold">{{ quiz.score }} 分</p>
-      <p>答對 {{ quiz.correctCount }} / {{ quiz.questions.length }} 題</p>
-      <p
-        data-testid="quiz-verdict"
-        :class="quiz.passed ? 'text-success' : 'text-danger-text'"
-        class="font-bold"
-      >
-        {{ quiz.passed ? `✓ 通過！（${PASS_SCORE} 分以上）` : `✗ 未通過，需要 ${PASS_SCORE} 分` }}
-      </p>
-      <div class="flex flex-wrap gap-3">
-        <BaseButton data-testid="quiz-restart" variant="secondary" @click="start">
-          ↺ 重新測驗
-        </BaseButton>
-        <RouterLink
-          to="/map"
-          class="inline-flex min-h-11 items-center justify-center rounded-control px-5 font-bold text-muted hover:bg-surface-2 hover:text-text"
-          >回關卡地圖</RouterLink
-        >
-      </div>
     </BaseCard>
   </main>
 </template>

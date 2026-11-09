@@ -73,6 +73,11 @@ Handover notes (current status, workflow, next task): [`docs/handoff.md`](docs/h
   with a reason until every slot is filled) → verdict, correct answer and explanation → next.
   Matching and ordering are answered with one native `<select>` per row and scored
   all-or-nothing. Bank data errors are listed at the top of the quiz page.
+- Result (`/result/:courseId`, TASK-012): after the last question the quiz store calls
+  `progress.recordQuizResult()` exactly once (best/latest score, cleared status, activity record,
+  EXP per `src/utils/exp.ts`: quiz-score band + first-clear bonus once per stage), then the page
+  shows score, counts, verdict, EXP, every wrong question with both answers and the explanation
+  (錯題補強), and 再挑戰. The attempt is in memory: after a reload the page shows an empty state.
 - Question bank: `src/data/questions/<courseId>.json`, an array of spec.txt §8.2 questions, loaded
   and validated by `getQuestionBank()` in `src/data/questions/index.ts`. Types and answer formats
   (`src/types/question.ts`): `single_choice` (answer = option index), `true_false` (options fixed

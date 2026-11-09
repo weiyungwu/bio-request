@@ -1,10 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
-import { createPinia, setActivePinia } from 'pinia'
+import { createPinia, getActivePinia, setActivePinia } from 'pinia'
 import { createMemoryHistory } from 'vue-router'
 import { createAppRouter } from '@/router'
 import QuizView from '@/views/QuizView.vue'
 import QuizQuestion from '@/components/quiz/QuizQuestion.vue'
+import { useProgressStore } from '@/stores/progress'
 import { getQuestionBank } from '@/data/questions'
 import type { Question, QuestionBank } from '@/types/question'
 
@@ -96,22 +97,38 @@ describe('QuizView (TASK-011)', () => {
     w.unmount()
   })
 
-  it('scores the paper at the end and restarts with nothing kept', async () => {
+  // TASK-012: the last question leads to the result page, with the attempt recorded once.
+  it('records the finished paper and opens the result page', async () => {
     const w = await mountQuiz()
     for (let n = 0; n < 5; n++) {
       await answer(w, n === 0)
       await w.find('[data-testid="quiz-next"]').trigger('click')
     }
-    expect(w.find('[data-testid="quiz-score"]').text()).toBe('80 分')
-    expect(w.find('[data-testid="quiz-verdict"]').text()).toContain('通過')
-    await flushPromises()
-    expect(document.activeElement?.id).toBe('quiz-result-title')
-
-    await w.find('[data-testid="quiz-restart"]').trigger('click')
-    expect(w.find('[data-testid="quiz-progress"]').text()).toBe('第 1 / 5 題 · 還剩 5 題')
-    expect(w.find('[data-testid="quiz-submit"]').attributes('disabled')).toBeDefined()
-    expect(w.findAll('[aria-pressed="true"]')).toHaveLength(0)
+    // The result route is lazy-loaded, so navigation settles after the dynamic import.
+    await vi.waitFor(() => expect(w.vm.$router.currentRoute.value.fullPath).toBe('/result/bio-01'))
+    const progress = useProgressStore()
+    expect(progress.courseProgress['bio-01']).toMatchObject({ latestScore: 80, completed: true })
+    expect(progress.records).toHaveLength(1)
     w.unmount()
+  })
+
+  // Spec: 重新開始測驗時，清除上一輪暫存答案 — 再挑戰 opens the quiz page afresh.
+  it('opening the quiz again starts a fresh paper', async () => {
+    const w = await mountQuiz()
+    for (let n = 0; n < 5; n++) {
+      await answer(w)
+      await w.find('[data-testid="quiz-next"]').trigger('click')
+    }
+    w.unmount()
+    const again = mount(QuizView, {
+      global: { plugins: [w.vm.$router, getActivePinia()!] },
+      attachTo: document.body,
+    })
+    await flushPromises()
+    expect(again.find('[data-testid="quiz-progress"]').text()).toBe('第 1 / 5 題 · 還剩 5 題')
+    expect(again.find('[data-testid="quiz-submit"]').attributes('disabled')).toBeDefined()
+    expect(again.findAll('[aria-pressed="true"]')).toHaveLength(0)
+    again.unmount()
   })
 
   // TASK-010: 缺少必要欄位時能顯示資料錯誤; the valid questions still make a paper.
