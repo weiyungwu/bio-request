@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
 import BaseCard from '@/components/common/BaseCard.vue'
@@ -13,10 +12,8 @@ import { useProgressStore } from '@/stores/progress'
 const router = useRouter()
 const progress = useProgressStore()
 
-const courseTitle = computed(() => {
-  const byId = new Map((courses as Course[]).map((c) => [c.id, c.title]))
-  return (id: string) => byId.get(id) ?? id
-})
+const storyTitleById = new Map((courses as Course[]).map((c) => [c.id, c.storyTitle]))
+const courseName = (id: string) => storyTitleById.get(id) ?? id
 
 const dateFormat = new Intl.DateTimeFormat('zh-TW', { month: 'numeric', day: 'numeric' })
 </script>
@@ -45,17 +42,23 @@ const dateFormat = new Intl.DateTimeFormat('zh-TW', { month: 'numeric', day: 'nu
     <div class="grid gap-4 md:grid-cols-2">
       <BaseCard as="section" highlight="reward" aria-labelledby="player-heading">
         <h2 id="player-heading" class="mb-3 text-xl">我的探險等級</h2>
-        <p data-testid="player-level" class="mb-3 text-3xl font-bold text-reward">
-          Lv {{ progress.levelInfo.level }}
+        <p data-testid="player-level" class="mb-1 text-3xl font-bold text-reward">
+          Lv.{{ progress.levelInfo.level }} {{ progress.levelInfo.title }}
         </p>
-        <div data-testid="player-exp">
-          <ProgressBar
-            :value="progress.levelInfo.expIntoLevel"
-            :max="progress.levelInfo.expForNextLevel"
-            label="距離下一級的經驗值"
-            unit="EXP"
-            tone="reward"
-          />
+        <div data-testid="player-exp" class="space-y-2">
+          <p class="text-2xl font-bold">{{ progress.levelInfo.exp }} EXP</p>
+          <template v-if="progress.levelInfo.nextLevelMinExp !== null">
+            <ProgressBar
+              :value="progress.levelInfo.exp - progress.levelInfo.levelMinExp"
+              :max="progress.levelInfo.nextLevelMinExp - progress.levelInfo.levelMinExp"
+              :label="`升到 Lv.${progress.levelInfo.level + 1} 的進度`"
+              tone="reward"
+            />
+            <p class="text-sm text-muted">
+              距離 Lv.{{ progress.levelInfo.level + 1 }} 還差 {{ progress.levelInfo.expToNext }} EXP
+            </p>
+          </template>
+          <p v-else class="text-sm font-semibold text-reward">★ 已達最高等級！</p>
         </div>
       </BaseCard>
 
@@ -67,12 +70,12 @@ const dateFormat = new Intl.DateTimeFormat('zh-TW', { month: 'numeric', day: 'nu
         <ul v-else class="space-y-3">
           <li
             v-for="record in progress.latestRecords"
-            :key="record.completedAt"
+            :key="`${record.courseId}-${record.completedAt}-${record.score}`"
             data-testid="recent-record"
             class="flex flex-wrap items-center justify-between gap-2"
           >
             <span class="min-w-0">
-              <span class="font-semibold">{{ courseTitle(record.courseId) }}</span>
+              <span class="font-semibold">{{ courseName(record.courseId) }}</span>
               <span class="ml-2 text-sm text-muted">
                 {{ dateFormat.format(new Date(record.completedAt)) }}
               </span>

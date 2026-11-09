@@ -1,6 +1,11 @@
 <template>
   <!-- Decorative hero art (stylized cell). Carries no required information. -->
-  <svg viewBox="0 0 240 240" role="img" aria-label="細胞插畫" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    viewBox="0 0 240 240"
+    aria-hidden="true"
+    focusable="false"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <defs>
       <radialGradient id="cell-body" cx="45%" cy="40%" r="65%">
         <stop offset="0%" stop-color="#2dd4bf" stop-opacity="0.35" />

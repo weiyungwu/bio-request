@@ -52,3 +52,5 @@ npm install
 - Style guide: `npm run dev`, then open `/design-system` (dev only, not in production builds).
 
 Known issues and deferred review items: [`docs/known-issues.md`](docs/known-issues.md).
+
+- Level / EXP / badge design: [`docs/progression.md`](docs/progression.md).

@@ -6,7 +6,7 @@ test.describe('Home (TASK-003)', () => {
     page.on('console', (m) => m.type() === 'error' && errors.push(m.text()))
 
     await page.goto('/')
-    await expect(page.getByTestId('player-level')).toContainText('Lv 1')
+    await expect(page.getByTestId('player-level')).toContainText('Lv.1 生物新手')
     await expect(page.getByTestId('recent-empty')).toBeVisible()
 
     await page.getByRole('button', { name: /開始冒險/ }).click()

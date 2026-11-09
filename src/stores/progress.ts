@@ -12,9 +12,12 @@ export const useProgressStore = defineStore('progress', () => {
 
   const levelInfo = computed(() => levelFromExp(exp.value))
   const latestRecords = computed(() =>
-    [...records.value]
-      .sort((a, b) => b.completedAt.localeCompare(a.completedAt))
-      .slice(0, RECENT_LIMIT),
+    records.value
+      .map((record) => ({ record, time: Date.parse(record.completedAt) }))
+      .filter(({ time }) => !Number.isNaN(time))
+      .sort((a, b) => b.time - a.time)
+      .slice(0, RECENT_LIMIT)
+      .map(({ record }) => record),
   )
 
   return { exp, records, levelInfo, latestRecords }
