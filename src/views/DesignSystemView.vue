@@ -13,6 +13,8 @@ const swatches = [
   ['reward', 'bg-reward'],
   ['success', 'bg-success'],
   ['danger', 'bg-danger'],
+  ['danger-text', 'bg-danger-text'],
+  ['bio', 'bg-bio'],
   ['muted', 'bg-muted'],
 ] as const
 </script>
@@ -65,8 +67,9 @@ const swatches = [
         <BaseTag>未開放</BaseTag>
         <BaseTag tone="explore">探索中</BaseTag>
         <BaseTag tone="reward">+50 EXP</BaseTag>
-        <BaseTag tone="success">已通關</BaseTag>
-        <BaseTag tone="danger">答錯</BaseTag>
+        <BaseTag tone="success">✓ 已通關</BaseTag>
+        <BaseTag tone="danger">✗ 答錯</BaseTag>
+        <BaseTag tone="bio">植物細胞</BaseTag>
       </div>
     </section>
 

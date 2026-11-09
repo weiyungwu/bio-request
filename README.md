@@ -38,14 +38,17 @@ npm install
 
 - Tokens live in `src/assets/main.css` (`@theme`) and become Tailwind utilities:
   colors `bg` `surface` `surface-2` `border` `text` `muted` `explore` (teal, quest/primary)
-  `reward` (yellow, EXP/hints) `success` `danger` `on-accent`; radius `rounded-control`
+  `reward` (yellow, EXP/hints) `success` `danger` (borders/icons/fills) `danger-text` (text on
+  danger tints) `bio` (lime, decorative topic accent, never a status) `on-accent`; radius `rounded-control`
   `rounded-card` `rounded-pill`; shadows `shadow-card` `shadow-glow-explore` `shadow-glow-reward`.
 - Breakpoints: mobile < 640px, tablet `sm`/`md`, desktop `lg` (1024px). Use `page-container`
   for the page gutter (16px mobile, 24px tablet+).
 - Components in `src/components/common/`: `BaseButton` (`variant` primary/secondary/reward/ghost,
   `size` md/lg, `block`, `disabled`), `BaseCard` (`as`, `highlight` none/explore/reward),
-  `BaseTag` (`tone` neutral/explore/reward/success/danger; place on `bg` or `surface`),
+  `BaseTag` (`tone` neutral/explore/reward/success/danger/bio; place on `bg` or `surface`),
   `ProgressBar` (`value`, `max`, `label` required for screen readers, `tone`).
 - Accessibility rule: never convey status by color alone. Answer feedback, lock/clear states, etc.
   must also carry text or an icon (e.g. `✓ 答對`, `✗ 答錯`, `🔒 未開放`).
 - Style guide: `npm run dev`, then open `/design-system` (dev only, not in production builds).
+
+Known issues and deferred review items: [`docs/known-issues.md`](docs/known-issues.md).

@@ -79,7 +79,7 @@ describe('ProgressBar', () => {
 
 describe('BaseTag', () => {
   it('renders its label with a distinct style per tone', () => {
-    const tones = ['neutral', 'explore', 'reward', 'success', 'danger'] as const
+    const tones = ['neutral', 'explore', 'reward', 'success', 'danger', 'bio'] as const
     const wrappers = tones.map((tone) =>
       mount(BaseTag, { props: { tone }, slots: { default: '標籤' } }),
     )
