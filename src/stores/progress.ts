@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { LearningRecord } from '@/types/progress'
+import type { CourseProgress, LearningRecord } from '@/types/progress'
 import { levelFromExp } from '@/utils/level'
 
 const RECENT_LIMIT = 3
@@ -9,6 +9,7 @@ const RECENT_LIMIT = 3
 export const useProgressStore = defineStore('progress', () => {
   const exp = ref(0)
   const records = ref<LearningRecord[]>([])
+  const courseProgress = ref<Record<string, CourseProgress>>({})
 
   const levelInfo = computed(() => levelFromExp(exp.value))
   const latestRecords = computed(() =>
@@ -20,5 +21,5 @@ export const useProgressStore = defineStore('progress', () => {
       .map(({ record }) => record),
   )
 
-  return { exp, records, levelInfo, latestRecords }
+  return { exp, records, courseProgress, levelInfo, latestRecords }
 })

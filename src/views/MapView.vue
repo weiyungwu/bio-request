@@ -1,6 +1,90 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import { RouterLink } from 'vue-router'
+import BaseTag from '@/components/common/BaseTag.vue'
+import ProgressBar from '@/components/common/ProgressBar.vue'
+import courses from '@/data/courses.json'
+import type { Course } from '@/types/course'
+import { useProgressStore } from '@/stores/progress'
+import { stageStatus, type StageStatus } from '@/utils/stages'
+
+const progress = useProgressStore()
+
+// Decorative theme icons (spec 頁面二: 關卡主題插畫) until real art exists.
+const THEME_ICON: Record<string, string> = {
+  'bio-01': '🔬',
+  'bio-02': '🧫',
+  'bio-03': '🔍',
+  'bio-04': '🌱',
+  'bio-05': '🍎',
+  'bio-06': '❤️',
+  'bio-07': '🧠',
+  'bio-08': '🧬',
+}
+
+const stages = computed(() =>
+  [...(courses as Course[])]
+    .sort((a, b) => a.order - b.order)
+    .map((course) => ({
+      course,
+      status: stageStatus(course.id, progress.courseProgress) as StageStatus,
+      bestScore: progress.courseProgress[course.id]?.bestScore,
+    })),
+)
+
+const completedCount = computed(() => stages.value.filter((s) => s.status === 'completed').length)
+
+const cardBase = 'flex h-full flex-col gap-3 rounded-card border bg-surface p-4 shadow-card sm:p-5'
+const cardInteractive =
+  'transition-[border-color,box-shadow,translate] hover:border-explore hover:shadow-glow-explore active:translate-y-0.5 motion-reduce:transition-none'
+</script>
+
 <template>
-  <!-- Placeholder: stage map is TASK-004. -->
-  <main class="page-container py-8">
-    <h1>關卡地圖</h1>
+  <main class="page-container space-y-6 py-8">
+    <header class="space-y-4">
+      <RouterLink to="/" class="text-sm font-semibold text-muted hover:text-text"
+        >← 回首頁</RouterLink
+      >
+      <h1>關卡地圖</h1>
+      <div data-testid="map-progress" class="space-y-2">
+        <p class="font-semibold">已完成 {{ completedCount }} / {{ stages.length }} 關</p>
+        <ProgressBar :value="completedCount" :max="stages.length" label="關卡完成進度" />
+      </div>
+    </header>
+
+    <ol class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <li v-for="{ course, status, bestScore } in stages" :key="course.id" data-testid="stage-card">
+        <component
+          :is="status === 'locked' ? 'div' : RouterLink"
+          v-bind="status === 'locked' ? {} : { to: `/lesson/${course.id}` }"
+          :class="[
+            cardBase,
+            status === 'locked' ? 'border-dashed border-border' : cardInteractive,
+            status === 'completed' ? 'border-success' : '',
+            status === 'open' ? 'border-explore' : '',
+          ]"
+        >
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-sm font-semibold text-muted">第 {{ course.order }} 關</span>
+            <BaseTag v-if="status === 'completed'" tone="success">✓ 已完成</BaseTag>
+            <BaseTag v-else-if="status === 'open'" tone="explore">▶ 可挑戰</BaseTag>
+            <BaseTag v-else>🔒 未開放</BaseTag>
+          </div>
+          <span aria-hidden="true" class="text-4xl">{{ THEME_ICON[course.id] }}</span>
+          <div class="space-y-1">
+            <h2 :class="['text-lg', status === 'locked' && 'text-muted']">
+              {{ course.storyTitle }}
+            </h2>
+            <p class="text-sm text-muted">{{ course.title }}・{{ course.description }}</p>
+          </div>
+          <p
+            v-if="status === 'completed' && bestScore !== undefined"
+            class="mt-auto font-semibold text-reward"
+          >
+            最佳 {{ bestScore }} 分
+          </p>
+        </component>
+      </li>
+    </ol>
   </main>
 </template>

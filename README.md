@@ -54,3 +54,6 @@ npm install
 Known issues and deferred review items: [`docs/known-issues.md`](docs/known-issues.md).
 
 - Level / EXP / badge design: [`docs/progression.md`](docs/progression.md).
+- Stage unlocking: a stage is playable only if its id is in `OPEN_COURSE_IDS`
+  (`src/utils/stages.ts`, MVP: `bio-01`). Add an id there when that stage's lesson and quiz
+  data ship. `/lesson/:courseId` redirects locked or unknown ids to `/map`.
