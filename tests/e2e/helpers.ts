@@ -30,6 +30,8 @@ export async function finishLesson(page: Page) {
   }
   await page.getByTestId('lesson-next').click()
   await expect(page.getByTestId('lesson-summary')).toBeVisible()
+  // The button must name the section it opens (heading 細胞城市探險), not a later one.
+  await expect(page.getByTestId('lesson-done')).toContainText('細胞城市探險')
   await page.clock.fastForward(PAST_COOLDOWN)
   await page.getByTestId('lesson-done').click()
 }

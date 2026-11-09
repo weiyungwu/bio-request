@@ -105,7 +105,7 @@ function finish() {
         :variant="onSummary ? 'reward' : 'primary'"
         @click="forward"
       >
-        <template v-if="onSummary">下一步：互動挑戰 →</template>
+        <template v-if="onSummary">下一步：細胞城市探險 →</template>
         <template v-else>{{ index === points.length - 1 ? '看重點整理' : '下一個' }} →</template>
       </BaseButton>
     </div>

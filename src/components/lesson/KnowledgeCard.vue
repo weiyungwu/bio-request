@@ -33,10 +33,10 @@ defineProps<{ point: KnowledgePoint }>()
       <ImageExplanation v-for="image in point.images" :key="image.src" :image="image" />
     </div>
 
-    <div>
-      <p class="text-sm font-semibold text-bio">生活例子</p>
-      <p>{{ point.example }}</p>
-    </div>
+    <dl>
+      <dt class="text-sm font-semibold text-bio">生活例子</dt>
+      <dd>{{ point.example }}</dd>
+    </dl>
 
     <ImportantNote>{{ point.examTip }}</ImportantNote>
   </article>

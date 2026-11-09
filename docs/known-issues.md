@@ -20,6 +20,7 @@
 - 第一關故事對白與角色（`src/data/lessons/bio-01.json` 的 `story`，賽爾隊長、米可）由 Claude 依 spec.txt 5.1 撰寫，需確認用語與知識正確性。（TASK-005）
 - 第一關教材（`bio-01.json` 的 `lessons`：單元 A 6 項、B 7 項、C 3 項，含定義、白話解釋、生活例子、考試重點、圖說）由 Claude 依 spec.txt 5.2／FR-03 撰寫，需確認正確性與是否符合學校課程範圍。（TASK-006）
 - 細胞示意圖（`public/images/cells/*.svg`）為 Claude 繪製的簡化示意圖，需確認構造位置與比例不會誤導。（TASK-006）
+- 植物細胞圖中葉綠體與粒線體長軸同為 26 單位，實際葉綠體約為粒線體數倍長。粒線體刻意與動物細胞同尺寸，若要修正應放大葉綠體；需重新排列並同步 `CellExplorer.vue` 與 E2E 點擊座標，與上一項示意圖確認一併處理。（Phase 2 審查 S-01）
 - 課程資料依 MVP 規格 §2 拆檔（`src/data/lessons/<id>.json`），偏離 spec.txt §8.1 把 lessons 放在 course 物件內的寫法；兩份規格互相矛盾，請確認。（TASK-005 審查 I2）
 - 「任務完成提示」解讀為開場故事後的任務指令卡；若原意是完成教學／遊戲後的提示，需調整。（TASK-005 審查 S8）
 
@@ -44,6 +45,7 @@
 - CI 模式的 Playwright `retries: 2` 會掩蓋不穩定的測試；新增 E2E 時請用 `--retries=0` 連跑數次確認。（TASK-006）
 
 - 故事角色頭像暫用 emoji（🧑‍🔬、🤖），待正式角色圖。（TASK-005）
+- 故事對話沒有「上一段」，誤點後無法回看前一句（任務卡出現前）；等有學生實測回饋再決定是否加上。（Phase 2 審查 S-02）
 
 - 最近學習紀錄的 v-for key 為 `courseId-completedAt-score`，同關、同毫秒、同分數時仍會重複；TASK-013 若為紀錄加上 id 再改用 id。（TASK-003 複審 S-E）
 
