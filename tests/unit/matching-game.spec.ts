@@ -122,6 +122,17 @@ describe('MatchingGame (TASK-008)', () => {
     expect(fn(w, 'b-membrane').attributes('aria-pressed')).toBe('false')
   })
 
+  // Phase 3 review I-02: on phones the hint renders below the fold; bring it into view.
+  it('scrolls the hint into view after a wrong pair', async () => {
+    const w = mountGame()
+    const box = w.find('[data-testid="matching-feedback"]').element as HTMLElement
+    const calls: unknown[] = []
+    box.scrollIntoView = (arg?: unknown) => void calls.push(arg)
+    await pair(w, 'b-nucleus', 'b-membrane')
+    await new Promise((r) => setTimeout(r))
+    expect(calls).toEqual([{ block: 'nearest' }])
+  })
+
   // Changing your mind within one column is not a mistake.
   it('picking another structure only moves the selection', async () => {
     const w = mountGame()

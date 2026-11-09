@@ -13,7 +13,7 @@
 | 3     | TASK-009 分類遊戲（植物／動物／兩者皆有）                         | 完成，任務審查已處理（commit 1188f8a）     |
 | 4–5   | **測驗引擎、結果頁、LocalStorage、錯題本（TASK-010～）** ← 下一步 | 未開始                                     |
 
-第一關流程（`src/views/LessonView.vue`）：故事 → 探險者訓練（16 個知識點＋重點整理）→ 細胞城市探險（細胞互動圖）→ 互動挑戰（配對遊戲 → 分類遊戲）。Phase 3 結束後需做 Phase 審查（不同模型或 Human）。
+第一關流程（`src/views/LessonView.vue`）：故事 → 探險者訓練（16 個知識點＋重點整理）→ 細胞城市探險（細胞互動圖）→ 互動挑戰（配對遊戲 → 分類遊戲 → 回關卡地圖；TASK-011 起改為進入測驗，替換 `LessonView` 中 `ClassificationGame` 的 `#next` slot）。Phase 3 審查（Gemini）已處理。
 
 ## 下一步要知道的
 
@@ -45,7 +45,6 @@ npm run build && CI=1 npx playwright test --retries=0  # 連跑兩次，確認�
 ## 等 Human 處理
 
 - 確認配對遊戲文字（`bio-01.json` 的 `matching`：功能敘述與錯誤提示）。
-- Phase 3 審查（不同模型或 Human），報告存成上層資料夾的 `phase-3-review.md`。
 - 其餘見 `known-issues.md`「待 Human 確認」。
 
 ## 不在這個 repo 裡的檔案

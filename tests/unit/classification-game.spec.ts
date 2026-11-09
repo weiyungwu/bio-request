@@ -65,22 +65,35 @@ describe('ClassificationGame (TASK-009)', () => {
     expect(choice(w, it.category).text()).toMatch(/^✓/)
   })
 
-  // Review I1: "細胞核…不是「動物細胞」" reads as "animal cells have no nucleus" — false.
-  it('a wrong pick for a shared structure states both cells have it, never "不是"', async () => {
+  // TASK-009 review I1: "細胞核…不是「動物細胞」" reads as "animal cells have no nucleus".
+  it('a wrong pick for a shared structure names the right bucket without "不是"', async () => {
     const w = mountGame()
     await skipTo(w, 'both')
-    const name = w.find('[data-testid="classification-item"]').text()
     await choice(w, 'animal').trigger('click')
-    expect(feedback(w)).toContain(`正確答案是「兩者皆有」：植物細胞和動物細胞都有${name}。`)
-    expect(feedback(w)).not.toContain('不是')
+    const headline = w.find('[data-testid="classification-feedback"] p').text()
+    expect(headline).toBe('✗ 不對喔，正確答案是「兩者皆有」。')
   })
 
-  it('a plant-only structure says animal cells lack it', async () => {
+  // Phase 3 review I-01: not every plant cell has chloroplasts, so the feedback must not
+  // claim "植物細胞有葉綠體"; the facts come only from the Human-checked explanation.
+  it('feedback states only the explanation, never a generated fact', async () => {
     const w = mountGame()
     await skipTo(w, 'plant')
-    const name = w.find('[data-testid="classification-item"]').text()
+    const it = current(w)
     await choice(w, 'plant').trigger('click')
-    expect(feedback(w)).toContain(`植物細胞有${name}，動物細胞沒有。`)
+    const paragraphs = w.findAll('[data-testid="classification-feedback"] p').map((p) => p.text())
+    expect(paragraphs).toEqual(['✓ 答對了！正確答案是「植物細胞」。', it.explanation])
+  })
+
+  // Phase 3 review I-03: the result must offer a way forward, chosen by the parent.
+  it("renders the parent's next step beside retry on the result", async () => {
+    const w = mount(ClassificationGame, {
+      props: { items, points },
+      slots: { next: '<a data-testid="next-step">回關卡地圖</a>' },
+    })
+    expect(w.find('[data-testid="next-step"]').exists()).toBe(false)
+    await playAll(w as unknown as W)
+    expect(w.find('[data-testid="next-step"]').exists()).toBe(true)
   })
 
   // Review I3: ✓ / ✗ are aria-hidden, so screen readers need the state in words.

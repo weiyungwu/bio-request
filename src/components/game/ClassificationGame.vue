@@ -18,16 +18,6 @@ const categories: { id: CellCategory; label: string }[] = [
 ]
 const labelOf = (c: CellCategory) => categories.find((x) => x.id === c)!.label
 
-// Says who has the structure. Never "不是動物細胞" for a shared one: students read
-// that as "animal cells don't have it" (TASK-009 review I1).
-const factOf = (it: ClassificationItem) => {
-  const name = nameOf(it.pointId)
-  if (it.category === 'both') return `植物細胞和動物細胞都有${name}。`
-  return it.category === 'plant'
-    ? `植物細胞有${name}，動物細胞沒有。`
-    : `動物細胞有${name}，植物細胞沒有。`
-}
-
 const pointById = computed(() => new Map(props.points.map((p) => [p.id, p])))
 const nameOf = (id: string) => pointById.value.get(id)?.term.zh ?? id
 
@@ -157,11 +147,14 @@ const choiceClass = (c: CellCategory) => {
           ]"
         >
           <p v-if="answer === current.category" class="font-bold text-success">
-            ✓ 答對了！{{ factOf(current) }}
+            ✓ 答對了！正確答案是「{{ labelOf(current.category) }}」。
           </p>
           <p v-else class="font-bold text-danger-text">
-            ✗ 不對喔，正確答案是「{{ labelOf(current.category) }}」：{{ factOf(current) }}
+            ✗ 不對喔，正確答案是「{{ labelOf(current.category) }}」。
           </p>
+          <!-- The headline only names the bucket; the Human-checked explanation states the
+               facts. A generated "植物細胞有葉綠體" overgeneralises (Phase 3 review I-01), and
+               "不是「動物細胞」" reads as "animal cells lack it" (TASK-009 review I1). -->
           <p>{{ current.explanation }}</p>
         </div>
       </div>
@@ -193,9 +186,11 @@ const choiceClass = (c: CellCategory) => {
           class="rounded-control border border-border px-4 py-3"
         >
           <p class="font-semibold">
-            <span aria-hidden="true">{{
-              answers.get(it.pointId) === it.category ? '✓' : '✗'
-            }}</span>
+            <span
+              aria-hidden="true"
+              :class="answers.get(it.pointId) === it.category ? 'text-success' : 'text-danger-text'"
+              >{{ answers.get(it.pointId) === it.category ? '✓' : '✗' }}</span
+            >
             <span class="sr-only">{{
               answers.get(it.pointId) === it.category ? '答對' : '答錯'
             }}</span>
@@ -207,9 +202,13 @@ const choiceClass = (c: CellCategory) => {
           <p class="text-sm text-muted">{{ it.explanation }}</p>
         </li>
       </ul>
-      <BaseButton data-testid="classification-retry" variant="secondary" @click="retry">
-        ↺ 重新挑戰
-      </BaseButton>
+      <div class="flex flex-wrap gap-3">
+        <!-- What comes next is the parent's call (map now; the quiz from TASK-011). -->
+        <slot name="next" />
+        <BaseButton data-testid="classification-retry" variant="secondary" @click="retry">
+          ↺ 重新挑戰
+        </BaseButton>
+      </div>
     </section>
   </BaseCard>
 </template>

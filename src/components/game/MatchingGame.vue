@@ -34,6 +34,7 @@ const feedback = ref<
 >(null)
 const finished = computed(() => matched.value.size === props.pairs.length)
 const resultHeading = ref<HTMLElement | null>(null)
+const feedbackEl = ref<HTMLElement | null>(null)
 
 function pick(column: 'structure' | 'function', id: string) {
   if (matched.value.has(id)) return
@@ -53,6 +54,8 @@ function pick(column: 'structure' | 'function', id: string) {
   } else {
     wrongCount.value++
     feedback.value = { correct: false, structure, fn }
+    // On phones the columns stack, so the hint lands below the screen (Phase 3 review I-02).
+    nextTick(() => feedbackEl.value?.scrollIntoView?.({ block: 'nearest' }))
   }
 }
 
@@ -123,7 +126,7 @@ const choiceClass = (selected: boolean, done: boolean) => [
       </div>
     </div>
 
-    <div data-testid="matching-feedback" aria-live="polite">
+    <div ref="feedbackEl" data-testid="matching-feedback" aria-live="polite">
       <div
         v-if="feedback?.correct"
         :key="attempt"
