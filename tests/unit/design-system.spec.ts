@@ -6,8 +6,9 @@ import BaseTag from '@/components/common/BaseTag.vue'
 import BaseCard from '@/components/common/BaseCard.vue'
 
 describe('BaseButton', () => {
-  // Quiz "未作答不可提交" (TASK-011) will rely on a disabled button
-  // swallowing clicks; if it ever emits, students can submit blank answers.
+  // Quiz "未作答不可提交" (TASK-011) relies on a disabled button swallowing
+  // clicks (via the native disabled attribute); if it ever emits, students
+  // can submit blank answers.
   it('does not emit click while disabled', async () => {
     const wrapper = mount(BaseButton, { props: { disabled: true }, slots: { default: '提交' } })
     await wrapper.trigger('click')
@@ -55,6 +56,13 @@ describe('ProgressBar', () => {
 
   it('treats max <= 0 as empty instead of NaN/Infinity', () => {
     expect(fill(mount(ProgressBar, { props: { value: 3, max: 0, label: 'EXP' } }))).toBe('0%')
+    expect(fill(mount(ProgressBar, { props: { value: 3, max: -10, label: 'EXP' } }))).toBe('0%')
+  })
+
+  // Screen readers must not announce a value outside min..max.
+  it('clamps aria-valuenow to the same range as the fill', () => {
+    const bar = mount(ProgressBar, { props: { value: 500, max: 100, label: 'EXP' } })
+    expect(bar.find('[role="progressbar"]').attributes('aria-valuenow')).toBe('100')
   })
 
   // Progress must be readable by screen readers, not only by color.

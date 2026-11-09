@@ -11,10 +11,9 @@ const props = withDefaults(
   { max: 100, tone: 'explore' },
 )
 
-const percent = computed(() => {
-  if (!(props.max > 0)) return 0
-  return Math.min(100, Math.max(0, (props.value / props.max) * 100))
-})
+const safeMax = computed(() => (props.max > 0 ? props.max : 0))
+const clampedValue = computed(() => Math.min(safeMax.value, Math.max(0, props.value)))
+const percent = computed(() => (safeMax.value ? (clampedValue.value / safeMax.value) * 100 : 0))
 </script>
 
 <template>
@@ -22,8 +21,8 @@ const percent = computed(() => {
     role="progressbar"
     :aria-label="label"
     aria-valuemin="0"
-    :aria-valuemax="max"
-    :aria-valuenow="value"
+    :aria-valuemax="safeMax"
+    :aria-valuenow="clampedValue"
     class="h-3 w-full overflow-hidden rounded-pill bg-surface-2"
   >
     <div

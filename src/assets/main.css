@@ -3,7 +3,10 @@
 /*
  * BIO QUEST design tokens (TASK-002).
  * Direction: deep navy base, teal = explore/quest, yellow = reward/hint.
- * All text/background pairs below meet WCAG AA (>= 4.5:1).
+ * Verified WCAG AA (>= 4.5:1) text contrast:
+ *   text/muted/explore/reward/success/danger on bg and surface;
+ *   on-accent text on explore/reward/danger fills;
+ *   BaseTag tones (15% tint) on bg and surface (>= 5.5). Keep tags off surface-2.
  */
 @theme {
   /* Fonts: system CJK stack, no network fetch (works offline). */
@@ -23,7 +26,7 @@
   --color-reward: #facc15; /* yellow: EXP, badges, hints */
   --color-reward-strong: #fde047;
   --color-success: #4ade80;
-  --color-danger: #f87171;
+  --color-danger: #fca5a5; /* light red so tinted tags stay AA on cards */
   --color-on-accent: #0b1b3a; /* text on teal/yellow/danger fills */
 
   /* Radius */

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = withDefaults(
+withDefaults(
   defineProps<{
     variant?: 'primary' | 'secondary' | 'reward' | 'ghost'
     size?: 'md' | 'lg'
@@ -9,8 +9,6 @@ const props = withDefaults(
   }>(),
   { variant: 'primary', size: 'md', type: 'button', disabled: false, block: false },
 )
-
-const emit = defineEmits<{ click: [event: MouseEvent] }>()
 
 const variantClass = {
   primary: 'bg-explore text-on-accent hover:bg-explore-strong hover:shadow-glow-explore',
@@ -23,11 +21,6 @@ const sizeClass = {
   md: 'min-h-11 px-5 text-base',
   lg: 'min-h-14 px-8 text-lg',
 } as const
-
-function onClick(event: MouseEvent) {
-  if (props.disabled) return
-  emit('click', event)
-}
 </script>
 
 <template>
@@ -35,13 +28,12 @@ function onClick(event: MouseEvent) {
     :type="type"
     :disabled="disabled"
     :class="[
-      'inline-flex items-center justify-center gap-2 rounded-control font-bold transition',
-      'disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none',
+      'inline-flex items-center justify-center gap-2 rounded-control font-bold transition-[color,background-color,border-color,box-shadow]',
+      'disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none',
       variantClass[variant],
       sizeClass[size],
       block && 'w-full',
     ]"
-    @click="onClick"
   >
     <slot />
   </button>
