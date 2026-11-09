@@ -67,6 +67,13 @@ Handover notes (current status, workflow, next task): [`docs/handoff.md`](docs/h
   This follows the MVP spec §2 file layout and deviates from spec.txt §8.1, which nests `lessons`
   inside the course object (the two specs conflict). `story` is an addition not in §8.1.
   `passingScore` (§8.1) is decided in TASK-011 (spec rule: pass = score >= 80).
+- Question bank: `src/data/questions/<courseId>.json`, an array of spec.txt §8.2 questions, loaded
+  and validated by `getQuestionBank()` in `src/data/questions/index.ts`. Types and answer formats
+  (`src/types/question.ts`): `single_choice` (answer = option index), `true_false` (options fixed
+  `["對","錯"]`, answer 0/1), `matching` (options `{left, right}`, answer[i] = right index for
+  left[i]), `ordering` (answer = option indices in correct order). Invalid questions are dropped
+  and listed in `errors` with a Chinese message naming the question and field. Ids are
+  `<courseId>-qNN`, unique across courses (the wrong-answer book keys on them).
 - 「任務完成提示」(TASK-005) is read as the mission briefing card shown after the opening story
   (title + objectives + 接受任務). Pending Human confirmation (see `docs/known-issues.md`).
 - E2E: `CI=1 npm run test:e2e` builds first, then tests the production preview (a stale
