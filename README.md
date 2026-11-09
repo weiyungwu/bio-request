@@ -52,6 +52,7 @@ npm install
 - Style guide: `npm run dev`, then open `/design-system` (dev only, not in production builds).
 
 Known issues and deferred review items: [`docs/known-issues.md`](docs/known-issues.md).
+Handover notes (current status, workflow, next task): [`docs/handoff.md`](docs/handoff.md).
 
 - Level / EXP / badge design: [`docs/progression.md`](docs/progression.md).
 - Stage unlocking: a stage is playable only if its id is in `OPEN_COURSE_IDS`
