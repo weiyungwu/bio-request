@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import BaseCard from '@/components/common/BaseCard.vue'
 import ProgressBar from '@/components/common/ProgressBar.vue'
 import type { Lesson } from '@/types/lesson'
 import KnowledgeCard from './KnowledgeCard.vue'
 import ImportantNote from './ImportantNote.vue'
+import { STORY_ADVANCE_COOLDOWN_MS } from './storyDialog'
 
 const props = defineProps<{ lessons: Lesson[] }>()
 const emit = defineEmits<{ complete: [] }>()
@@ -24,9 +25,23 @@ const forwardButton = ref<{ $el: HTMLElement } | null>(null)
 
 const unitLabel = (unitIndex: number) => `單元 ${String.fromCharCode(65 + unitIndex)}`
 
+// The forward button becomes 下一步 on the summary; ignore it briefly so a
+// double tap or held Enter on the last point cannot skip 重點整理.
+const summaryReady = ref(false)
+let summaryTimer: ReturnType<typeof setTimeout> | undefined
+onBeforeUnmount(() => clearTimeout(summaryTimer))
+
 function forward() {
-  if (onSummary.value) finish()
-  else index.value++
+  if (onSummary.value) {
+    if (summaryReady.value) finish()
+    return
+  }
+  index.value++
+  if (onSummary.value) {
+    summaryReady.value = false
+    clearTimeout(summaryTimer)
+    summaryTimer = setTimeout(() => (summaryReady.value = true), STORY_ADVANCE_COOLDOWN_MS)
+  }
 }
 
 function back() {

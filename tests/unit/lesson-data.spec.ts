@@ -71,6 +71,8 @@ describe('bio-01 lessons', () => {
     const m = point('a-metabolism')
     expect(m.example).toContain('呼吸作用')
     expect(m.example).not.toMatch(/食物被分解，釋放/)
+    // The exam tip must not teach the opposite either.
+    expect(m.examTip).toContain('不會直接產生')
   })
 
   it('defines 感應 as the whole phenomenon, not a step between stimulus and response', () => {

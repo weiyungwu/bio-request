@@ -1,7 +1,8 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import LessonCard from '@/components/lesson/LessonCard.vue'
+import { STORY_ADVANCE_COOLDOWN_MS } from '@/components/lesson/storyDialog'
 import type { Lesson } from '@/types/lesson'
 
 const kp = (id: string, zh: string, examTip: string) => ({
@@ -26,6 +27,22 @@ const btn = (w: ReturnType<typeof mount>, id: string) => w.find(`[data-testid="$
 const term = (w: ReturnType<typeof mount>) => w.find('[data-testid="term-zh"]').text()
 
 describe('LessonCard', () => {
+  beforeEach(() => vi.useFakeTimers())
+  afterEach(() => vi.useRealTimers())
+
+  // 重點整理 is a required step (spec 3.1 / 頁面三). The same button turns into
+  // 下一步, so a double tap / held Enter must not skip straight past it.
+  it('ignores 下一步 right after the summary appears', async () => {
+    const w = mount(LessonCard, { props: { lessons } })
+    for (let i = 0; i < 3; i++) await btn(w, 'lesson-next').trigger('click')
+    await btn(w, 'lesson-done').trigger('click')
+    expect(w.emitted('complete')).toBeUndefined()
+    expect(w.find('[data-testid="lesson-summary"]').exists()).toBe(true)
+    vi.advanceTimersByTime(STORY_ADVANCE_COOLDOWN_MS)
+    await btn(w, 'lesson-done').trigger('click')
+    expect(w.emitted('complete')).toHaveLength(1)
+  })
+
   it('starts at the first point of the first unit, with progress', () => {
     const w = mount(LessonCard, { props: { lessons } })
     expect(term(w)).toBe('甲')
@@ -54,6 +71,7 @@ describe('LessonCard', () => {
     expect(summary.exists()).toBe(true)
     for (const tip of ['重點甲', '重點乙', '重點丙']) expect(summary.text()).toContain(tip)
     expect(w.emitted('complete')).toBeUndefined()
+    vi.advanceTimersByTime(STORY_ADVANCE_COOLDOWN_MS)
     await btn(w, 'lesson-done').trigger('click')
     await btn(w, 'lesson-done').trigger('click')
     expect(w.emitted('complete')).toHaveLength(1)

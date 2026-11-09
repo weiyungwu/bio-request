@@ -46,6 +46,8 @@ test.describe('Stage 1 lesson (TASK-006)', () => {
 
     await page.getByTestId('lesson-next').click()
     await expect(page.getByTestId('lesson-summary')).toContainText('粒線體')
+    // 下一步 ignores clicks briefly after the summary appears (double-tap guard).
+    await page.clock.fastForward(STORY_ADVANCE_COOLDOWN_MS + 50)
     await page.getByTestId('lesson-done').click()
     await expect(page.getByRole('heading', { name: '互動挑戰' })).toBeFocused()
     expect(errors).toEqual([])
