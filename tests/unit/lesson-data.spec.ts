@@ -135,6 +135,7 @@ describe('bio-01 lessons', () => {
     })
 
     // Biology guard (spec 5.2 unit C): only 細胞壁 and 葉綠體 are plant-only; the rest are shared.
+    // 液胞 as both: Human confirmed against 108 課綱 textbooks (翰林、南一、康軒).
     it('puts each structure in the bucket unit C teaches', () => {
       const byName = Object.fromEntries(items.map((it) => [point(it.pointId).term.zh, it.category]))
       expect(byName).toEqual({

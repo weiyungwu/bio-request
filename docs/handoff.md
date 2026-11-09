@@ -45,7 +45,7 @@ npm run build && CI=1 npx playwright test --retries=0  # 連跑兩次，確認�
 ## 等 Human 處理
 
 - 確認配對遊戲文字（`bio-01.json` 的 `matching`：功能敘述與錯誤提示）。
-- 確認分類遊戲的歸類與解析（`bio-01.json` 的 `classification`，含液胞歸類）。
+- 確認分類遊戲的解析文字，以及「動物細胞」選項沒有正確答案是否可接受（液胞歸類已確認）。
 - 其餘見 `known-issues.md`「待 Human 確認」。
 
 ## 不在這個 repo 裡的檔案
