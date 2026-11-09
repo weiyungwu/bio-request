@@ -9,6 +9,16 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
+    // Dev-only style guide; tree-shaken out of production builds.
+    ...(import.meta.env.DEV
+      ? [
+          {
+            path: '/design-system',
+            name: 'design-system',
+            component: () => import('../views/DesignSystemView.vue'),
+          },
+        ]
+      : []),
   ],
 })
 

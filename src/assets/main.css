@@ -1,1 +1,83 @@
 @import 'tailwindcss';
+
+/*
+ * BIO QUEST design tokens (TASK-002).
+ * Direction: deep navy base, teal = explore/quest, yellow = reward/hint.
+ * All text/background pairs below meet WCAG AA (>= 4.5:1).
+ */
+@theme {
+  /* Fonts: system CJK stack, no network fetch (works offline). */
+  --font-sans:
+    'PingFang TC', 'Noto Sans TC', 'Microsoft JhengHei', system-ui, -apple-system, 'Segoe UI',
+    sans-serif;
+
+  /* Colors */
+  --color-bg: #0b1b3a; /* page background */
+  --color-surface: #132a52; /* cards */
+  --color-surface-2: #1c3a6b; /* raised / hover / track */
+  --color-border: #2a4a80;
+  --color-text: #e8f0fb; /* 14.8:1 on bg */
+  --color-muted: #a3b8d8; /* 7.0:1 on surface */
+  --color-explore: #2dd4bf; /* teal: quest, primary actions */
+  --color-explore-strong: #5eead4;
+  --color-reward: #facc15; /* yellow: EXP, badges, hints */
+  --color-reward-strong: #fde047;
+  --color-success: #4ade80;
+  --color-danger: #f87171;
+  --color-on-accent: #0b1b3a; /* text on teal/yellow/danger fills */
+
+  /* Radius */
+  --radius-control: 0.75rem; /* buttons, inputs */
+  --radius-card: 1.25rem;
+  --radius-pill: 9999px;
+
+  /* Shadows */
+  --shadow-card: 0 8px 24px -8px rgb(0 0 0 / 0.45);
+  --shadow-glow-explore: 0 0 0 1px rgb(45 212 191 / 0.4), 0 8px 24px -6px rgb(45 212 191 / 0.45);
+  --shadow-glow-reward: 0 0 0 1px rgb(250 204 21 / 0.4), 0 8px 24px -6px rgb(250 204 21 / 0.45);
+
+  /*
+   * Breakpoints (Tailwind defaults kept):
+   *   mobile  < 640px   (base styles)
+   *   tablet  sm: 640px / md: 768px
+   *   desktop lg: 1024px
+   * Spacing: Tailwind 4px scale. Page gutter 16px mobile, 24px tablet+.
+   */
+}
+
+@layer base {
+  html {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100dvh;
+    line-height: 1.7; /* CJK body text needs more leading */
+  }
+
+  /* Heading scale: mobile first, larger from lg. */
+  h1 {
+    @apply text-3xl leading-tight font-bold lg:text-4xl;
+  }
+  h2 {
+    @apply text-2xl leading-snug font-bold lg:text-3xl;
+  }
+  h3 {
+    @apply text-xl leading-snug font-semibold;
+  }
+  h4 {
+    @apply text-lg font-semibold;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-reward);
+    outline-offset: 2px;
+  }
+}
+
+@utility page-container {
+  @apply mx-auto w-full max-w-5xl px-4 sm:px-6;
+}
