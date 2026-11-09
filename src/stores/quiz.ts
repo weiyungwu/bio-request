@@ -46,6 +46,16 @@ export const useQuizStore = defineStore('quiz', () => {
     finished.value = false
   }
 
+  /** Forgets any attempt, e.g. when a course has no usable bank (review S1). */
+  function reset() {
+    courseId.value = null
+    questions.value = []
+    responses.value = []
+    submitted.value = []
+    index.value = 0
+    finished.value = false
+  }
+
   /** Sets one slot of the current answer; ignored once the question is submitted. */
   function choose(slot: number, value: number | null) {
     const r = responses.value[index.value]
@@ -78,6 +88,7 @@ export const useQuizStore = defineStore('quiz', () => {
     score,
     passed,
     start,
+    reset,
     choose,
     submit,
     next,

@@ -9,7 +9,7 @@ import courses from '@/data/courses.json'
 import { getQuestionBank } from '@/data/questions'
 import { useQuizStore } from '@/stores/quiz'
 import type { Course } from '@/types/course'
-import { PASS_SCORE, QUIZ_SIZE } from '@/utils/quiz'
+import { PASS_SCORE, QUIZ_SIZE, hasRepeats } from '@/utils/quiz'
 
 const route = useRoute()
 const quiz = useQuizStore()
@@ -24,7 +24,7 @@ const resultHeading = ref<HTMLElement | null>(null)
 const round = ref(0)
 
 function start() {
-  if (!bank.value || !canStart.value) return
+  if (!bank.value || !canStart.value) return quiz.reset()
   quiz.start(courseId.value, bank.value.questions)
   round.value++
 }
@@ -32,9 +32,11 @@ watch(courseId, start, { immediate: true })
 
 const remaining = computed(() => quiz.questions.length - quiz.index - (quiz.isSubmitted ? 1 : 0))
 const blanks = computed(() => quiz.response.filter((v) => v === null).length)
+const repeats = computed(() => hasRepeats(quiz.response))
 const submitHint = computed(() => {
-  if (blanks.value === 0) return ''
-  return quiz.response.length === 1 ? '請先選擇一個答案' : `還有 ${blanks.value} 個空格沒有選`
+  if (blanks.value > 0)
+    return quiz.response.length === 1 ? '請先選擇一個答案' : `還有 ${blanks.value} 個空格沒有選`
+  return repeats.value ? '有重複的選項，每個選項只能用一次' : ''
 })
 
 function next() {
@@ -99,7 +101,7 @@ function next() {
       <div v-if="!quiz.isSubmitted" class="flex flex-wrap items-center gap-3">
         <BaseButton
           data-testid="quiz-submit"
-          :disabled="blanks > 0"
+          :disabled="blanks > 0 || repeats"
           aria-describedby="quiz-submit-hint"
           @click="quiz.submit"
         >

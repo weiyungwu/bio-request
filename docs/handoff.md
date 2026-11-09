@@ -13,7 +13,7 @@
 | 3     | TASK-009 分類遊戲（植物／動物／兩者皆有）                   | 完成，任務審查已處理（commit 1188f8a）     |
 | 3     | Phase 3 審查（Gemini）                                      | 已處理（commit a06fa0b）                   |
 | 4     | TASK-010 題庫資料結構與第一關 12 題                         | 完成，任務審查已處理                       |
-| 4     | TASK-011 測驗引擎（`/quiz/:courseId`）                      | 完成，待任務審查                           |
+| 4     | TASK-011 測驗引擎（`/quiz/:courseId`）                      | 完成，任務審查已處理                       |
 | 4–5   | **TASK-012 測驗結果頁** ← 下一步；之後 LocalStorage、錯題本 | 未開始                                     |
 
 第一關流程（`src/views/LessonView.vue`）：故事 → 探險者訓練（16 個知識點＋重點整理）→ 細胞城市探險（細胞互動圖）→ 互動挑戰（配對遊戲 → 分類遊戲）→ 關卡測驗（`QuizView`，5 題）。Phase 3 審查（Gemini）已處理。
@@ -22,6 +22,7 @@
 
 - TASK-012 結果頁：作答結果在 Pinia `useQuizStore()`（`results`、`score`、`passed`、`correctCount`），只在記憶體。`QuizView` 結束時目前只顯示最基本的分數區塊（`quiz-result`），TASK-012 改成 `ResultView`（EXP、錯題補強入口、再挑戰）。
 - 測驗分數還沒寫入 `useProgressStore`（最佳／最近分數、通關、錯題）：TASK-012／013 接上，地圖的「完成第一關後進度更新」靠這一步。
+- 讀 `useQuizStore()` 時要確認 `quiz.courseId` 是目前的關卡；題庫不足時 `QuizView` 會呼叫 `reset()`。
 - 題型與答案格式、測驗流程見 README。
 
 ## 工作流程（規格 §1.2）

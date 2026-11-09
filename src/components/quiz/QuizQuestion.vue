@@ -136,6 +136,7 @@ function onSelect(slot: number, event: Event) {
           <select
             :id="`quiz-slot-${slot}`"
             data-testid="quiz-select"
+            aria-describedby="quiz-question"
             :value="response[slot] ?? ''"
             :disabled="submitted"
             class="min-h-11 w-full rounded-control border border-border bg-surface px-3 text-text disabled:opacity-80"

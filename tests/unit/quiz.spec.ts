@@ -6,6 +6,7 @@ import {
   correctAnswerText,
   drawQuestions,
   emptyResponse,
+  hasRepeats,
   isAnswered,
   isCorrect,
   isPassing,
@@ -87,6 +88,13 @@ describe('quiz engine (TASK-011)', () => {
     expect(isAnswered([0, 1])).toBe(true)
   })
 
+  // Review I1: a repeated pick can never match a permutation key.
+  it('spots an item used twice', () => {
+    expect(hasRepeats([0, 0, 1])).toBe(true)
+    expect(hasRepeats([0, null, null])).toBe(false)
+    expect(hasRepeats([2, 0, 1])).toBe(false)
+  })
+
   // Spec: 同一題不會在同一份試卷中重複出現; 隨機抽題.
   it('draws distinct questions, differently across draws', () => {
     const draws = new Set<string>()
@@ -133,6 +141,32 @@ describe('quiz store (TASK-011)', () => {
     expect(s.isSubmitted).toBe(false)
     s.next()
     expect(s.index).toBe(0)
+  })
+
+  // Review S3: a fast double click on 下一題 must not skip an unanswered question.
+  it('ignores a repeated submit or next', () => {
+    const s = fresh()
+    s.choose(0, 1)
+    s.submit()
+    s.submit()
+    s.next()
+    s.next()
+    expect(s.index).toBe(1)
+    expect(s.isSubmitted).toBe(false)
+  })
+
+  it('ignores a slot that does not exist', () => {
+    const s = fresh()
+    s.choose(3, 1)
+    s.choose(-1, 1)
+    expect(s.response).toEqual([null])
+  })
+
+  // Review S1: a refused start must not leave the last course's attempt behind.
+  it('reset forgets the attempt', () => {
+    const s = fresh()
+    s.reset()
+    expect([s.courseId, s.questions.length, s.finished]).toEqual([null, 0, false])
   })
 
   // Feedback is shown right after submitting, so the answer can't change afterwards.

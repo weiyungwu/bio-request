@@ -65,6 +65,24 @@ describe('QuizView (TASK-011)', () => {
     w.unmount()
   })
 
+  // Review I1: a matching/ordering answer that uses an item twice is blocked with a reason.
+  it('blocks submit when a matching or ordering answer repeats an item', async () => {
+    const w = await mountQuiz()
+    const quiz = (await import('@/stores/quiz')).useQuizStore()
+    const q = byType('ordering')
+    // A one-question paper puts the ordering question on screen.
+    quiz.start('bio-01', [q])
+    await flushPromises()
+    expect((w.findComponent(QuizQuestion).props('question') as Question).type).toBe('ordering')
+    const selects = w.findAll('[data-testid="quiz-select"]')
+    for (const s of selects) await s.setValue('0')
+    expect(w.find('[data-testid="quiz-submit"]').attributes('disabled')).toBeDefined()
+    expect(w.find('[data-testid="quiz-submit-hint"]').text()).toContain('有重複的選項')
+    for (const [slot, s] of selects.entries()) await s.setValue(String(slot))
+    expect(w.find('[data-testid="quiz-submit"]').attributes('disabled')).toBeUndefined()
+    w.unmount()
+  })
+
   // Spec: 判斷正確與否、顯示解答; FR-05 答題回饋立即顯示.
   it('shows the verdict, the correct answer and the explanation right after submitting', async () => {
     const w = await mountQuiz()

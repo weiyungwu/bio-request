@@ -39,6 +39,15 @@ export function isAnswered(response: QuizResponse): boolean {
   return response.length > 0 && response.every((v) => v !== null)
 }
 
+/**
+ * Matching and ordering keys are permutations, so a response that uses an item twice can
+ * never be right; the page blocks submit and says why (TASK-011 review I1).
+ */
+export function hasRepeats(response: QuizResponse): boolean {
+  const picked = response.filter((v) => v !== null)
+  return new Set(picked).size !== picked.length
+}
+
 /** All-or-nothing: matching and ordering count only when every slot is right. */
 export function isCorrect(q: Question, response: QuizResponse): boolean {
   if (!isAnswered(response)) return false
