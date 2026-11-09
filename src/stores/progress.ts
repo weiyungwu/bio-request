@@ -4,6 +4,7 @@ import type { CourseProgress, LearningRecord, SavedProgress, WrongQuestion } fro
 import { FIRST_CLEAR_EXP, quizScoreExp, type QuizExpAward } from '@/utils/exp'
 import { levelFromExp } from '@/utils/level'
 import {
+  STORAGE_KEY,
   clearStorage,
   emptyProgress,
   parseProgress,
@@ -33,6 +34,20 @@ export const useProgressStore = defineStore('progress', () => {
   })
   // Every change is saved; a failed write (private mode, quota) keeps the session working.
   watch(snapshot, (data) => writeStorage(data), { deep: true })
+
+  function apply(data: SavedProgress) {
+    exp.value = data.exp
+    records.value = data.records
+    courseProgress.value = data.courseProgress
+    wrongQuestions.value = data.wrongQuestions
+    badges.value = data.badges
+  }
+  // Another tab saved (or reset): adopt it, so this tab's next save can't write back stale
+  // progress or undo a confirmed reset (TASK-013 review I1). The browser fires `storage`
+  // only in other tabs and only for a changed value, so the echo save causes no loop.
+  globalThis.addEventListener?.('storage', (e: StorageEvent) => {
+    if (e.key === STORAGE_KEY || e.key === null) apply(parseProgress(e.newValue))
+  })
 
   const levelInfo = computed(() => levelFromExp(exp.value))
   const latestRecords = computed(() =>
@@ -77,12 +92,7 @@ export const useProgressStore = defineStore('progress', () => {
 
   /** 重設學習資料 (spec TASK-013); the page asks the student to confirm first. */
   function resetAll() {
-    const empty = emptyProgress()
-    exp.value = empty.exp
-    records.value = empty.records
-    courseProgress.value = empty.courseProgress
-    wrongQuestions.value = empty.wrongQuestions
-    badges.value = empty.badges
+    apply(emptyProgress())
     clearStorage()
   }
 

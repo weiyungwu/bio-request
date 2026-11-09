@@ -90,6 +90,31 @@ describe('progress store persistence (TASK-013)', () => {
     })
   })
 
+  // Review I3: 標記已熟悉 is a nested change; it must be saved like any other.
+  it('keeps 已熟悉 across a reload', async () => {
+    const p = reload()
+    p.recordQuizResult('bio-01', 80, ['bio-01-q03'], at)
+    await nextTick()
+    p.wrongQuestions['bio-01-q03']!.mastered = true
+    await nextTick()
+    expect(reload().wrongQuestions['bio-01-q03']!.mastered).toBe(true)
+  })
+
+  // Review I1: a reset or a newer result saved in another tab must not be overwritten here.
+  it('adopts what another tab saved', async () => {
+    const p = reload()
+    p.recordQuizResult('bio-01', 80, [], at)
+    await nextTick()
+    // The other tab reset: storage now holds empty progress and the browser tells us.
+    const text = JSON.stringify(emptyProgress())
+    localStorage.setItem(STORAGE_KEY, text)
+    window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY, newValue: text }))
+    expect(p.exp).toBe(0)
+    p.recordQuizResult('bio-01', 60, [], at)
+    await nextTick()
+    expect(reload().exp).toBe(10)
+  })
+
   it('reset clears memory and storage', async () => {
     const p = reload()
     p.recordQuizResult('bio-01', 80, ['bio-01-q03'], at)
@@ -97,6 +122,8 @@ describe('progress store persistence (TASK-013)', () => {
     p.resetAll()
     await nextTick()
     expect([p.exp, p.records, p.courseProgress, p.wrongQuestions]).toEqual([0, [], {}, {}])
+    // Storage itself holds nothing from before (review S4).
+    expect(parseProgress(localStorage.getItem(STORAGE_KEY))).toEqual(emptyProgress())
     expect(reload().exp).toBe(0)
   })
 
@@ -108,13 +135,17 @@ describe('progress store persistence (TASK-013)', () => {
     const get = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
       throw new Error('SecurityError')
     })
-    const p = reload()
-    p.recordQuizResult('bio-01', 80, [], at)
-    await nextTick()
-    expect(p.exp).toBe(50)
-    expect(writeStorage(emptyProgress())).toBe(false)
-    set.mockRestore()
-    get.mockRestore()
+    try {
+      const p = reload()
+      p.recordQuizResult('bio-01', 80, [], at)
+      await nextTick()
+      expect(p.exp).toBe(50)
+      expect(writeStorage(emptyProgress())).toBe(false)
+    } finally {
+      // Restore even on failure, or later tests would inherit a throwing storage (review S2).
+      set.mockRestore()
+      get.mockRestore()
+    }
   })
 })
 
@@ -135,7 +166,20 @@ describe('HomeView reset (TASK-013: 提供重設學習資料功能，並要求�
     expect(w.find('[data-testid="reset-confirm"]').text()).toContain('無法復原')
     expect(p.exp).toBe(50)
     expect(document.activeElement?.getAttribute('data-testid')).toBe('reset-cancel')
+    // Review I2: the focused panel names the question and what is erased, for screen readers.
+    const panel = w.find('[data-testid="reset-confirm"]')
+    expect(panel.attributes('aria-labelledby')).toBe('reset-confirm-title')
+    expect(w.find('#reset-confirm-detail').text()).toContain('無法復原')
     await w.find('[data-testid="reset-cancel"]').trigger('click')
+    expect(w.find('[data-testid="reset-confirm"]').exists()).toBe(false)
+    expect(p.exp).toBe(50)
+    w.unmount()
+  })
+
+  it('Escape cancels', async () => {
+    const { w, p } = await mountHome()
+    await w.find('[data-testid="reset-data"]').trigger('click')
+    await w.find('[data-testid="reset-confirm"]').trigger('keydown', { key: 'Escape' })
     expect(w.find('[data-testid="reset-confirm"]').exists()).toBe(false)
     expect(p.exp).toBe(50)
     w.unmount()

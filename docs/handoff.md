@@ -15,7 +15,7 @@
 | 4     | TASK-010 題庫資料結構與第一關 12 題                         | 完成，任務審查已處理                       |
 | 4     | TASK-011 測驗引擎（`/quiz/:courseId`）                      | 完成，任務審查已處理                       |
 | 4     | TASK-012 測驗結果頁（`/result/:courseId`）                  | 完成，任務審查已處理                       |
-| 5     | TASK-013 LocalStorage 進度管理                              | 完成，待任務審查                           |
+| 5     | TASK-013 LocalStorage 進度管理                              | 完成，任務審查已處理                       |
 | 5     | **TASK-014 錯題本 ReviewView** ← 下一步；之後 TASK-015 成就 | 未開始                                     |
 
 第一關流程（`src/views/LessonView.vue`）：故事 → 探險者訓練（16 個知識點＋重點整理）→ 細胞城市探險（細胞互動圖）→ 互動挑戰（配對遊戲 → 分類遊戲）→ 關卡測驗（`QuizView`，5 題）。Phase 3 審查（Gemini）已處理。
@@ -23,7 +23,8 @@
 ## 下一步要知道的
 
 - TASK-014 錯題本：錯題已保存在 `useProgressStore().wrongQuestions`（以題號為 key：`courseId`、`lastWrongAt`、`mastered`），每次測驗結束由 `recordQuizResult()` 寫入；再次答錯會把 `mastered` 改回 `false`。題目內容用 `getQuestionBank(courseId)` 依題號查。結果頁的「錯題補強」區塊要加上錯題本連結。
-- TASK-015：`badges` 欄位已保存但還沒有發放邏輯；EXP 每日上限見 `docs/progression.md` §3。
+- TASK-015：`badges` 欄位已保存但還沒有發放邏輯；EXP 每日上限見 `docs/progression.md` §3。開始發放徽章後，首頁重設確認文字要加上「徽章」。
+- 保存的資料格式若要加欄位，必須是選填或有預設值（見 known-issues）。多個分頁會透過 `storage` 事件同步。
 - 讀 `useQuizStore()` 時要確認 `quiz.courseId` 是目前的關卡。
 - 單元測試每個測試前會清空 LocalStorage（`tests/unit/setup.ts`）；重新建立 Pinia 等於重新整理頁面。
 - 資料格式、測驗與結果頁流程見 README。

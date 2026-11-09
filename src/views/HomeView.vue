@@ -123,10 +123,16 @@ function confirmReset() {
       <div
         v-if="confirming"
         data-testid="reset-confirm"
+        role="group"
+        aria-labelledby="reset-confirm-title"
+        aria-describedby="reset-confirm-detail"
+        @keydown.esc="cancelReset"
         class="space-y-3 rounded-control border-l-4 border-danger bg-danger/15 px-4 py-3"
       >
-        <p class="font-bold text-danger-text">⚠ 確定要重設學習資料嗎？</p>
-        <p>經驗值、等級、各關成績與通關狀態、學習紀錄和錯題都會被清除，而且無法復原。</p>
+        <p id="reset-confirm-title" class="font-bold text-danger-text">⚠ 確定要重設學習資料嗎？</p>
+        <p id="reset-confirm-detail">
+          經驗值、等級、各關成績與通關狀態、學習紀錄和錯題都會被清除，而且無法復原。
+        </p>
         <div class="flex flex-wrap gap-3">
           <BaseButton
             ref="cancelButton"
