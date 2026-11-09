@@ -25,7 +25,9 @@ describe('MatchingGame (TASK-008)', () => {
     const w = mountGame()
     await pair(w, 'b-nucleus', 'b-nucleus')
     expect(feedback(w)).toContain('答對了')
-    expect(feedback(w)).toContain(points.find((p) => p.id === 'b-nucleus')!.definition)
+    const nucleus = points.find((p) => p.id === 'b-nucleus')!
+    expect(feedback(w)).toContain(nucleus.definition)
+    expect(feedback(w)).toContain(nucleus.plain)
     expect(structure(w, 'b-nucleus').attributes('aria-disabled')).toBe('true')
     expect(fn(w, 'b-nucleus').text()).toContain('→ 細胞核')
     expect(progress(w)).toContain('1 / 4')
@@ -94,5 +96,48 @@ describe('MatchingGame (TASK-008)', () => {
     expect(structure(w, 'b-nucleus').text()).toMatch(/^✓/)
     expect(structure(w, 'b-membrane').text()).toMatch(/^\d\./)
     expect(fn(w, 'b-membrane').text()).toMatch(/^[A-D]\./)
+  })
+  // Colour-blind students need a non-colour cue for the item waiting for its partner.
+  it('marks the selected item with ▶', async () => {
+    const w = mountGame()
+    await structure(w, 'b-membrane').trigger('click')
+    expect(structure(w, 'b-membrane').text()).toMatch(/^▶/)
+    expect(structure(w, 'b-membrane').attributes('aria-pressed')).toBe('true')
+  })
+
+  it('tapping the selected item again deselects it', async () => {
+    const w = mountGame()
+    await fn(w, 'b-membrane').trigger('click')
+    await fn(w, 'b-membrane').trigger('click')
+    expect(fn(w, 'b-membrane').attributes('aria-pressed')).toBe('false')
+  })
+
+  // Changing your mind within one column is not a mistake.
+  it('picking another structure only moves the selection', async () => {
+    const w = mountGame()
+    await structure(w, 'b-nucleus').trigger('click')
+    await structure(w, 'b-membrane').trigger('click')
+    expect(feedback(w)).toBe('')
+    await fn(w, 'b-membrane').trigger('click')
+    expect(feedback(w)).toContain('答對了')
+  })
+
+  // The same wrong pair twice must be announced twice (fresh live-region node).
+  it('re-renders feedback for a repeated wrong pair', async () => {
+    const w = mountGame()
+    await pair(w, 'b-nucleus', 'b-membrane')
+    const first = w.find('[data-testid="matching-feedback"] > div').element
+    await pair(w, 'b-nucleus', 'b-membrane')
+    expect(w.find('[data-testid="matching-feedback"] > div').element).not.toBe(first)
+  })
+
+  it('does not list functions in the structure order', () => {
+    const ids = (w: W, col: string) =>
+      w.findAll(`[data-testid="match-${col}"]`).map((b) => b.attributes('data-id'))
+    for (let n = 0; n < 20; n++) {
+      const w = mountGame()
+      expect(ids(w, 'function')).not.toEqual(ids(w, 'structure'))
+      w.unmount()
+    }
   })
 })

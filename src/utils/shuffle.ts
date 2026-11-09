@@ -1,6 +1,6 @@
 /**
- * Fisher–Yates shuffle. With 2+ items it never returns the input order, so
- * choices listed beside their answers never line up row for row.
+ * Fisher–Yates shuffle. With 2+ items it never returns the input order as a
+ * whole (single items may still keep their place).
  */
 export function shuffle<T>(items: readonly T[], random: () => number = Math.random): T[] {
   const out = [...items]

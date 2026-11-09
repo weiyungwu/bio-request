@@ -14,16 +14,19 @@ const pointById = computed(() => new Map(props.points.map((p) => [p.id, p])))
 const pairById = computed(() => new Map(props.pairs.map((p) => [p.pointId, p])))
 const nameOf = (id: string) => pointById.value.get(id)?.term.zh ?? id
 
-// Both columns are keyed by pointId; functions are shuffled so rows don't give the answer away.
+// Both columns are keyed by pointId; functions are shuffled so the list order doesn't
+// give the answer away. Shuffled once: the parent remounts (:key) for new pairs.
 const structureIds = computed(() => props.pairs.map((p) => p.pointId))
 const functionIds = ref(shuffle(structureIds.value))
-const LETTERS = 'ABCDEFGH'
+const letter = (i: number) => String.fromCharCode(65 + i)
 
 const selectedStructure = ref<string | null>(null)
 const selectedFunction = ref<string | null>(null)
 // A Set: re-picking a finished pair can never count it twice.
 const matched = ref(new Set<string>())
 const wrongCount = ref(0)
+// Bumped per attempt so the live region re-announces a repeated identical answer.
+const attempt = ref(0)
 const feedback = ref<
   { correct: true; id: string } | { correct: false; structure: string; fn: string } | null
 >(null)
@@ -32,13 +35,15 @@ const resultHeading = ref<HTMLElement | null>(null)
 
 function pick(column: 'structure' | 'function', id: string) {
   if (matched.value.has(id)) return
-  if (column === 'structure') selectedStructure.value = id
-  else selectedFunction.value = id
+  const selected = column === 'structure' ? selectedStructure : selectedFunction
+  // aria-pressed buttons toggle: tapping the selected one again deselects it.
+  selected.value = selected.value === id ? null : id
 
   const structure = selectedStructure.value
   const fn = selectedFunction.value
   if (!structure || !fn) return
   selectedStructure.value = selectedFunction.value = null
+  attempt.value++
   if (structure === fn) {
     matched.value.add(structure)
     feedback.value = { correct: true, id: structure }
@@ -49,12 +54,16 @@ function pick(column: 'structure' | 'function', id: string) {
   }
 }
 
+// Selection also swaps the number/letter for ▶, so it never relies on colour alone.
+const marker = (id: string, selected: boolean, label: string) =>
+  matched.value.has(id) ? '✓' : selected ? '▶' : `${label}.`
+
 const choiceClass = (selected: boolean, done: boolean) => [
   'flex min-h-11 w-full items-start gap-2 rounded-control border px-4 py-2 text-left font-semibold transition-colors motion-reduce:transition-none',
   done
     ? 'cursor-default border-success/60 text-success'
     : selected
-      ? 'border-reward bg-reward/15 text-reward'
+      ? 'border-reward bg-reward/15 text-reward ring-2 ring-reward'
       : 'border-border text-text hover:border-explore',
 ]
 </script>
@@ -83,7 +92,7 @@ const choiceClass = (selected: boolean, done: boolean) => [
           :class="choiceClass(selectedStructure === id, matched.has(id))"
           @click="pick('structure', id)"
         >
-          <span aria-hidden="true">{{ matched.has(id) ? '✓' : `${i + 1}.` }}</span>
+          <span aria-hidden="true">{{ marker(id, selectedStructure === id, String(i + 1)) }}</span>
           <span
             >{{ nameOf(id) }}<span v-if="matched.has(id)" class="sr-only">（已配對）</span></span
           >
@@ -103,7 +112,7 @@ const choiceClass = (selected: boolean, done: boolean) => [
           :class="choiceClass(selectedFunction === id, matched.has(id))"
           @click="pick('function', id)"
         >
-          <span aria-hidden="true">{{ matched.has(id) ? '✓' : `${LETTERS[i]}.` }}</span>
+          <span aria-hidden="true">{{ marker(id, selectedFunction === id, letter(i)) }}</span>
           <span>
             {{ pairById.get(id)?.function }}
             <span v-if="matched.has(id)" class="block text-sm font-normal">→ {{ nameOf(id) }}</span>
@@ -115,13 +124,17 @@ const choiceClass = (selected: boolean, done: boolean) => [
     <div data-testid="matching-feedback" aria-live="polite">
       <div
         v-if="feedback?.correct"
+        :key="attempt"
         class="rounded-control border-l-4 border-success bg-success/10 px-4 py-3"
       >
         <p class="font-bold text-success">✓ 答對了！</p>
+        <!-- spec §10: the metaphor (plain) only adds to the formal definition, never replaces it. -->
         <p>{{ pointById.get(feedback.id)?.definition }}</p>
+        <p class="text-muted">{{ pointById.get(feedback.id)?.plain }}</p>
       </div>
       <div
         v-else-if="feedback"
+        :key="attempt"
         class="rounded-control border-l-4 border-danger bg-danger/15 px-4 py-3"
       >
         <p class="font-bold text-danger-text">
