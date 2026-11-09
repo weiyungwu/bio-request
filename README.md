@@ -61,3 +61,5 @@ Known issues and deferred review items: [`docs/known-issues.md`](docs/known-issu
 - Stage states map to spec FR-01 (已完成／進行中／尚未解鎖) plus one extra: `completed` ✓ 已完成,
   `in-progress` ⏳ 進行中 (attempted, not cleared), `open` ▶ 可挑戰 (never attempted — calling it
   進行中 would be misleading), `locked` 🔒 未開放.
+- Lesson data: `src/data/lessons/<courseId>.json` (story now; lesson cards in TASK-006),
+  loaded by `getLessonData()` in `src/data/lessons/index.ts`.

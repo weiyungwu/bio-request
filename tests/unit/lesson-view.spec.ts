@@ -25,4 +25,15 @@ describe('LessonView', () => {
   it('links back to the stage map', async () => {
     expect((await mountLesson()).find('a[href="/map"]').exists()).toBe(true)
   })
+
+  // TASK-005: the story comes first; finishing it enters the lesson.
+  it('starts with the story and enters the lesson when the story completes', async () => {
+    const wrapper = await mountLesson()
+    expect(wrapper.find('[data-testid="story-dialog"]').exists()).toBe(true)
+    expect(wrapper.find('[data-testid="lesson-content"]').exists()).toBe(false)
+    wrapper.findComponent({ name: 'StoryDialog' }).vm.$emit('complete')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('[data-testid="story-dialog"]').exists()).toBe(false)
+    expect(wrapper.find('[data-testid="lesson-content"]').exists()).toBe(true)
+  })
 })

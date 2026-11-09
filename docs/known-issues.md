@@ -16,6 +16,10 @@
 | ProgressBar 分段模式（如 5 題測驗分 5 格）                                                                                      | TASK-011（如需要）                            | Gemini Phase 0 #3  |
 | E2E 測試檔納入型別檢查（`tests/e2e/tsconfig.json` 未被根 tsconfig 引用）                                                        | 開始寫規格 4.2 主流程 E2E 前                  | TASK-001 審查 S2   |
 
+## 待 Human 確認（規格 1.2：教材正確性由 Human 驗收）
+
+- 第一關故事對白與角色（`src/data/lessons/bio-01.json` 的 `story`，賽爾隊長、米可）由 Claude 依 spec.txt 5.1 撰寫，需確認用語與知識正確性。（TASK-005）
+
 ## 使用限制（設計上的取捨，已寫入 README）
 
 - 狀態不可只靠顏色表示，必須同時有文字或圖示。
@@ -23,6 +27,8 @@
 - `bio` 色只作裝飾或主題標記，不代表答對或答錯。
 
 ## 觀察中（目前不處理）
+
+- 故事角色頭像暫用 emoji（🧑‍🔬、🤖），待正式角色圖。（TASK-005）
 
 - 最近學習紀錄的 v-for key 為 `courseId-completedAt-score`，同關、同毫秒、同分數時仍會重複；TASK-013 若為紀錄加上 id 再改用 id。（TASK-003 複審 S-E）
 
