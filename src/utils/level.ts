@@ -4,14 +4,14 @@
  */
 export const LEVELS = [
   { level: 1, title: '生物新手', minExp: 0 },
-  { level: 2, title: '初級探索員', minExp: 100 },
+  { level: 2, title: '見習探索員', minExp: 100 },
   { level: 3, title: '細胞見習生', minExp: 250 },
   { level: 4, title: '細胞探索員', minExp: 450 },
   { level: 5, title: '生物研究員', minExp: 700 },
   { level: 6, title: '生物專家', minExp: 1000 },
   { level: 7, title: '生命觀察家', minExp: 1400 },
   { level: 8, title: '進階研究員', minExp: 1900 },
-  { level: 9, title: '生物大師', minExp: 2500 },
+  { level: 9, title: '生物學者', minExp: 2500 },
   { level: 10, title: '傳奇探索者', minExp: 3200 },
 ] as const
 
