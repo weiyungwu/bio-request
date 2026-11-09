@@ -33,6 +33,14 @@ async function playAll(w: W, wrong: string[] = []) {
   }
 }
 
+/** Answers correctly and moves on until the current structure matches `category`. */
+async function skipTo(w: W, category: CellCategory) {
+  while (current(w).category !== category) {
+    await choice(w, current(w).category).trigger('click')
+    await next(w)
+  }
+}
+
 describe('ClassificationGame (TASK-009)', () => {
   // Spec: 分類正確與否能被判斷; FR-04: the feedback explains why.
   it('a correct answer says so and explains why', async () => {
@@ -55,6 +63,42 @@ describe('ClassificationGame (TASK-009)', () => {
     expect(text).toContain(it.explanation)
     expect(choice(w, wrong).text()).toMatch(/^✗/)
     expect(choice(w, it.category).text()).toMatch(/^✓/)
+  })
+
+  // Review I1: "細胞核…不是「動物細胞」" reads as "animal cells have no nucleus" — false.
+  it('a wrong pick for a shared structure states both cells have it, never "不是"', async () => {
+    const w = mountGame()
+    await skipTo(w, 'both')
+    const name = w.find('[data-testid="classification-item"]').text()
+    await choice(w, 'animal').trigger('click')
+    expect(feedback(w)).toContain(`正確答案是「兩者皆有」：植物細胞和動物細胞都有${name}。`)
+    expect(feedback(w)).not.toContain('不是')
+  })
+
+  it('a plant-only structure says animal cells lack it', async () => {
+    const w = mountGame()
+    await skipTo(w, 'plant')
+    const name = w.find('[data-testid="classification-item"]').text()
+    await choice(w, 'plant').trigger('click')
+    expect(feedback(w)).toContain(`植物細胞有${name}，動物細胞沒有。`)
+  })
+
+  // Review I3: ✓ / ✗ are aria-hidden, so screen readers need the state in words.
+  it('names the correct answer and the wrong pick for screen readers', async () => {
+    const w = mountGame()
+    const it = current(w)
+    const wrong = wrongFor(it.category)
+    expect(w.findAll('.sr-only').filter((e) => e.text().includes('答案'))).toHaveLength(0)
+    await choice(w, wrong).trigger('click')
+    expect(choice(w, it.category).find('.sr-only').text()).toBe('（正確答案）')
+    expect(choice(w, wrong).find('.sr-only').text()).toBe('（你的答案）')
+  })
+
+  // Mounted when the student leaves the matching game; focus must land on the new game.
+  it('focuses its title on mount', () => {
+    const w = mountGame()
+    expect(document.activeElement?.id).toBe('classification-title')
+    w.unmount()
   })
 
   // One answer per structure: tapping again (or fast double taps) can't change or re-score it.
@@ -92,7 +136,7 @@ describe('ClassificationGame (TASK-009)', () => {
     }
     const mito = w.find('[data-testid="classification-review"][data-id="b-mitochondrion"]')
     expect(mito.text()).toContain('✗')
-    expect(mito.text()).toContain('兩者皆有')
+    expect(mito.text()).toContain('正確答案：兩者皆有')
     expect(mito.text()).toContain('你的答案：植物細胞')
     await new Promise((r) => setTimeout(r))
     expect(document.activeElement?.id).toBe('classification-result-title')

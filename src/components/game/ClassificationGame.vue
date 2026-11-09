@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import BaseCard from '@/components/common/BaseCard.vue'
 import type { CellCategory, ClassificationItem, KnowledgePoint } from '@/types/lesson'
@@ -18,6 +18,16 @@ const categories: { id: CellCategory; label: string }[] = [
 ]
 const labelOf = (c: CellCategory) => categories.find((x) => x.id === c)!.label
 
+// Says who has the structure. Never "不是動物細胞" for a shared one: students read
+// that as "animal cells don't have it" (TASK-009 review I1).
+const factOf = (it: ClassificationItem) => {
+  const name = nameOf(it.pointId)
+  if (it.category === 'both') return `植物細胞和動物細胞都有${name}。`
+  return it.category === 'plant'
+    ? `植物細胞有${name}，動物細胞沒有。`
+    : `動物細胞有${name}，植物細胞沒有。`
+}
+
 const pointById = computed(() => new Map(props.points.map((p) => [p.id, p])))
 const nameOf = (id: string) => pointById.value.get(id)?.term.zh ?? id
 
@@ -30,12 +40,12 @@ const current = computed(() => order.value[index.value])
 const answer = computed(() =>
   current.value ? answers.value.get(current.value.pointId) : undefined,
 )
-const finished = computed(() => answers.value.size === props.items.length)
 const correctCount = computed(
   () => props.items.filter((it) => answers.value.get(it.pointId) === it.category).length,
 )
 
-const itemHeading = ref<HTMLElement | null>(null)
+const titleEl = ref<HTMLElement | null>(null)
+const itemEl = ref<HTMLElement | null>(null)
 const resultHeading = ref<HTMLElement | null>(null)
 const showResult = ref(false)
 
@@ -46,6 +56,8 @@ function start() {
   showResult.value = false
 }
 start()
+// Mounted only when the student moves on from the matching game, so focus follows.
+onMounted(() => titleEl.value?.focus())
 
 function choose(category: CellCategory) {
   if (!current.value || answer.value) return
@@ -56,8 +68,8 @@ function next() {
   if (!answer.value) return
   if (index.value < order.value.length - 1) {
     index.value++
-    nextTick(() => itemHeading.value?.focus())
-  } else if (finished.value) {
+    nextTick(() => itemEl.value?.focus())
+  } else {
     showResult.value = true
     nextTick(() => resultHeading.value?.focus())
   }
@@ -65,7 +77,7 @@ function next() {
 
 function retry() {
   start()
-  nextTick(() => itemHeading.value?.focus())
+  nextTick(() => itemEl.value?.focus())
 }
 
 // The chosen and the correct button are marked with ✗ / ✓, not colour alone.
@@ -88,18 +100,23 @@ const choiceClass = (c: CellCategory) => {
 <template>
   <BaseCard as="section" class="space-y-5" aria-labelledby="classification-title">
     <div class="space-y-1">
-      <h3 id="classification-title" tabindex="-1">植物還是動物？</h3>
+      <h3 id="classification-title" ref="titleEl" tabindex="-1">植物還是動物？</h3>
       <p class="text-muted">這個構造出現在植物細胞、動物細胞，還是兩者皆有？</p>
     </div>
 
     <template v-if="!showResult && current">
-      <p data-testid="classification-progress" class="text-sm font-semibold text-muted">
+      <p
+        id="classification-progress"
+        data-testid="classification-progress"
+        class="text-sm font-semibold text-muted"
+      >
         第 {{ index + 1 }} / {{ order.length }} 題
       </p>
       <p
         id="classification-item"
-        ref="itemHeading"
+        ref="itemEl"
         tabindex="-1"
+        aria-describedby="classification-progress"
         data-testid="classification-item"
         class="text-center text-2xl font-bold"
       >
@@ -118,7 +135,13 @@ const choiceClass = (c: CellCategory) => {
           @click="choose(c.id)"
         >
           <span v-if="marker(c.id)" aria-hidden="true">{{ marker(c.id) }}</span>
-          <span>{{ c.label }}</span>
+          <span
+            >{{ c.label
+            }}<span v-if="answer && c.id === current.category" class="sr-only">（正確答案）</span
+            ><span v-if="answer && c.id === answer && c.id !== current.category" class="sr-only"
+              >（你的答案）</span
+            ></span
+          >
         </button>
       </div>
 
@@ -134,12 +157,10 @@ const choiceClass = (c: CellCategory) => {
           ]"
         >
           <p v-if="answer === current.category" class="font-bold text-success">
-            ✓ 答對了！{{ nameOf(current.pointId) }}屬於「{{ labelOf(current.category) }}」。
+            ✓ 答對了！{{ factOf(current) }}
           </p>
           <p v-else class="font-bold text-danger-text">
-            ✗ 不對喔：{{ nameOf(current.pointId) }}屬於「{{ labelOf(current.category) }}」，不是「{{
-              labelOf(answer)
-            }}」。
+            ✗ 不對喔，正確答案是「{{ labelOf(current.category) }}」：{{ factOf(current) }}
           </p>
           <p>{{ current.explanation }}</p>
         </div>
@@ -178,7 +199,7 @@ const choiceClass = (c: CellCategory) => {
             <span class="sr-only">{{
               answers.get(it.pointId) === it.category ? '答對' : '答錯'
             }}</span>
-            {{ nameOf(it.pointId) }}：{{ labelOf(it.category) }}
+            {{ nameOf(it.pointId) }}　正確答案：{{ labelOf(it.category) }}
           </p>
           <p v-if="answers.get(it.pointId) !== it.category" class="text-sm text-danger-text">
             你的答案：{{ labelOf(answers.get(it.pointId)!) }}

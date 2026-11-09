@@ -22,7 +22,6 @@ const game = ref<'matching' | 'classification'>('matching')
 const lessonHeading = ref<HTMLElement | null>(null)
 const exploreHeading = ref<HTMLElement | null>(null)
 const gameHeading = ref<HTMLElement | null>(null)
-const classificationWrap = ref<HTMLElement | null>(null)
 
 // The view is reused when only :courseId changes; restart the flow.
 watch(courseId, () => {
@@ -45,11 +44,9 @@ function enterGame() {
   nextTick(() => gameHeading.value?.focus())
 }
 
+// ClassificationGame focuses its own title when it mounts.
 function enterClassification() {
   game.value = 'classification'
-  nextTick(() =>
-    classificationWrap.value?.querySelector<HTMLElement>('#classification-title')?.focus(),
-  )
 }
 </script>
 
@@ -105,9 +102,12 @@ function enterClassification() {
         :points="points"
         @complete="enterClassification"
       />
-      <div v-else ref="classificationWrap">
-        <ClassificationGame :key="courseId" :items="lesson.classification.items" :points="points" />
-      </div>
+      <ClassificationGame
+        v-else
+        :key="courseId"
+        :items="lesson.classification.items"
+        :points="points"
+      />
     </section>
   </main>
 </template>

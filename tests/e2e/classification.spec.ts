@@ -49,12 +49,19 @@ test.describe('Classification game (TASK-009)', () => {
     expect(errors).toEqual([])
   })
 
-  test('has no horizontal overflow', async ({ page }) => {
+  // The result list with its long explanations is the likeliest place to overflow on phones.
+  test('has no horizontal overflow, during play or on the result', async ({ page }) => {
     await openGame(page)
-    const [scrollWidth, clientWidth] = await page.evaluate(() => [
-      document.documentElement.scrollWidth,
-      document.documentElement.clientWidth,
-    ])
-    expect(scrollWidth).toBeLessThanOrEqual(clientWidth)
+    const overflow = () =>
+      page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      )
+    expect(await overflow()).toBeLessThanOrEqual(0)
+    for (let n = 1; n <= 7; n++) {
+      await page.getByTestId('classification-choice').first().click()
+      await page.getByTestId('classification-next').click()
+    }
+    await expect(page.getByTestId('classification-result')).toBeVisible()
+    expect(await overflow()).toBeLessThanOrEqual(0)
   })
 })
