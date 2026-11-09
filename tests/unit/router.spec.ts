@@ -31,6 +31,15 @@ describe('lesson route guard', () => {
     },
   )
 
+  // TASK-011: the quiz of a locked stage is just as closed as its lesson.
+  it('opens the quiz of an open stage and blocks a locked one', async () => {
+    const router = makeRouter()
+    await router.push('/quiz/bio-01')
+    expect(router.currentRoute.value.fullPath).toBe('/quiz/bio-01')
+    await router.push('/quiz/bio-02')
+    expect(router.currentRoute.value.fullPath).toBe('/map')
+  })
+
   it.each(['bio-02', 'bio-08', 'does-not-exist'])('redirects /lesson/%s to the map', async (id) => {
     const router = makeRouter()
     await router.push(`/lesson/${id}`)

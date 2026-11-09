@@ -43,8 +43,8 @@ test.describe('Classification game (TASK-009)', () => {
     await expect(page.getByTestId('classification-review')).toHaveCount(7)
     await expect(page.getByTestId('classification-result')).toContainText('你的答案：動物細胞')
 
-    // Phase 3 review I-03: the end of the games leads somewhere (the map until TASK-011).
-    await expect(page.getByTestId('classification-to-map')).toBeVisible()
+    // Phase 3 review I-03: the end of the games leads somewhere — the stage quiz (TASK-011).
+    await expect(page.getByTestId('classification-to-quiz')).toBeVisible()
     await page.getByTestId('classification-retry').click()
     await expect(page.getByTestId('classification-progress')).toHaveText('第 1 / 7 題')
     await expect(item).toBeFocused()
@@ -52,8 +52,8 @@ test.describe('Classification game (TASK-009)', () => {
       await page.getByTestId('classification-choice').first().click()
       await page.getByTestId('classification-next').click()
     }
-    await page.getByTestId('classification-to-map').click()
-    await expect(page).toHaveURL(/\/map$/)
+    await page.getByTestId('classification-to-quiz').click()
+    await expect(page).toHaveURL(/\/quiz\/bio-01$/)
     expect(errors).toEqual([])
   })
 

@@ -66,7 +66,13 @@ Handover notes (current status, workflow, next task): [`docs/handoff.md`](docs/h
   loaded by `getLessonData()` in `src/data/lessons/index.ts`.
   This follows the MVP spec §2 file layout and deviates from spec.txt §8.1, which nests `lessons`
   inside the course object (the two specs conflict). `story` is an addition not in §8.1.
-  `passingScore` (§8.1) is decided in TASK-011 (spec rule: pass = score >= 80).
+  `passingScore` is not stored per course: `PASS_SCORE = 80` and `QUIZ_SIZE = 5` in
+  `src/utils/quiz.ts` apply to every stage (spec TASK-011, §5.4).
+- Quiz (`/quiz/:courseId`, TASK-011): pure engine in `src/utils/quiz.ts` (draw, judge, score),
+  attempt state in the Pinia `quiz` store (in memory). Each question: answer → 提交答案 (disabled
+  with a reason until every slot is filled) → verdict, correct answer and explanation → next.
+  Matching and ordering are answered with one native `<select>` per row and scored
+  all-or-nothing. Bank data errors are listed at the top of the quiz page.
 - Question bank: `src/data/questions/<courseId>.json`, an array of spec.txt §8.2 questions, loaded
   and validated by `getQuestionBank()` in `src/data/questions/index.ts`. Types and answer formats
   (`src/types/question.ts`): `single_choice` (answer = option index), `true_false` (options fixed

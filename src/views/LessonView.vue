@@ -108,13 +108,13 @@ function enterClassification() {
         :items="lesson.classification.items"
         :points="points"
       >
-        <!-- Until the quiz exists (TASK-011), the stage's games end back at the map. -->
+        <!-- The games lead into the stage quiz (TASK-011). -->
         <template #next>
           <RouterLink
-            to="/map"
-            data-testid="classification-to-map"
+            :to="`/quiz/${courseId}`"
+            data-testid="classification-to-quiz"
             class="inline-flex min-h-11 items-center justify-center rounded-control bg-explore px-5 font-bold text-on-accent hover:bg-explore-strong"
-            >回關卡地圖 →</RouterLink
+            >進入關卡測驗 →</RouterLink
           >
         </template>
       </ClassificationGame>
