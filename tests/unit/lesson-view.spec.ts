@@ -48,4 +48,15 @@ describe('LessonView', () => {
     expect(document.activeElement?.id).toBe('lesson-heading')
     wrapper.unmount()
   })
+
+  // TASK-006 fills the lesson step; finishing it moves on to the games step.
+  it('shows the lesson cards after the story, then the next step after the lesson', async () => {
+    const wrapper = await mountLesson()
+    wrapper.findComponent({ name: 'StoryDialog' }).vm.$emit('complete')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.findComponent({ name: 'LessonCard' }).exists()).toBe(true)
+    wrapper.findComponent({ name: 'LessonCard' }).vm.$emit('complete')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('[data-testid="game-content"]').exists()).toBe(true)
+  })
 })

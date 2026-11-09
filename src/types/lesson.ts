@@ -21,8 +21,43 @@ export interface Story {
   objectives: string[]
 }
 
-/** Per-course lesson file: src/data/lessons/<courseId>.json. Lessons are added in TASK-006. */
+export interface LessonImage {
+  /** Path under public/, e.g. "/images/cells/plant-cell.svg". */
+  src: string
+  alt: string
+  /** Explains the image in text; the image itself must not be the only carrier of meaning. */
+  caption: string
+}
+
+/** One knowledge card; fields per spec.txt FR-03. */
+export interface KnowledgePoint {
+  id: string
+  /** 正式學科名詞 */
+  term: { zh: string; en: string }
+  /** 正式定義 */
+  definition: string
+  /** 白話解釋 */
+  plain: string
+  /** 生活化例子 */
+  example: string
+  /** 考試重點提示 */
+  examTip: string
+  /** 圖片或示意圖 (optional; see docs/known-issues.md) */
+  image?: LessonImage
+  /** Decorative emoji when there is no image. */
+  icon?: string
+}
+
+/** A teaching unit (spec.txt 8.1 `lessons[]`; 8.1's unused `content` omitted). */
+export interface Lesson {
+  id: string
+  title: string
+  knowledgePoints: KnowledgePoint[]
+}
+
+/** Per-course lesson file: src/data/lessons/<courseId>.json. */
 export interface LessonData {
   courseId: string
   story: Story
+  lessons: Lesson[]
 }

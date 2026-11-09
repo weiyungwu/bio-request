@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240">
+  <!-- Plant cell (schematic). No text: meaning is carried by the caption. -->
+  <rect width="320" height="240" fill="#0b1b3a"/>
+  <!-- cell wall: thick, rectangular -->
+  <rect x="34" y="24" width="252" height="192" rx="10" fill="#a16207" stroke="#facc15" stroke-width="3"/>
+  <!-- cell membrane + cytoplasm just inside the wall -->
+  <rect x="48" y="38" width="224" height="164" rx="6" fill="#1c3a6b" stroke="#2dd4bf" stroke-width="3"/>
+  <!-- large central vacuole (light blue) -->
+  <rect x="96" y="58" width="150" height="124" rx="40" fill="#bfdbfe" opacity="0.85"/>
+  <!-- nucleus pushed to one side -->
+  <circle cx="74" cy="120" r="20" fill="#3b1f6b" stroke="#c4b5fd" stroke-width="3"/>
+  <circle cx="70" cy="116" r="6" fill="#c4b5fd" opacity="0.8"/>
+  <!-- chloroplasts: green ovals along the edge -->
+  <g fill="#22c55e" stroke="#14532d" stroke-width="2">
+    <ellipse cx="80" cy="56" rx="13" ry="7"/>
+    <ellipse cx="150" cy="48" rx="13" ry="7"/>
+    <ellipse cx="226" cy="48" rx="13" ry="7"/>
+    <ellipse cx="258" cy="100" rx="7" ry="13"/>
+    <ellipse cx="258" cy="160" rx="7" ry="13"/>
+    <ellipse cx="176" cy="192" rx="13" ry="7"/>
+    <ellipse cx="96" cy="190" rx="13" ry="7"/>
+  </g>
+  <!-- mitochondria (small, orange) -->
+  <g fill="#f59e0b" stroke="#7c2d12" stroke-width="2">
+    <ellipse cx="226" cy="192" rx="9" ry="5"/>
+    <ellipse cx="62" cy="168" rx="5" ry="9"/>
+  </g>
+</svg>

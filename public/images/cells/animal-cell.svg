@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240">
+  <!-- Animal cell (schematic). No text: meaning is carried by the caption. -->
+  <rect width="320" height="240" fill="#0b1b3a"/>
+  <!-- cell membrane + cytoplasm: irregular rounded outline -->
+  <path d="M60 120 C55 60 120 28 175 34 C240 40 282 78 272 132 C264 186 210 214 150 208 C92 202 64 172 60 120 Z"
+        fill="#1c3a6b" stroke="#2dd4bf" stroke-width="5"/>
+  <!-- nucleus (dark, central) with nucleolus -->
+  <circle cx="165" cy="120" r="36" fill="#3b1f6b" stroke="#c4b5fd" stroke-width="3"/>
+  <circle cx="158" cy="114" r="11" fill="#c4b5fd" opacity="0.8"/>
+  <!-- mitochondria: ovals with inner folds -->
+  <g fill="#f59e0b" stroke="#7c2d12" stroke-width="2">
+    <ellipse cx="102" cy="92" rx="20" ry="10" transform="rotate(-20 102 92)"/>
+    <ellipse cx="228" cy="152" rx="20" ry="10" transform="rotate(15 228 152)"/>
+    <ellipse cx="120" cy="170" rx="18" ry="9" transform="rotate(25 120 170)"/>
+  </g>
+  <g fill="none" stroke="#7c2d12" stroke-width="2" stroke-linecap="round">
+    <path d="M90 94 q4 -8 8 0 t8 0 t8 0" transform="rotate(-20 102 92)"/>
+    <path d="M216 152 q4 -8 8 0 t8 0 t8 0" transform="rotate(15 228 152)"/>
+    <path d="M109 170 q4 -7 7 0 t7 0 t7 0" transform="rotate(25 120 170)"/>
+  </g>
+  <!-- small vesicles -->
+  <g fill="#93c5fd" opacity="0.7">
+    <circle cx="226" cy="86" r="6"/>
+    <circle cx="200" cy="184" r="5"/>
+  </g>
+</svg>
