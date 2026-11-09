@@ -345,5 +345,44 @@
         "hint": "細胞膜是包在細胞外層的薄膜，像城市的大門。"
       }
     ]
+  },
+  "classification": {
+    "items": [
+      {
+        "pointId": "b-nucleus",
+        "category": "both",
+        "explanation": "植物細胞和動物細胞都有細胞核，負責儲存遺傳物質、調控細胞的活動。"
+      },
+      {
+        "pointId": "b-membrane",
+        "category": "both",
+        "explanation": "兩者都有細胞膜控制物質進出；植物細胞的細胞膜位在細胞壁的內側。"
+      },
+      {
+        "pointId": "b-cytoplasm",
+        "category": "both",
+        "explanation": "兩者都有細胞質，細胞內多數代謝反應在這裡進行。"
+      },
+      {
+        "pointId": "b-mitochondrion",
+        "category": "both",
+        "explanation": "植物細胞也要進行呼吸作用、釋放能量，所以植物細胞和動物細胞都有粒線體。"
+      },
+      {
+        "pointId": "b-chloroplast",
+        "category": "plant",
+        "explanation": "葉綠體只存在植物的部分細胞中（例如葉肉細胞），能進行光合作用；動物細胞沒有葉綠體。"
+      },
+      {
+        "pointId": "b-vacuole",
+        "category": "both",
+        "explanation": "兩者都可能有液胞；成熟的植物細胞通常有一個大型的中央液胞，動物細胞的液胞通常較小或不明顯。"
+      },
+      {
+        "pointId": "b-wall",
+        "category": "plant",
+        "explanation": "植物細胞在細胞膜外側有細胞壁，能支持和保護細胞；動物細胞沒有細胞壁，所以形狀較不固定。"
+      }
+    ]
   }
 }

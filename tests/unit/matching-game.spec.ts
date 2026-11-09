@@ -82,6 +82,16 @@ describe('MatchingGame (TASK-008)', () => {
     w.unmount()
   })
 
+  // TASK-009: the lesson moves on to the classification game from the result.
+  it('emits complete from the result, not before', async () => {
+    const w = mountGame()
+    expect(w.find('[data-testid="matching-done"]').exists()).toBe(false)
+    for (const p of pairs) await pair(w, p.pointId, p.pointId)
+    await w.find('[data-testid="matching-done"]').trigger('click')
+    expect(w.emitted('complete')).toHaveLength(1)
+    w.unmount()
+  })
+
   it('says so when there were no mistakes', async () => {
     const w = mountGame()
     for (const p of pairs) await pair(w, p.pointId, p.pointId)

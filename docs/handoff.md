@@ -1,26 +1,24 @@
 # 交接筆記
 
 換電腦或開新 session 時先讀這份，再讀 [`known-issues.md`](known-issues.md) 和 `git log --oneline -15`。
-最後更新：2026-11-09（TASK-008 完成後）。
+最後更新：2026-11-09（TASK-009 完成後）。
 
 ## 目前進度
 
-| Phase | 任務                                                  | 狀態                                       |
-| ----- | ----------------------------------------------------- | ------------------------------------------ |
-| 0–1   | 專案骨架、設計系統、首頁、關卡地圖（TASK-001～004）   | 完成，Phase 審查已處理                     |
-| 2     | 故事對話、教學卡、細胞互動圖（TASK-005～007）         | 完成，Phase 2 審查已處理（commit 9dc341e） |
-| 3     | TASK-008 細胞器配對                                   | 完成，任務審查已處理（commit e0056e6）     |
-| 3     | **TASK-009 分類遊戲（植物／動物／兩者皆有）← 下一步** | 未開始                                     |
-| 4–5   | 測驗引擎、結果頁、LocalStorage、錯題本（TASK-010～）  | 未開始                                     |
+| Phase | 任務                                                              | 狀態                                       |
+| ----- | ----------------------------------------------------------------- | ------------------------------------------ |
+| 0–1   | 專案骨架、設計系統、首頁、關卡地圖（TASK-001～004）               | 完成，Phase 審查已處理                     |
+| 2     | 故事對話、教學卡、細胞互動圖（TASK-005～007）                     | 完成，Phase 2 審查已處理（commit 9dc341e） |
+| 3     | TASK-008 細胞器配對                                               | 完成，任務審查已處理（commit e0056e6）     |
+| 3     | TASK-009 分類遊戲（植物／動物／兩者皆有）                         | 完成，待任務審查                           |
+| 4–5   | **測驗引擎、結果頁、LocalStorage、錯題本（TASK-010～）** ← 下一步 | 未開始                                     |
 
-第一關流程（`src/views/LessonView.vue`）：故事 → 探險者訓練（16 個知識點＋重點整理）→ 細胞城市探險（細胞互動圖）→ 互動挑戰（目前只有配對遊戲）。
+第一關流程（`src/views/LessonView.vue`）：故事 → 探險者訓練（16 個知識點＋重點整理）→ 細胞城市探險（細胞互動圖）→ 互動挑戰（配對遊戲 → 分類遊戲）。Phase 3 結束後需做 Phase 審查（不同模型或 Human）。
 
-## TASK-009 開始前要知道的
+## 下一步要知道的
 
-- 規格：MVP 任務規格 TASK-009；spec.txt §5.3 遊戲三、FR-04（回饋要解釋原因）。
-- `MatchingGame.vue` 還沒有 `emit('complete')`，刻意留到 TASK-009：接分類遊戲時再加，並在 `LessonView.vue` 串起配對 → 分類。
-- 可沿用：`src/utils/shuffle.ts`；教材資料放在 `src/data/lessons/bio-01.json`（配對用 `matching`，型別在 `src/types/lesson.ts`）。
-- 配對遊戲的 UI 模式（點選、`aria-pressed`、`aria-disabled` 保留焦點、✓／✗／▶ 不只靠顏色、`aria-live` 回饋每次重新渲染）建議分類遊戲比照。
+- `ClassificationGame.vue` 沒有 `emit('complete')`：等 TASK-011 測驗頁接上時再加（同 TASK-008 的做法，第一個使用者出現才寫）。
+- 遊戲 UI 模式（點選、`aria-disabled` 保留焦點、✓／✗／▶ 不只靠顏色、`aria-live` 回饋每次重新渲染）建議測驗選項比照。
 
 ## 工作流程（規格 §1.2）
 
@@ -41,11 +39,13 @@ npm run build && CI=1 npx playwright test --retries=0  # 連跑兩次，確認�
 ```
 
 - CI 模式的 Playwright 預設 `retries: 2` 會掩蓋不穩定測試，新增 E2E 時一律加 `--retries=0`。
+- macOS 12 的電腦：目前的 Playwright 不支援下載瀏覽器（`Playwright does not support chromium on mac12`）。改用快取中的舊版 `~/Library/Caches/ms-playwright/chromium_headless_shell-1228/`：建立一個暫時的 config，匯入 `playwright.config.ts`，在每個 project 的 `use.launchOptions.executablePath` 指向它，跑完刪掉，不要 commit。
 - Playwright 的 `click()` 會等待 `aria-disabled="true"` 的元素，測試點擊已完成項目時改用 `dispatchEvent('click')`。
 
 ## 等 Human 處理
 
 - 確認配對遊戲文字（`bio-01.json` 的 `matching`：功能敘述與錯誤提示）。
+- 確認分類遊戲的歸類與解析（`bio-01.json` 的 `classification`，含液胞歸類）。
 - 其餘見 `known-issues.md`「待 Human 確認」。
 
 ## 不在這個 repo 裡的檔案

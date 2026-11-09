@@ -124,4 +124,32 @@ describe('bio-01 lessons', () => {
       expect(pairs.filter((p) => p.function.trim() === '' || p.hint.trim() === '')).toEqual([])
     })
   })
+
+  // TASK-009 / spec.txt 5.3 遊戲三: 植物細胞、動物細胞或兩者皆有.
+  describe('classification game', () => {
+    const items = getLessonData('bio-01')!.classification.items
+
+    it('covers every unit B structure once', () => {
+      const unitB = lessons[1]!.knowledgePoints.map((k) => k.id)
+      expect(items.map((it) => it.pointId).sort()).toEqual([...unitB].sort())
+    })
+
+    // Biology guard (spec 5.2 unit C): only 細胞壁 and 葉綠體 are plant-only; the rest are shared.
+    it('puts each structure in the bucket unit C teaches', () => {
+      const byName = Object.fromEntries(items.map((it) => [point(it.pointId).term.zh, it.category]))
+      expect(byName).toEqual({
+        細胞核: 'both',
+        細胞膜: 'both',
+        細胞質: 'both',
+        粒線體: 'both',
+        葉綠體: 'plant',
+        液胞: 'both',
+        細胞壁: 'plant',
+      })
+    })
+
+    it('every item has an explanation', () => {
+      expect(items.filter((it) => it.explanation.trim() === '')).toEqual([])
+    })
+  })
 })

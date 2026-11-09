@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
+import ClassificationGame from '@/components/game/ClassificationGame.vue'
 import MatchingGame from '@/components/game/MatchingGame.vue'
 import CellExplorer from '@/components/lesson/CellExplorer.vue'
 import LessonCard from '@/components/lesson/LessonCard.vue'
@@ -15,14 +16,19 @@ const course = computed(() => (courses as Course[]).find((c) => c.id === courseI
 const lesson = computed(() => getLessonData(courseId.value))
 const points = computed(() => lesson.value?.lessons.flatMap((l) => l.knowledgePoints) ?? [])
 
-// story -> lesson -> explore (cell diagram) -> game (matching TASK-008; classification TASK-009)
+// story -> lesson -> explore (cell diagram) -> game (matching TASK-008 -> classification TASK-009)
 const phase = ref<'story' | 'lesson' | 'explore' | 'game'>('story')
+const game = ref<'matching' | 'classification'>('matching')
 const lessonHeading = ref<HTMLElement | null>(null)
 const exploreHeading = ref<HTMLElement | null>(null)
 const gameHeading = ref<HTMLElement | null>(null)
+const classificationWrap = ref<HTMLElement | null>(null)
 
 // The view is reused when only :courseId changes; restart the flow.
-watch(courseId, () => (phase.value = 'story'))
+watch(courseId, () => {
+  phase.value = 'story'
+  game.value = 'matching'
+})
 
 function enterLesson() {
   phase.value = 'lesson'
@@ -37,6 +43,13 @@ function enterExplore() {
 function enterGame() {
   phase.value = 'game'
   nextTick(() => gameHeading.value?.focus())
+}
+
+function enterClassification() {
+  game.value = 'classification'
+  nextTick(() =>
+    classificationWrap.value?.querySelector<HTMLElement>('#classification-title')?.focus(),
+  )
 }
 </script>
 
@@ -85,7 +98,16 @@ function enterGame() {
     </section>
     <section v-else data-testid="game-content" aria-labelledby="game-heading" class="space-y-4">
       <h2 id="game-heading" ref="gameHeading" tabindex="-1">互動挑戰</h2>
-      <MatchingGame :key="courseId" :pairs="lesson.matching.pairs" :points="points" />
+      <MatchingGame
+        v-if="game === 'matching'"
+        :key="courseId"
+        :pairs="lesson.matching.pairs"
+        :points="points"
+        @complete="enterClassification"
+      />
+      <div v-else ref="classificationWrap">
+        <ClassificationGame :key="courseId" :items="lesson.classification.items" :points="points" />
+      </div>
     </section>
   </main>
 </template>

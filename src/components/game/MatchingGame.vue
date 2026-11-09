@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
+import BaseButton from '@/components/common/BaseButton.vue'
 import BaseCard from '@/components/common/BaseCard.vue'
 import type { KnowledgePoint, MatchingPair } from '@/types/lesson'
 import { shuffle } from '@/utils/shuffle'
@@ -9,6 +10,7 @@ const props = defineProps<{
   /** Knowledge points that give each structure its name and explanation. */
   points: KnowledgePoint[]
 }>()
+const emit = defineEmits<{ complete: [] }>()
 
 const pointById = computed(() => new Map(props.points.map((p) => [p.id, p])))
 const pairById = computed(() => new Map(props.pairs.map((p) => [p.pointId, p])))
@@ -164,6 +166,9 @@ const choiceClass = (selected: boolean, done: boolean) => [
           >：{{ pair.function }}
         </li>
       </ul>
+      <BaseButton data-testid="matching-done" @click="emit('complete')">
+        下一個挑戰：植物還是動物？ →
+      </BaseButton>
     </section>
   </BaseCard>
 </template>

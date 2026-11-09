@@ -75,6 +75,21 @@ export interface MatchingConfig {
   pairs: MatchingPair[]
 }
 
+/** Answer buckets in the classification game (TASK-009, spec.txt 5.3 遊戲三). */
+export type CellCategory = 'plant' | 'animal' | 'both'
+
+export interface ClassificationItem {
+  /** KnowledgePoint id; its term is the structure shown. */
+  pointId: string
+  category: CellCategory
+  /** Why it belongs there (FR-04: explain, not just 對/錯). Shown after every answer. */
+  explanation: string
+}
+
+export interface ClassificationConfig {
+  items: ClassificationItem[]
+}
+
 /** Per-course lesson file: src/data/lessons/<courseId>.json. */
 export interface LessonData {
   courseId: string
@@ -82,4 +97,5 @@ export interface LessonData {
   lessons: Lesson[]
   explorer: ExplorerConfig
   matching: MatchingConfig
+  classification: ClassificationConfig
 }
