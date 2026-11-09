@@ -4,11 +4,17 @@ import BaseTag from '@/components/common/BaseTag.vue'
 import type { Question } from '@/types/question'
 import { correctAnswerText, isCorrect, type QuizResponse } from '@/utils/quiz'
 
-const props = defineProps<{
-  question: Question
-  response: QuizResponse
-  submitted: boolean
-}>()
+const props = withDefaults(
+  defineProps<{
+    question: Question
+    response: QuizResponse
+    submitted: boolean
+    /** Keeps ids unique when several questions are on one page (錯題本). */
+    idPrefix?: string
+    headingLevel?: 'h2' | 'h3'
+  }>(),
+  { idPrefix: 'quiz', headingLevel: 'h2' },
+)
 const emit = defineEmits<{ choose: [slot: number, value: number | null] }>()
 
 const heading = ref<HTMLElement | null>(null)
@@ -97,11 +103,18 @@ function onSelect(slot: number, event: Event) {
       <BaseTag v-else-if="question.type === 'matching'">配對題</BaseTag>
       <BaseTag v-else-if="question.type === 'ordering'">排序題</BaseTag>
     </div>
-    <h2 id="quiz-question" ref="heading" tabindex="-1" data-testid="quiz-question" class="text-xl">
+    <component
+      :is="headingLevel"
+      :id="`${idPrefix}-question`"
+      ref="heading"
+      tabindex="-1"
+      data-testid="quiz-question"
+      class="text-xl"
+    >
       {{ question.question }}
-    </h2>
+    </component>
 
-    <div v-if="!rows" class="space-y-2" role="group" aria-labelledby="quiz-question">
+    <div v-if="!rows" class="space-y-2" role="group" :aria-labelledby="`${idPrefix}-question`">
       <button
         v-for="(text, i) in choiceOptions"
         :key="text"
@@ -131,12 +144,12 @@ function onSelect(slot: number, event: Event) {
         data-testid="quiz-row"
         class="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] sm:items-center"
       >
-        <label :for="`quiz-slot-${slot}`" class="font-semibold">{{ label }}</label>
+        <label :for="`${idPrefix}-slot-${slot}`" class="font-semibold">{{ label }}</label>
         <div class="space-y-1">
           <select
-            :id="`quiz-slot-${slot}`"
+            :id="`${idPrefix}-slot-${slot}`"
             data-testid="quiz-select"
-            aria-describedby="quiz-question"
+            :aria-describedby="`${idPrefix}-question`"
             :value="response[slot] ?? ''"
             :disabled="submitted"
             class="min-h-11 w-full rounded-control border border-border bg-surface px-3 text-text disabled:opacity-80"

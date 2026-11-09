@@ -1,28 +1,29 @@
 # 交接筆記
 
 換電腦或開新 session 時先讀這份，再讀 [`known-issues.md`](known-issues.md) 和 `git log --oneline -15`。
-最後更新：2026-11-09（TASK-013 完成後）。
+最後更新：2026-11-09（TASK-014 完成後）。
 
 ## 目前進度
 
-| Phase | 任務                                                        | 狀態                                       |
-| ----- | ----------------------------------------------------------- | ------------------------------------------ |
-| 0–1   | 專案骨架、設計系統、首頁、關卡地圖（TASK-001～004）         | 完成，Phase 審查已處理                     |
-| 2     | 故事對話、教學卡、細胞互動圖（TASK-005～007）               | 完成，Phase 2 審查已處理（commit 9dc341e） |
-| 3     | TASK-008 細胞器配對                                         | 完成，任務審查已處理（commit e0056e6）     |
-| 3     | TASK-009 分類遊戲（植物／動物／兩者皆有）                   | 完成，任務審查已處理（commit 1188f8a）     |
-| 3     | Phase 3 審查（Gemini）                                      | 已處理（commit a06fa0b）                   |
-| 4     | TASK-010 題庫資料結構與第一關 12 題                         | 完成，任務審查已處理                       |
-| 4     | TASK-011 測驗引擎（`/quiz/:courseId`）                      | 完成，任務審查已處理                       |
-| 4     | TASK-012 測驗結果頁（`/result/:courseId`）                  | 完成，任務審查已處理                       |
-| 5     | TASK-013 LocalStorage 進度管理                              | 完成，任務審查已處理                       |
-| 5     | **TASK-014 錯題本 ReviewView** ← 下一步；之後 TASK-015 成就 | 未開始                                     |
+| Phase | 任務                                                            | 狀態                                       |
+| ----- | --------------------------------------------------------------- | ------------------------------------------ |
+| 0–1   | 專案骨架、設計系統、首頁、關卡地圖（TASK-001～004）             | 完成，Phase 審查已處理                     |
+| 2     | 故事對話、教學卡、細胞互動圖（TASK-005～007）                   | 完成，Phase 2 審查已處理（commit 9dc341e） |
+| 3     | TASK-008 細胞器配對                                             | 完成，任務審查已處理（commit e0056e6）     |
+| 3     | TASK-009 分類遊戲（植物／動物／兩者皆有）                       | 完成，任務審查已處理（commit 1188f8a）     |
+| 3     | Phase 3 審查（Gemini）                                          | 已處理（commit a06fa0b）                   |
+| 4     | TASK-010 題庫資料結構與第一關 12 題                             | 完成，任務審查已處理                       |
+| 4     | TASK-011 測驗引擎（`/quiz/:courseId`）                          | 完成，任務審查已處理                       |
+| 4     | TASK-012 測驗結果頁（`/result/:courseId`）                      | 完成，任務審查已處理                       |
+| 5     | TASK-013 LocalStorage 進度管理                                  | 完成，任務審查已處理                       |
+| 5     | TASK-014 錯題本（`/review`）                                    | 完成，待任務審查                           |
+| 5     | **TASK-015 成就系統** ← 下一步；之後 Phase 4–5 審查、主流程 E2E | 未開始                                     |
 
 第一關流程（`src/views/LessonView.vue`）：故事 → 探險者訓練（16 個知識點＋重點整理）→ 細胞城市探險（細胞互動圖）→ 互動挑戰（配對遊戲 → 分類遊戲）→ 關卡測驗（`QuizView`，5 題）。Phase 3 審查（Gemini）已處理。
 
 ## 下一步要知道的
 
-- TASK-014 錯題本：錯題已保存在 `useProgressStore().wrongQuestions`（以題號為 key：`courseId`、`lastWrongAt`、`mastered`），每次測驗結束由 `recordQuizResult()` 寫入；再次答錯會把 `mastered` 改回 `false`。題目內容用 `getQuestionBank(courseId)` 依題號查。結果頁的「錯題補強」區塊要加上錯題本連結。
+- TASK-015 要發放「完成錯題補強」EXP（`docs/progression.md` §2：重新答對才給、每組首次）：重新答對記在 `wrongQuestions[id].lastCorrectAt`（`recordReviewAnswer`）。
 - TASK-015：`badges` 欄位已保存但還沒有發放邏輯；EXP 每日上限見 `docs/progression.md` §3。開始發放徽章後，首頁重設確認文字要加上「徽章」。
 - 保存的資料格式若要加欄位，必須是選填或有預設值（見 known-issues）。多個分頁會透過 `storage` 事件同步。
 - 讀 `useQuizStore()` 時要確認 `quiz.courseId` 是目前的關卡。

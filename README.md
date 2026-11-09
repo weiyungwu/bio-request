@@ -87,6 +87,11 @@ Handover notes (current status, workflow, next task): [`docs/handoff.md`](docs/h
   errors never throw. §8.3 keeps exp/wrongQuestions/earnedBadges per course; here they are global,
   and wrong questions are keyed by question id. 重設學習資料 is on the home page, behind an inline
   confirmation. Unit tests clear LocalStorage before each test (`tests/unit/setup.ts`).
+- 錯題本 (`/review`, TASK-014): wrong questions from `progress.wrongQuestions`, grouped by stage
+  (map order), 待複習 before 已熟悉. Each: show answer and explanation, 重新作答 with the quiz's
+  `QuizQuestion` (ids prefixed per question), 標記已熟悉 / 取消. A correct retry sets
+  `lastCorrectAt` (重新答對); a wrong one clears 已熟悉. Entries whose question left the bank are
+  counted on the page. Linked from the result page and home.
 - Question bank: `src/data/questions/<courseId>.json`, an array of spec.txt §8.2 questions, loaded
   and validated by `getQuestionBank()` in `src/data/questions/index.ts`. Types and answer formats
   (`src/types/question.ts`): `single_choice` (answer = option index), `true_false` (options fixed

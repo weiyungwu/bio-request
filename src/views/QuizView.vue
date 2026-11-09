@@ -9,7 +9,7 @@ import courses from '@/data/courses.json'
 import { getQuestionBank } from '@/data/questions'
 import { useQuizStore } from '@/stores/quiz'
 import type { Course } from '@/types/course'
-import { QUIZ_SIZE, hasRepeats } from '@/utils/quiz'
+import { QUIZ_SIZE, submitBlocker } from '@/utils/quiz'
 
 const route = useRoute()
 const router = useRouter()
@@ -31,13 +31,7 @@ function start() {
 watch(courseId, start, { immediate: true })
 
 const remaining = computed(() => quiz.questions.length - quiz.index - (quiz.isSubmitted ? 1 : 0))
-const blanks = computed(() => quiz.response.filter((v) => v === null).length)
-const repeats = computed(() => hasRepeats(quiz.response))
-const submitHint = computed(() => {
-  if (blanks.value > 0)
-    return quiz.response.length === 1 ? '請先選擇一個答案' : `還有 ${blanks.value} 個空格沒有選`
-  return repeats.value ? '有重複的選項，每個選項只能用一次' : ''
-})
+const submitHint = computed(() => submitBlocker(quiz.response))
 
 function next() {
   if (quiz.finished) return
@@ -104,7 +98,7 @@ function next() {
       <div v-if="!quiz.isSubmitted" class="flex flex-wrap items-center gap-3">
         <BaseButton
           data-testid="quiz-submit"
-          :disabled="blanks > 0 || repeats"
+          :disabled="submitHint !== ''"
           aria-describedby="quiz-submit-hint"
           @click="quiz.submit"
         >

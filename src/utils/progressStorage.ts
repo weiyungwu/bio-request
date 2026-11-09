@@ -38,7 +38,8 @@ const isWrongQuestion = (key: string, w: unknown): w is WrongQuestion =>
   w.questionId === key &&
   isText(w.courseId) &&
   isDate(w.lastWrongAt) &&
-  typeof w.mastered === 'boolean'
+  typeof w.mastered === 'boolean' &&
+  (w.lastCorrectAt === undefined || isDate(w.lastCorrectAt))
 
 /** Keeps the entries of a keyed object that pass `valid`. */
 function pickEntries<T>(

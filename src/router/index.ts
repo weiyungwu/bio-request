@@ -24,6 +24,11 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('../views/QuizView.vue'),
   },
   {
+    path: '/review',
+    name: 'review',
+    component: () => import('../views/ReviewView.vue'),
+  },
+  {
     path: '/result/:courseId',
     name: 'result',
     component: () => import('../views/ResultView.vue'),

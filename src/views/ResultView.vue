@@ -108,6 +108,13 @@ const linkClass = {
             <p class="text-sm text-muted">解析：{{ r.question.explanation }}</p>
           </li>
         </ol>
+        <RouterLink
+          v-if="wrong.length > 0"
+          to="/review"
+          data-testid="result-to-review"
+          :class="linkClass.secondary"
+          >到錯題本複習 →</RouterLink
+        >
       </BaseCard>
 
       <div class="flex flex-wrap gap-3">

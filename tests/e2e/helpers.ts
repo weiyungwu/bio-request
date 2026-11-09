@@ -75,7 +75,7 @@ type Q = {
 const bank: Q[] = JSON.parse(readFileSync('src/data/questions/bio-01.json', 'utf8'))
 
 /** Answers the shown question from the key (or deliberately wrong) and submits. */
-export async function answer(page: Page, wrong: boolean) {
+export async function answer(page: Page, wrong: boolean, submit = 'quiz-submit') {
   const text = (await page.getByTestId('quiz-question').textContent())!.trim()
   const q = bank.find((b) => b.question === text)!
   if (typeof q.answer === 'number') {
@@ -87,7 +87,7 @@ export async function answer(page: Page, wrong: boolean) {
     const selects = page.getByTestId('quiz-select')
     for (const [slot, v] of key.entries()) await selects.nth(slot).selectOption(String(v))
   }
-  await page.getByTestId('quiz-submit').click()
+  await page.getByTestId(submit).click()
 }
 
 /** Plays a whole stage 1 quiz from /quiz/bio-01, answering the `wrong` question numbers (1-5) wrong. */

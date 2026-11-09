@@ -48,6 +48,13 @@ export function hasRepeats(response: QuizResponse): boolean {
   return new Set(picked).size !== picked.length
 }
 
+/** Why the answer can't be submitted yet, or '' when it can (shown next to 提交答案). */
+export function submitBlocker(response: QuizResponse): string {
+  const blanks = response.filter((v) => v === null).length
+  if (blanks > 0) return response.length === 1 ? '請先選擇一個答案' : `還有 ${blanks} 個空格沒有選`
+  return hasRepeats(response) ? '有重複的選項，每個選項只能用一次' : ''
+}
+
 /** All-or-nothing: matching and ordering count only when every slot is right. */
 export function isCorrect(q: Question, response: QuizResponse): boolean {
   if (!isAnswered(response)) return false

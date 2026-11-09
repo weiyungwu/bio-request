@@ -32,6 +32,9 @@ export interface WrongQuestion {
   lastWrongAt: string
   /** 標記已熟悉 (TASK-014). A new wrong answer clears it. */
   mastered: boolean
+  /** ISO 8601 timestamp of the latest correct retry in the 錯題本 (TASK-014). Optional, so
+   *  entries saved before it existed still load. */
+  lastCorrectAt?: string
 }
 
 /** Everything saved in LocalStorage (TASK-013, spec FR-08). */

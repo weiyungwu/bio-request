@@ -90,6 +90,23 @@ export const useProgressStore = defineStore('progress', () => {
     return { quiz, firstClear, total: quiz + firstClear }
   }
 
+  /**
+   * A retry in the 錯題本 (TASK-014). Right: remembered as 重新答對. Wrong: back to 待複習,
+   * the same as a mistake in a quiz.
+   */
+  function recordReviewAnswer(questionId: string, correct: boolean, now = new Date()) {
+    const entry = wrongQuestions.value[questionId]
+    if (!entry) return
+    if (correct) entry.lastCorrectAt = now.toISOString()
+    else Object.assign(entry, { lastWrongAt: now.toISOString(), mastered: false })
+  }
+
+  /** 標記已熟悉 / 取消 (TASK-014). */
+  function setMastered(questionId: string, mastered: boolean) {
+    const entry = wrongQuestions.value[questionId]
+    if (entry) entry.mastered = mastered
+  }
+
   /** 重設學習資料 (spec TASK-013); the page asks the student to confirm first. */
   function resetAll() {
     apply(emptyProgress())
@@ -105,6 +122,8 @@ export const useProgressStore = defineStore('progress', () => {
     levelInfo,
     latestRecords,
     recordQuizResult,
+    recordReviewAnswer,
+    setMastered,
     resetAll,
   }
 })
