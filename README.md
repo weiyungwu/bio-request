@@ -68,3 +68,5 @@ Known issues and deferred review items: [`docs/known-issues.md`](docs/known-issu
   `passingScore` (§8.1) is decided in TASK-011 (spec rule: pass = score >= 80).
 - 「任務完成提示」(TASK-005) is read as the mission briefing card shown after the opening story
   (title + objectives + 接受任務). Pending Human confirmation (see `docs/known-issues.md`).
+- E2E: `CI=1 npm run test:e2e` builds first, then tests the production preview (a stale
+  `dist/` would otherwise test old code). Run new E2E with `--retries=0` a few times to catch flakiness.

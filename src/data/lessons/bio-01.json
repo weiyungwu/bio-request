@@ -318,5 +318,8 @@
         }
       ]
     }
-  ]
+  ],
+  "explorer": {
+    "targets": ["b-nucleus", "b-mitochondrion", "b-membrane"]
+  }
 }

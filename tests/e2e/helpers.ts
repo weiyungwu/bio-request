@@ -1,0 +1,35 @@
+import { expect, type Page } from '@playwright/test'
+import { STORY_ADVANCE_COOLDOWN_MS } from '../../src/components/lesson/storyDialog'
+
+const PAST_COOLDOWN = STORY_ADVANCE_COOLDOWN_MS + 50
+
+/** Opens stage 1 with a fake clock and plays through the story into the lesson. */
+export async function playStory(page: Page) {
+  await page.clock.install()
+  await page.goto('/lesson/bio-01')
+  const counter = page.getByText(/^\d+ \/ 6$/)
+  await expect(counter).toHaveText('1 / 6')
+  for (let n = 2; n <= 6; n++) {
+    await page.clock.fastForward(PAST_COOLDOWN)
+    await page.getByTestId('story-next').click()
+    await expect(counter).toHaveText(`${n} / 6`)
+  }
+  await page.clock.fastForward(PAST_COOLDOWN)
+  await page.getByTestId('story-next').click()
+  await expect(page.getByTestId('mission-card')).toBeVisible()
+  await page.clock.fastForward(PAST_COOLDOWN)
+  await page.getByTestId('mission-start').click()
+  await expect(page.getByTestId('lesson-position')).toBeVisible()
+}
+
+/** From the lesson's first point, reads all 16 points and the summary. */
+export async function finishLesson(page: Page) {
+  for (let n = 2; n <= 16; n++) {
+    await page.getByTestId('lesson-next').click()
+    await expect(page.getByTestId('lesson-position')).toContainText(`${n} / 16`)
+  }
+  await page.getByTestId('lesson-next').click()
+  await expect(page.getByTestId('lesson-summary')).toBeVisible()
+  await page.clock.fastForward(PAST_COOLDOWN)
+  await page.getByTestId('lesson-done').click()
+}

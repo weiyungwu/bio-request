@@ -57,6 +57,10 @@ describe('LessonView', () => {
     expect(wrapper.findComponent({ name: 'LessonCard' }).exists()).toBe(true)
     wrapper.findComponent({ name: 'LessonCard' }).vm.$emit('complete')
     await wrapper.vm.$nextTick()
+    // TASK-007: the cell explorer comes between the lesson and the games.
+    expect(wrapper.findComponent({ name: 'CellExplorer' }).exists()).toBe(true)
+    wrapper.findComponent({ name: 'CellExplorer' }).vm.$emit('complete')
+    await wrapper.vm.$nextTick()
     expect(wrapper.find('[data-testid="game-content"]').exists()).toBe(true)
   })
 })

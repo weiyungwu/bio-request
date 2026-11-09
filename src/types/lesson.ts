@@ -56,8 +56,15 @@ export interface Lesson {
 }
 
 /** Per-course lesson file: src/data/lessons/<courseId>.json. */
+/** Cell explorer (TASK-007): structures to find before moving on (FR-02 mission). */
+export interface ExplorerConfig {
+  /** KnowledgePoint ids, e.g. "b-nucleus". */
+  targets: string[]
+}
+
 export interface LessonData {
   courseId: string
   story: Story
   lessons: Lesson[]
+  explorer: ExplorerConfig
 }

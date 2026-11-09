@@ -31,6 +31,8 @@
 
 ## 觀察中（目前不處理）
 
+- 細胞圖形狀在 `public/images/cells/*.svg`（教學圖）與 `CellExplorer.vue`（可點擊版）各有一份；修改其中一份時要同步另一份。（TASK-007）
+
 - 單元 A（生命的特徵）6 個知識點只有 emoji 圖示，沒有圖片或示意圖（FR-03 要求「圖片或示意圖」）；待美術資源。（TASK-006）
 - CI 模式的 Playwright `retries: 2` 會掩蓋不穩定的測試；新增 E2E 時請用 `--retries=0` 連跑數次確認。（TASK-006）
 

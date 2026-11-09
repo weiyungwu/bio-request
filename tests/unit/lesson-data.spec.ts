@@ -91,4 +91,12 @@ describe('bio-01 lessons', () => {
     expect(point('c-plant').example).toContain('沒有葉綠體') // onion epidermis
     expect(point('b-wall').examTip).toContain('真菌、細菌也有細胞壁')
   })
+
+  // Explorer mission targets must point at real unit B structures.
+  it('explorer targets are existing knowledge points', () => {
+    const ids = new Set(lessons.flatMap((l) => l.knowledgePoints.map((k) => k.id)))
+    const targets = getLessonData('bio-01')!.explorer.targets
+    expect(targets).toEqual(['b-nucleus', 'b-mitochondrion', 'b-membrane'])
+    expect(targets.every((t) => ids.has(t))).toBe(true)
+  })
 })
