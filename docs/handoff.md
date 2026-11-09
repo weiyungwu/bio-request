@@ -56,4 +56,6 @@ npm run build && CI=1 npx playwright test --retries=0  # 連跑兩次，確認�
 - `BIO QUEST 生物冒險-spec.txt`（產品與技術規格）
 - `phase-0-review-gemini.md`、`phase-1-review.md`、`phase-2-review.md`
 
-在另一台電腦工作前，要另外把這些檔案帶過去，放在 repo 的上一層。
+這個 repo 是公開的，所以這些檔案刻意不進 git，改用雲端硬碟（例如 iCloud、Google Drive）同步。在另一台電腦工作前，先把這些檔案同步下來，放在 repo 的上一層（與 `bio-quest/` 同一層），文件中的 `../BIO QUEST …` 路徑才找得到。
+
+新的 Phase 審查報告也存到上層資料夾，並一起同步，不要 commit 進 repo。
