@@ -75,6 +75,18 @@ describe('ProgressBar', () => {
     expect(bar.attributes('aria-valuemax')).toBe('80')
     expect(bar.attributes('aria-label')).toBe('第一關進度')
   })
+  // Self-learners need the actual numbers ("35 / 100 EXP"), not just a bar.
+  it('shows value / max with a unit when unit is given, and exposes it to screen readers', () => {
+    const wrapper = mount(ProgressBar, {
+      props: { value: 35, max: 100, label: '經驗值', unit: 'EXP' },
+    })
+    expect(wrapper.text()).toContain('35 / 100 EXP')
+    expect(wrapper.find('[role="progressbar"]').attributes('aria-valuetext')).toBe('35 / 100 EXP')
+  })
+
+  it('shows no value text when unit is omitted', () => {
+    expect(mount(ProgressBar, { props: { value: 35, label: 'x' } }).text()).toBe('')
+  })
 })
 
 describe('BaseTag', () => {

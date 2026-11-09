@@ -4,16 +4,17 @@
 
 ## 延後到對應任務（審查已確認有效，等第一個使用者出現再做，避免先寫用不到的程式碼）
 
-| 項目                                                                                                                    | 處理時機                              | 來源               |
-| ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------- | ------------------ |
-| `ProgressBar` 顯示數值文字（如「3 / 5 題」「120 / 200 EXP」），可考慮分段模式                                           | TASK-003（首頁 EXP）                  | Gemini Phase 0 #3  |
-| 可點擊卡片：hover / active / focus 狀態                                                                                 | TASK-004（關卡地圖）                  | Gemini Phase 0 #5  |
-| 教學重點提示樣式（左側色條 callout）                                                                                    | TASK-006 `ImportantNote.vue`          | Gemini Phase 0 #5  |
-| 教材中的生物專有名詞不可斷開（名詞外包 `whitespace-nowrap` span；`word-break: keep-all` 實測無效）                      | TASK-006（教材 JSON / 元件）          | Gemini Phase 0 #6  |
-| 測驗 / 配對選項元件：選取、答對、答錯狀態，選項編號與 ✓ / ✗ 圖示                                                        | TASK-008、TASK-011                    | Gemini Phase 0 #2  |
-| 提交按鈕停用時顯示原因（如「請先選取答案」）                                                                            | TASK-011                              | Gemini Phase 0 #10 |
-| 單元測試經過真正的 `main.ts` 驗證 Pinia 已接上（目前測試自行建立 Pinia）；router 改為每個測試各自建立，避免狀態互相影響 | 第一個 Pinia store 出現時（TASK-013） | TASK-001 審查 S3   |
-| E2E 測試檔納入型別檢查（`tests/e2e/tsconfig.json` 未被根 tsconfig 引用）                                                | 開始寫規格 4.2 主流程 E2E 前          | TASK-001 審查 S2   |
+| 項目                                                                                                                            | 處理時機                     | 來源               |
+| ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- | ------------------ |
+| 可點擊卡片：hover / active / focus 狀態                                                                                         | TASK-004（關卡地圖）         | Gemini Phase 0 #5  |
+| 教學重點提示樣式（左側色條 callout）                                                                                            | TASK-006 `ImportantNote.vue` | Gemini Phase 0 #5  |
+| 教材中的生物專有名詞不可斷開（名詞外包 `whitespace-nowrap` span；`word-break: keep-all` 實測無效）                              | TASK-006（教材 JSON / 元件） | Gemini Phase 0 #6  |
+| 測驗 / 配對選項元件：選取、答對、答錯狀態，選項編號與 ✓ / ✗ 圖示                                                                | TASK-008、TASK-011           | Gemini Phase 0 #2  |
+| 提交按鈕停用時顯示原因（如「請先選取答案」）                                                                                    | TASK-011                     | Gemini Phase 0 #10 |
+| `tests/unit/app.spec.ts` 仍使用 router singleton，改為每個測試各自建立 router（Pinia 是否接上 `main.ts` 已由 E2E 首頁測試涵蓋） | 下次修改 app.spec 時         | TASK-001 審查 S3   |
+| 等級規則為暫定：每 100 EXP 升一級、從 Lv 1 開始（`src/utils/level.ts`），規格未定義                                             | TASK-015                     | TASK-003 實作      |
+| ProgressBar 分段模式（如 5 題測驗分 5 格）                                                                                      | TASK-011（如需要）           | Gemini Phase 0 #3  |
+| E2E 測試檔納入型別檢查（`tests/e2e/tsconfig.json` 未被根 tsconfig 引用）                                                        | 開始寫規格 4.2 主流程 E2E 前 | TASK-001 審查 S2   |
 
 ## 使用限制（設計上的取捨，已寫入 README）
 

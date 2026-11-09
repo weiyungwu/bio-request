@@ -9,6 +9,11 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
+    {
+      path: '/map',
+      name: 'map',
+      component: () => import('../views/MapView.vue'),
+    },
     // Dev-only style guide; tree-shaken out of production builds.
     ...(import.meta.env.DEV
       ? [
