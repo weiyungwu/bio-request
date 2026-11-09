@@ -35,3 +35,16 @@ export async function finishLesson(page: Page) {
   await page.clock.fastForward(PAST_COOLDOWN)
   await page.getByTestId('lesson-done').click()
 }
+
+/** Completes the cell explorer mission with the structure buttons and enters the games. */
+export async function finishExplorer(page: Page) {
+  const chip = (id: string) =>
+    page.locator(`[data-testid="structure-chip"][data-structure="${id}"]`)
+  for (const id of ['nucleus', 'mitochondrion', 'membrane', 'wall', 'chloroplast']) {
+    await chip(id).click()
+  }
+  await page.getByTestId('cell-animal').click()
+  await chip('nucleus').click()
+  await page.getByTestId('explore-done').click()
+  await expect(page.getByRole('heading', { name: '互動挑戰' })).toBeFocused()
+}

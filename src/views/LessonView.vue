@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
+import MatchingGame from '@/components/game/MatchingGame.vue'
 import CellExplorer from '@/components/lesson/CellExplorer.vue'
 import LessonCard from '@/components/lesson/LessonCard.vue'
 import StoryDialog from '@/components/lesson/StoryDialog.vue'
@@ -12,8 +13,9 @@ const route = useRoute()
 const courseId = computed(() => String(route.params.courseId))
 const course = computed(() => (courses as Course[]).find((c) => c.id === courseId.value))
 const lesson = computed(() => getLessonData(courseId.value))
+const points = computed(() => lesson.value?.lessons.flatMap((l) => l.knowledgePoints) ?? [])
 
-// story -> lesson -> explore (cell diagram) -> game (games are TASK-008/009)
+// story -> lesson -> explore (cell diagram) -> game (matching TASK-008; classification TASK-009)
 const phase = ref<'story' | 'lesson' | 'explore' | 'game'>('story')
 const lessonHeading = ref<HTMLElement | null>(null)
 const exploreHeading = ref<HTMLElement | null>(null)
@@ -76,14 +78,14 @@ function enterGame() {
       <h2 id="explore-heading" ref="exploreHeading" tabindex="-1">細胞城市探險</h2>
       <CellExplorer
         :key="courseId"
-        :points="lesson.lessons.flatMap((l) => l.knowledgePoints)"
+        :points="points"
         :targets="lesson.explorer.targets"
         @complete="enterGame"
       />
     </section>
-    <section v-else data-testid="game-content" aria-labelledby="game-heading">
-      <!-- Placeholder: interactive games are TASK-008/009. -->
+    <section v-else data-testid="game-content" aria-labelledby="game-heading" class="space-y-4">
       <h2 id="game-heading" ref="gameHeading" tabindex="-1">互動挑戰</h2>
+      <MatchingGame :key="courseId" :pairs="lesson.matching.pairs" :points="points" />
     </section>
   </main>
 </template>

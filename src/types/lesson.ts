@@ -61,10 +61,25 @@ export interface ExplorerConfig {
   targets: string[]
 }
 
+/** One structure–function pair in the matching game (TASK-008, spec.txt 5.3 遊戲二). */
+export interface MatchingPair {
+  /** KnowledgePoint id; its term is the structure name and its definition the explanation. */
+  pointId: string
+  /** Function shown as a choice. Must not contain the structure name. */
+  function: string
+  /** Shown when this structure is paired with the wrong function. */
+  hint: string
+}
+
+export interface MatchingConfig {
+  pairs: MatchingPair[]
+}
+
 /** Per-course lesson file: src/data/lessons/<courseId>.json. */
 export interface LessonData {
   courseId: string
   story: Story
   lessons: Lesson[]
   explorer: ExplorerConfig
+  matching: MatchingConfig
 }

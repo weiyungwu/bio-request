@@ -99,4 +99,29 @@ describe('bio-01 lessons', () => {
     expect(targets).toEqual(['b-nucleus', 'b-mitochondrion', 'b-membrane'])
     expect(targets.every((t) => ids.has(t))).toBe(true)
   })
+  // TASK-008 / spec.txt 5.3 遊戲二: 細胞核、粒線體、葉綠體、細胞膜 matched to their functions.
+  describe('matching game', () => {
+    const pairs = getLessonData('bio-01')!.matching.pairs
+
+    it('uses the four spec structures', () => {
+      expect(pairs.map((p) => point(p.pointId)?.term.zh)).toEqual([
+        '細胞核',
+        '粒線體',
+        '葉綠體',
+        '細胞膜',
+      ])
+    })
+
+    // A function that names any structure, or two identical functions, gives the answer away.
+    it('functions are distinct and never name a structure', () => {
+      const names = lessons[1]!.knowledgePoints.map((k) => k.term.zh)
+      const fns = pairs.map((p) => p.function)
+      expect(new Set(fns).size).toBe(fns.length)
+      expect(fns.filter((f) => names.some((n) => f.includes(n)))).toEqual([])
+    })
+
+    it('every pair has a hint', () => {
+      expect(pairs.filter((p) => p.function.trim() === '' || p.hint.trim() === '')).toEqual([])
+    })
+  })
 })

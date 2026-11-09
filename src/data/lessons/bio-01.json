@@ -321,5 +321,29 @@
   ],
   "explorer": {
     "targets": ["b-nucleus", "b-mitochondrion", "b-membrane"]
+  },
+  "matching": {
+    "pairs": [
+      {
+        "pointId": "b-nucleus",
+        "function": "儲存遺傳物質（DNA），調控細胞的生長與活動",
+        "hint": "細胞核是細胞的控制中心，遺傳物質主要存在這裡。"
+      },
+      {
+        "pointId": "b-mitochondrion",
+        "function": "進行呼吸作用，分解養分並釋放能量",
+        "hint": "粒線體與細胞的能量供應有關，動物細胞和植物細胞都有。"
+      },
+      {
+        "pointId": "b-chloroplast",
+        "function": "進行光合作用，利用光能製造養分",
+        "hint": "葉綠體和「光」有關，存在植物的部分細胞中。"
+      },
+      {
+        "pointId": "b-membrane",
+        "function": "控制物質進出細胞",
+        "hint": "細胞膜是包在細胞外層的薄膜，像城市的大門。"
+      }
+    ]
   }
 }
