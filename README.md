@@ -46,4 +46,6 @@ npm install
   `size` md/lg, `block`, `disabled`), `BaseCard` (`as`, `highlight` none/explore/reward),
   `BaseTag` (`tone` neutral/explore/reward/success/danger; place on `bg` or `surface`),
   `ProgressBar` (`value`, `max`, `label` required for screen readers, `tone`).
+- Accessibility rule: never convey status by color alone. Answer feedback, lock/clear states, etc.
+  must also carry text or an icon (e.g. `✓ 答對`, `✗ 答錯`, `🔒 未開放`).
 - Style guide: `npm run dev`, then open `/design-system` (dev only, not in production builds).

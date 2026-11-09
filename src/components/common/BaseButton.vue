@@ -28,7 +28,8 @@ const sizeClass = {
     :type="type"
     :disabled="disabled"
     :class="[
-      'inline-flex items-center justify-center gap-2 rounded-control font-bold transition-[color,background-color,border-color,box-shadow]',
+      'inline-flex items-center justify-center gap-2 rounded-control font-bold transition-[color,background-color,border-color,box-shadow,translate]',
+      'enabled:active:translate-y-0.5 motion-reduce:transition-none',
       'disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none',
       variantClass[variant],
       sizeClass[size],

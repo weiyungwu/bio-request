@@ -61,7 +61,14 @@
     line-height: 1.7; /* CJK body text needs more leading */
   }
 
-  /* Heading scale: mobile first, larger from lg. */
+  /* Heading scale: mobile first, larger from lg. Balance avoids a lone
+     trailing character on wrapped CJK headings. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
   h1 {
     @apply text-3xl leading-tight font-bold lg:text-4xl;
   }
