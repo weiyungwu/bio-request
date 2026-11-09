@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { nextTick, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
 import BaseCard from '@/components/common/BaseCard.vue'
@@ -16,6 +17,31 @@ const storyTitleById = new Map((courses as Course[]).map((c) => [c.id, c.storyTi
 const courseName = (id: string) => storyTitleById.get(id) ?? id
 
 const dateFormat = new Intl.DateTimeFormat('zh-TW', { month: 'numeric', day: 'numeric' })
+
+// 重設學習資料 (TASK-013): two steps, so one stray tap can't wipe a student's progress.
+const confirming = ref(false)
+const resetDone = ref(false)
+const resetButton = ref<InstanceType<typeof BaseButton> | null>(null)
+const cancelButton = ref<InstanceType<typeof BaseButton> | null>(null)
+const focusOf = (b: InstanceType<typeof BaseButton> | null) =>
+  (b?.$el as HTMLElement | undefined)?.focus()
+
+function askReset() {
+  resetDone.value = false
+  confirming.value = true
+  // Cancel is the safe default for a destructive action.
+  nextTick(() => focusOf(cancelButton.value))
+}
+function cancelReset() {
+  confirming.value = false
+  nextTick(() => focusOf(resetButton.value))
+}
+function confirmReset() {
+  progress.resetAll()
+  confirming.value = false
+  resetDone.value = true
+  nextTick(() => focusOf(resetButton.value))
+}
 </script>
 
 <template>
@@ -90,5 +116,48 @@ const dateFormat = new Intl.DateTimeFormat('zh-TW', { month: 'numeric', day: 'nu
         </ul>
       </BaseCard>
     </div>
+
+    <BaseCard as="section" class="space-y-3" aria-labelledby="data-heading">
+      <h2 id="data-heading" class="text-xl">學習資料</h2>
+      <p class="text-sm text-muted">學習紀錄只保存在這台裝置的瀏覽器中。</p>
+      <div
+        v-if="confirming"
+        data-testid="reset-confirm"
+        class="space-y-3 rounded-control border-l-4 border-danger bg-danger/15 px-4 py-3"
+      >
+        <p class="font-bold text-danger-text">⚠ 確定要重設學習資料嗎？</p>
+        <p>經驗值、等級、各關成績與通關狀態、學習紀錄和錯題都會被清除，而且無法復原。</p>
+        <div class="flex flex-wrap gap-3">
+          <BaseButton
+            ref="cancelButton"
+            data-testid="reset-cancel"
+            variant="secondary"
+            @click="cancelReset"
+          >
+            取消
+          </BaseButton>
+          <button
+            type="button"
+            data-testid="reset-yes"
+            class="inline-flex min-h-11 items-center justify-center rounded-control border-2 border-danger px-5 font-bold text-danger-text hover:bg-danger/15"
+            @click="confirmReset"
+          >
+            確定重設
+          </button>
+        </div>
+      </div>
+      <BaseButton
+        v-else
+        ref="resetButton"
+        data-testid="reset-data"
+        variant="ghost"
+        @click="askReset"
+      >
+        重設學習資料
+      </BaseButton>
+      <p data-testid="reset-status" aria-live="polite" class="text-sm font-semibold text-success">
+        <template v-if="resetDone">✓ 學習資料已重設。</template>
+      </p>
+    </BaseCard>
   </main>
 </template>

@@ -105,7 +105,10 @@ describe('QuizView (TASK-011)', () => {
       await w.find('[data-testid="quiz-next"]').trigger('click')
     }
     // The result route is lazy-loaded, so navigation settles after the dynamic import.
-    await vi.waitFor(() => expect(w.vm.$router.currentRoute.value.fullPath).toBe('/result/bio-01'))
+    await vi.waitFor(
+      () => expect(w.vm.$router.currentRoute.value.fullPath).toBe('/result/bio-01'),
+      { timeout: 5000 },
+    )
     const progress = useProgressStore()
     expect(progress.courseProgress['bio-01']).toMatchObject({ latestScore: 80, completed: true })
     expect(progress.records).toHaveLength(1)

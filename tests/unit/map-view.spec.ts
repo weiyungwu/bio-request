@@ -81,7 +81,10 @@ describe('MapView', () => {
     const { wrapper, router } = await mountMap(pinia)
     await wrapper.findAll('[data-testid="stage-card"]')[0]!.find('a').trigger('click')
     // The lesson route is lazy-loaded, so navigation settles after the chunk import.
-    await vi.waitFor(() => expect(router.currentRoute.value.fullPath).toBe('/lesson/bio-01'))
+    // A cold import can take over waitFor's 1 s default, so allow longer.
+    await vi.waitFor(() => expect(router.currentRoute.value.fullPath).toBe('/lesson/bio-01'), {
+      timeout: 5000,
+    })
   })
 
   // TASK-004 acceptance: 完成第一關後，進度狀態正確更新 (live, without reload).

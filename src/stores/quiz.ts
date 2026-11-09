@@ -82,7 +82,8 @@ export const useQuizStore = defineStore('quiz', () => {
     }
     finished.value = true
     // Exactly once per attempt: the finished guard above stops a second call.
-    award.value = useProgressStore().recordQuizResult(courseId.value!, score.value)
+    const wrongIds = results.value.filter((r) => !r.correct).map((r) => r.question.id)
+    award.value = useProgressStore().recordQuizResult(courseId.value!, score.value, wrongIds)
   }
 
   return {

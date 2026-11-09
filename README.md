@@ -80,6 +80,13 @@ Handover notes (current status, workflow, next task): [`docs/handoff.md`](docs/h
   (錯題補強), and 再挑戰. The attempt is in memory: after a reload the page shows an empty state.
   正確率 (spec page 6) is the score itself (correct / total × 100), so it is not shown twice.
   The quiz opens the result with `router.replace`, so Back does not start a new paper.
+- Saved progress (TASK-013): the progress store loads LocalStorage key `bio-quest:progress`
+  (`{ version: 1, exp, records, courseProgress, wrongQuestions, badges }`, `src/types/progress.ts`)
+  when created and saves on every change. `parseProgress()` (`src/utils/progressStorage.ts`) starts
+  empty on broken JSON or another version and otherwise drops only invalid entries; storage
+  errors never throw. §8.3 keeps exp/wrongQuestions/earnedBadges per course; here they are global,
+  and wrong questions are keyed by question id. 重設學習資料 is on the home page, behind an inline
+  confirmation. Unit tests clear LocalStorage before each test (`tests/unit/setup.ts`).
 - Question bank: `src/data/questions/<courseId>.json`, an array of spec.txt §8.2 questions, loaded
   and validated by `getQuestionBank()` in `src/data/questions/index.ts`. Types and answer formats
   (`src/types/question.ts`): `single_choice` (answer = option index), `true_false` (options fixed

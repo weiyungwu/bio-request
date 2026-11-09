@@ -1,29 +1,5 @@
-import { test, expect, type Page } from '@playwright/test'
-import { readFileSync } from 'node:fs'
-
-type Q = {
-  question: string
-  type: string
-  options: string[] | { left: string[] }
-  answer: number | number[]
-}
-const bank: Q[] = JSON.parse(readFileSync('src/data/questions/bio-01.json', 'utf8'))
-
-/** Answers the shown question from the key (or deliberately wrong) and submits. */
-async function answer(page: Page, wrong: boolean) {
-  const text = (await page.getByTestId('quiz-question').textContent())!.trim()
-  const q = bank.find((b) => b.question === text)!
-  if (typeof q.answer === 'number') {
-    const n = (q.options as string[]).length
-    const i = wrong ? (q.answer + 1) % n : q.answer
-    await page.locator(`[data-testid="quiz-option"][data-index="${i}"]`).click()
-  } else {
-    const key = wrong ? [...q.answer].reverse() : q.answer
-    const selects = page.getByTestId('quiz-select')
-    for (const [slot, v] of key.entries()) await selects.nth(slot).selectOption(String(v))
-  }
-  await page.getByTestId('quiz-submit').click()
-}
+import { test, expect } from '@playwright/test'
+import { answer } from './helpers'
 
 test.describe('Stage quiz (TASK-011)', () => {
   test('five questions, one wrong: feedback each time, 80 points, restart clears', async ({

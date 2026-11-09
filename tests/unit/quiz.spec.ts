@@ -158,6 +158,14 @@ describe('quiz store (TASK-011)', () => {
     expect(s.award).toBe(award)
   })
 
+  // TASK-013: the finished paper's wrong questions are saved for the 錯題本.
+  it('saves the ids of the questions answered wrong', () => {
+    const s = fresh()
+    answerAll(s, [1, 3])
+    const ids = [s.questions[1]!.id, s.questions[3]!.id].sort()
+    expect(Object.keys(useProgressStore().wrongQuestions).sort()).toEqual(ids)
+  })
+
   it('ignores a repeated submit or next', () => {
     const s = fresh()
     s.choose(0, 1)

@@ -34,7 +34,7 @@ describe('progress.recordQuizResult (TASK-012)', () => {
 
   it('records score, cleared status, an activity entry and EXP', () => {
     const p = useProgressStore()
-    const award = p.recordQuizResult('bio-01', 80, at)
+    const award = p.recordQuizResult('bio-01', 80, [], at)
     expect(award).toEqual({ quiz: 20, firstClear: FIRST_CLEAR_EXP, total: 50 })
     expect(p.exp).toBe(50)
     expect(p.courseProgress['bio-01']).toEqual({
@@ -51,15 +51,19 @@ describe('progress.recordQuizResult (TASK-012)', () => {
   // Spec TASK-015 (rule wired here): 重複挑戰不會錯誤累積通關獎勵.
   it('pays the first-clear bonus once, never on a replay', () => {
     const p = useProgressStore()
-    p.recordQuizResult('bio-01', 80, at)
-    expect(p.recordQuizResult('bio-01', 100, at)).toEqual({ quiz: 40, firstClear: 0, total: 40 })
+    p.recordQuizResult('bio-01', 80, [], at)
+    expect(p.recordQuizResult('bio-01', 100, [], at)).toEqual({
+      quiz: 40,
+      firstClear: 0,
+      total: 40,
+    })
   })
 
   // A failed retry must not erase a clear or the best score; latest is always the last try.
   it('keeps the best score and cleared status after a worse retry', () => {
     const p = useProgressStore()
-    p.recordQuizResult('bio-01', 100, at)
-    p.recordQuizResult('bio-01', 40, at)
+    p.recordQuizResult('bio-01', 100, [], at)
+    p.recordQuizResult('bio-01', 40, [], at)
     expect(p.courseProgress['bio-01']).toMatchObject({
       completed: true,
       bestScore: 100,
@@ -69,7 +73,7 @@ describe('progress.recordQuizResult (TASK-012)', () => {
 
   it('a failing first attempt earns no bonus and does not clear the stage', () => {
     const p = useProgressStore()
-    expect(p.recordQuizResult('bio-01', 60, at)).toEqual({ quiz: 10, firstClear: 0, total: 10 })
+    expect(p.recordQuizResult('bio-01', 60, [], at)).toEqual({ quiz: 10, firstClear: 0, total: 10 })
     expect(p.courseProgress['bio-01']!.completed).toBe(false)
   })
 })

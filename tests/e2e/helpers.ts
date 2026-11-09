@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { expect, type Page } from '@playwright/test'
 import { STORY_ADVANCE_COOLDOWN_MS } from '../../src/components/lesson/storyDialog'
 
@@ -63,4 +64,38 @@ export async function finishMatching(page: Page) {
   }
   await page.getByTestId('matching-done').click()
   await expect(page.getByRole('heading', { name: '植物還是動物？' })).toBeFocused()
+}
+
+type Q = {
+  question: string
+  type: string
+  options: string[] | { left: string[] }
+  answer: number | number[]
+}
+const bank: Q[] = JSON.parse(readFileSync('src/data/questions/bio-01.json', 'utf8'))
+
+/** Answers the shown question from the key (or deliberately wrong) and submits. */
+export async function answer(page: Page, wrong: boolean) {
+  const text = (await page.getByTestId('quiz-question').textContent())!.trim()
+  const q = bank.find((b) => b.question === text)!
+  if (typeof q.answer === 'number') {
+    const n = (q.options as string[]).length
+    const i = wrong ? (q.answer + 1) % n : q.answer
+    await page.locator(`[data-testid="quiz-option"][data-index="${i}"]`).click()
+  } else {
+    const key = wrong ? [...q.answer].reverse() : q.answer
+    const selects = page.getByTestId('quiz-select')
+    for (const [slot, v] of key.entries()) await selects.nth(slot).selectOption(String(v))
+  }
+  await page.getByTestId('quiz-submit').click()
+}
+
+/** Plays a whole stage 1 quiz from /quiz/bio-01, answering the `wrong` question numbers (1-5) wrong. */
+export async function playQuiz(page: Page, wrong: number[] = []) {
+  await page.goto('/quiz/bio-01')
+  for (let n = 1; n <= 5; n++) {
+    await answer(page, wrong.includes(n))
+    await page.getByTestId('quiz-next').click()
+  }
+  await expect(page).toHaveURL(/\/result\/bio-01$/)
 }
