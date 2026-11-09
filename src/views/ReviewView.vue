@@ -4,35 +4,38 @@ import { RouterLink } from 'vue-router'
 import BaseCard from '@/components/common/BaseCard.vue'
 import ReviewItem from '@/components/quiz/ReviewItem.vue'
 import courses from '@/data/courses.json'
-import { getQuestionBank } from '@/data/questions'
 import { useProgressStore } from '@/stores/progress'
 import type { Course } from '@/types/course'
 
 const progress = useProgressStore()
 
-// 依關卡分類, in map order. Within a stage: 待複習 first, then the most recent mistakes.
+// 待複習 first, then the most recent mistakes — ranked once per visit, so an item never jumps
+// away (and drops focus) while the student marks or retries it (TASK-014 review I2).
+const rank = new Map(
+  [...progress.reviewable]
+    .sort(
+      (a, b) =>
+        Number(a.entry.mastered) - Number(b.entry.mastered) ||
+        Date.parse(b.entry.lastWrongAt) - Date.parse(a.entry.lastWrongAt),
+    )
+    .map((r, i) => [r.entry.questionId, i]),
+)
+
+// 依關卡分類, in map order.
 const groups = computed(() =>
   [...(courses as Course[])]
     .sort((a, b) => a.order - b.order)
     .map((course) => {
-      const bank = new Map(getQuestionBank(course.id)?.questions.map((q) => [q.id, q]) ?? [])
-      const entries = Object.values(progress.wrongQuestions).filter((w) => w.courseId === course.id)
-      const items = entries
-        .flatMap((entry) => {
-          const question = bank.get(entry.questionId)
-          return question ? [{ entry, question }] : []
-        })
+      const items = progress.reviewable
+        .filter((r) => r.entry.courseId === course.id)
         .sort(
           (a, b) =>
-            Number(a.entry.mastered) - Number(b.entry.mastered) ||
-            Date.parse(b.entry.lastWrongAt) - Date.parse(a.entry.lastWrongAt),
+            (rank.get(a.entry.questionId) ?? Infinity) - (rank.get(b.entry.questionId) ?? Infinity),
         )
-      return { course, items, missing: entries.length - items.length }
+      const all = Object.values(progress.wrongQuestions).filter((w) => w.courseId === course.id)
+      return { course, items, missing: all.length - items.length }
     })
     .filter((g) => g.items.length > 0 || g.missing > 0),
-)
-const toReview = computed(
-  () => Object.values(progress.wrongQuestions).filter((w) => !w.mastered).length,
 )
 
 const heading = ref<HTMLElement | null>(null)
@@ -48,7 +51,7 @@ onMounted(() => heading.value?.focus())
     >
     <h1 ref="heading" tabindex="-1">錯題本</h1>
     <p data-testid="review-summary" class="text-muted">
-      <template v-if="groups.length">還有 {{ toReview }} 題待複習。</template>
+      <template v-if="groups.length">還有 {{ progress.toReviewCount }} 題待複習。</template>
       <template v-else>目前沒有錯題。完成關卡測驗後，答錯的題目會出現在這裡。</template>
     </p>
 

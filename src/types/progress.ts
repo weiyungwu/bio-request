@@ -37,6 +37,10 @@ export interface WrongQuestion {
   lastCorrectAt?: string
 }
 
+/** 重新答對: the latest retry was right (a later mistake undoes it; TASK-014 review I1). */
+export const isRetriedCorrect = (w: WrongQuestion) =>
+  w.lastCorrectAt !== undefined && Date.parse(w.lastCorrectAt) > Date.parse(w.lastWrongAt)
+
 /** Everything saved in LocalStorage (TASK-013, spec FR-08). */
 export interface SavedProgress {
   version: 1

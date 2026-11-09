@@ -107,6 +107,8 @@ describe('ReviewView (TASK-014)', () => {
     const w = await mountReview()
     expect(w.findAll('[data-testid="review-item"]')).toHaveLength(1)
     expect(w.find('[data-testid="review-missing"]').text()).toContain('另有 1 題')
+    // Review S1: only reachable questions count as 待複習.
+    expect(w.find('[data-testid="review-summary"]').text()).toContain('還有 1 題待複習')
     w.unmount()
   })
 
@@ -135,7 +137,36 @@ describe('ReviewView (TASK-014)', () => {
     await it().find('[data-testid="review-submit"]').trigger('click')
     expect(it().find('[data-testid="quiz-feedback"]').text()).toContain('答對了')
     expect(p.wrongQuestions['bio-01-q01']!.lastCorrectAt).toBeDefined()
-    expect(it().text()).toContain('已重新答對')
+    expect(it().find('[data-testid="review-retried"]').exists()).toBe(true)
+
+    // Review I1: a later wrong retry takes the 重新答對 badge away again.
+    await it().find('[data-testid="review-retry"]').trigger('click')
+    expect(document.activeElement?.id).toBe('review-bio-01-q01-question')
+    await it()
+      .find(`[data-testid="quiz-option"][data-index="${(key + 1) % 4}"]`)
+      .trigger('click')
+    await it().find('[data-testid="review-submit"]').trigger('click')
+    expect(it().find('[data-testid="review-retried"]').exists()).toBe(false)
+    expect(it().find('[data-testid="review-status"]').text()).toBe('待複習')
+
+    // 完成 returns focus to the question (review I3).
+    await it().find('[data-testid="review-close"]').trigger('click')
+    await flushPromises()
+    expect(document.activeElement?.tagName).toBe('H3')
+    w.unmount()
+  })
+
+  // Review I2: marking an item does not move it while the page is open.
+  it('keeps the order fixed during a visit', async () => {
+    const p = reload()
+    p.recordQuizResult('bio-01', 60, ['bio-01-q01'], t1)
+    p.recordQuizResult('bio-01', 60, ['bio-01-q05'], t2)
+    const w = await mountReview()
+    const ids = () => w.findAll('[data-testid="review-item"]').map((i) => i.attributes('data-id'))
+    // Review S2: among 待複習, the most recent mistake comes first.
+    expect(ids()).toEqual(['bio-01-q05', 'bio-01-q01'])
+    await item(w, 'bio-01-q05').find('[data-testid="review-mastered"]').trigger('click')
+    expect(ids()).toEqual(['bio-01-q05', 'bio-01-q01'])
     w.unmount()
   })
 
@@ -147,9 +178,11 @@ describe('ReviewView (TASK-014)', () => {
     const btn = () => item(w, 'bio-01-q01').find('[data-testid="review-mastered"]')
     await btn().trigger('click')
     expect(p.wrongQuestions['bio-01-q01']!.mastered).toBe(true)
-    expect(item(w, 'bio-01-q01').text()).toContain('已熟悉')
+    // The badge, not the button label (which also contains 已熟悉) — review I4.
+    expect(item(w, 'bio-01-q01').find('[data-testid="review-status"]').text()).toBe('✓ 已熟悉')
     await btn().trigger('click')
     expect(p.wrongQuestions['bio-01-q01']!.mastered).toBe(false)
+    expect(item(w, 'bio-01-q01').find('[data-testid="review-status"]').text()).toBe('待複習')
     w.unmount()
   })
 

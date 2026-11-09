@@ -23,14 +23,14 @@ test.describe('錯題本 (TASK-014)', () => {
     await items.first().getByTestId('review-retry').click()
     await answer(page, false, 'review-submit')
     await expect(page.getByTestId('quiz-feedback')).toContainText('答對了')
-    await expect(items.first()).toContainText('已重新答對')
+    await expect(items.first().getByTestId('review-retried')).toBeVisible()
 
     // 標記已熟悉 → it moves after the 待複習 one and survives a reload.
     await items.first().getByTestId('review-mastered').click()
     await expect(page.getByTestId('review-summary')).toContainText('還有 1 題待複習')
     await page.reload()
     await expect(page.getByTestId('review-summary')).toContainText('還有 1 題待複習')
-    await expect(items.last()).toContainText('已熟悉')
+    await expect(items.last().getByTestId('review-status')).toHaveText('✓ 已熟悉')
 
     await page.goto('/')
     await expect(page.getByTestId('home-review-link')).toContainText('1 題待複習')

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
 import BaseCard from '@/components/common/BaseCard.vue'
@@ -15,10 +15,6 @@ const progress = useProgressStore()
 
 const storyTitleById = new Map((courses as Course[]).map((c) => [c.id, c.storyTitle]))
 const courseName = (id: string) => storyTitleById.get(id) ?? id
-
-const toReview = computed(
-  () => Object.values(progress.wrongQuestions).filter((w) => !w.mastered).length,
-)
 
 const dateFormat = new Intl.DateTimeFormat('zh-TW', { month: 'numeric', day: 'numeric' })
 
@@ -122,7 +118,10 @@ function confirmReset() {
           to="/review"
           data-testid="home-review-link"
           class="mt-4 inline-flex min-h-11 items-center font-semibold text-explore hover:underline"
-          ><span aria-hidden="true">📖 </span>錯題本（{{ toReview }} 題待複習）→</RouterLink
+          ><span aria-hidden="true">📖 </span>錯題本（{{
+            progress.toReviewCount
+          }}
+          題待複習）→</RouterLink
         >
       </BaseCard>
     </div>

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import BaseTag from '@/components/common/BaseTag.vue'
 import QuizQuestion from '@/components/quiz/QuizQuestion.vue'
 import { useProgressStore } from '@/stores/progress'
-import type { WrongQuestion } from '@/types/progress'
+import { isRetriedCorrect, type WrongQuestion } from '@/types/progress'
 import type { Question } from '@/types/question'
 import {
   correctAnswerText,
@@ -20,6 +20,9 @@ const progress = useProgressStore()
 const showAnswer = ref(false)
 // One retry at a time: answering → submitted; 再作答一次 starts a clean one.
 const retrying = ref(false)
+// Bumped per retry: QuizQuestion remounts and takes focus, also on 再作答一次 (review I3).
+const attempt = ref(0)
+const titleEl = ref<HTMLElement | null>(null)
 const response = ref<QuizResponse>([])
 const submitted = ref(false)
 const hint = computed(() => submitBlocker(response.value))
@@ -30,6 +33,12 @@ function startRetry() {
   response.value = emptyResponse(props.question)
   submitted.value = false
   retrying.value = true
+  attempt.value++
+}
+// 完成 removes itself; land on the question again instead of the page top (review I3).
+function closeRetry() {
+  retrying.value = false
+  nextTick(() => titleEl.value?.focus())
 }
 function choose(slot: number, value: number | null) {
   if (!submitted.value) response.value[slot] = value
@@ -49,13 +58,18 @@ function submit() {
   >
     <div class="flex flex-wrap gap-2">
       <BaseTag tone="explore">{{ question.topic }}</BaseTag>
-      <BaseTag v-if="entry.mastered" tone="success">✓ 已熟悉</BaseTag>
-      <BaseTag v-else tone="reward">待複習</BaseTag>
-      <BaseTag v-if="entry.lastCorrectAt && !entry.mastered" tone="success">✓ 已重新答對</BaseTag>
+      <BaseTag v-if="entry.mastered" data-testid="review-status" tone="success">✓ 已熟悉</BaseTag>
+      <BaseTag v-else data-testid="review-status" tone="reward">待複習</BaseTag>
+      <BaseTag
+        v-if="isRetriedCorrect(entry) && !entry.mastered"
+        data-testid="review-retried"
+        tone="success"
+        >✓ 已重新答對</BaseTag
+      >
     </div>
 
     <template v-if="!retrying">
-      <h3 class="text-base">{{ question.question }}</h3>
+      <h3 ref="titleEl" tabindex="-1" class="text-base">{{ question.question }}</h3>
       <div v-if="showAnswer" data-testid="review-answer" class="space-y-1 text-sm">
         <p><span class="font-semibold">正確答案：</span>{{ correctAnswerText(question) }}</p>
         <p><span class="font-semibold">解析：</span>{{ question.explanation }}</p>
@@ -63,6 +77,7 @@ function submit() {
     </template>
     <div v-else class="space-y-3">
       <QuizQuestion
+        :key="attempt"
         :question="question"
         :response="response"
         :submitted="submitted"
@@ -108,7 +123,7 @@ function submit() {
         v-if="retrying && submitted"
         data-testid="review-close"
         variant="ghost"
-        @click="retrying = false"
+        @click="closeRetry"
       >
         完成
       </BaseButton>

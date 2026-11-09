@@ -1,6 +1,7 @@
 import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import type { CourseProgress, LearningRecord, SavedProgress, WrongQuestion } from '@/types/progress'
+import { getQuestionBank } from '@/data/questions'
 import { FIRST_CLEAR_EXP, quizScoreExp, type QuizExpAward } from '@/utils/exp'
 import { levelFromExp } from '@/utils/level'
 import {
@@ -50,6 +51,19 @@ export const useProgressStore = defineStore('progress', () => {
   })
 
   const levelInfo = computed(() => levelFromExp(exp.value))
+  /**
+   * Wrong questions the 錯題本 can show: their question is still in its stage's bank.
+   * Counting only these keeps 待複習 reachable (TASK-014 review S1).
+   */
+  const reviewable = computed(() =>
+    Object.values(wrongQuestions.value).flatMap((entry) => {
+      const question = getQuestionBank(entry.courseId)?.questions.find(
+        (q) => q.id === entry.questionId,
+      )
+      return question ? [{ entry, question }] : []
+    }),
+  )
+  const toReviewCount = computed(() => reviewable.value.filter((r) => !r.entry.mastered).length)
   const latestRecords = computed(() =>
     records.value
       .map((record) => ({ record, time: Date.parse(record.completedAt) }))
@@ -121,6 +135,8 @@ export const useProgressStore = defineStore('progress', () => {
     badges,
     levelInfo,
     latestRecords,
+    reviewable,
+    toReviewCount,
     recordQuizResult,
     recordReviewAnswer,
     setMastered,
