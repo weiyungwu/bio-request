@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, useId } from 'vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import BaseCard from '@/components/common/BaseCard.vue'
 import type { KnowledgePoint } from '@/types/lesson'
@@ -63,17 +63,20 @@ const foundPointIds = computed(
       (['plant', 'animal'] as const).flatMap((k) => [...explored.value[k]].map((s) => POINT_ID[s])),
     ),
 )
+// FR-02 mission: the story's targets, plus 分辨植物細胞與動物細胞 — find in the
+// plant cell what the animal cell lacks (wall, chloroplast), and look at the animal cell.
 const missionItems = computed(() => [
   ...props.targets.map((id) => ({
     key: id,
     label: `找到${pointById.value.get(id)?.term.zh ?? id}`,
     done: foundPointIds.value.has(id),
   })),
-  ...(['plant', 'animal'] as const).map((k) => ({
-    key: k,
-    label: `觀察${CELL_NAME[k]}`,
-    done: explored.value[k].size > 0,
-  })),
+  {
+    key: 'plant-only',
+    label: '在植物細胞找到細胞壁和葉綠體（動物細胞沒有）',
+    done: explored.value.plant.has('wall') && explored.value.plant.has('chloroplast'),
+  },
+  { key: 'animal', label: '觀察動物細胞', done: explored.value.animal.size > 0 },
 ])
 const remaining = computed(() => missionItems.value.filter((i) => !i.done))
 
@@ -86,9 +89,20 @@ function finish() {
 
 const hitProps = (id: StructureId) => ({
   'data-structure': id,
-  class: ['cursor-pointer', selected.value === id && 'is-selected'],
+  // Cytoplasm is a region whose outline sits under the membrane line: highlight its fill.
+  class: [
+    'cursor-pointer',
+    selected.value === id && (id === 'cytoplasm' ? 'is-selected-fill' : 'is-selected'),
+  ],
   onClick: () => select(id),
 })
+
+const uid = useId()
+const plantInsideId = `${uid}-plant-inside`
+const animalInsideId = `${uid}-animal-inside`
+const hintId = `${uid}-hint`
+const ANIMAL_OUTLINE =
+  'M60 120 C55 60 120 28 175 34 C240 40 282 78 272 132 C264 186 210 214 150 208 C92 202 64 172 60 120 Z'
 </script>
 
 <template>
@@ -135,9 +149,14 @@ const hitProps = (id: StructureId) => ({
             rx="6"
             fill="#1c3a6b"
           />
-          <!-- membrane: visible line plus a wide transparent hit area -->
+          <!-- membrane: visible line plus a wide transparent hit area clipped to the
+               inside, so it never takes taps from the cell wall band (x 34–48). -->
+          <clipPath :id="plantInsideId">
+            <rect x="48" y="38" width="224" height="164" rx="6" />
+          </clipPath>
           <g v-bind="hitProps('membrane')">
             <rect
+              class="hit-area"
               x="48"
               y="38"
               width="224"
@@ -147,6 +166,7 @@ const hitProps = (id: StructureId) => ({
               stroke="transparent"
               stroke-width="12"
               pointer-events="stroke"
+              :clip-path="`url(#${plantInsideId})`"
             />
             <rect
               x="48"
@@ -186,25 +206,40 @@ const hitProps = (id: StructureId) => ({
           <g v-bind="hitProps('mitochondrion')" fill="#f59e0b" stroke="#7c2d12" stroke-width="2">
             <ellipse cx="226" cy="192" rx="13" ry="6.5" />
             <ellipse cx="66" cy="170" rx="6.5" ry="13" />
+            <path
+              d="M218 193 q2.5 -5 5 0 t5 0 t5 0"
+              fill="none"
+              stroke-width="1.5"
+              pointer-events="none"
+            />
+            <path
+              d="M67 162 q-5 2.5 0 5 t0 5 t0 5"
+              fill="none"
+              stroke-width="1.5"
+              pointer-events="none"
+            />
           </g>
         </template>
 
         <template v-else>
-          <path
-            v-bind="hitProps('cytoplasm')"
-            d="M60 120 C55 60 120 28 175 34 C240 40 282 78 272 132 C264 186 210 214 150 208 C92 202 64 172 60 120 Z"
-            fill="#1c3a6b"
-          />
+          <path v-bind="hitProps('cytoplasm')" :d="ANIMAL_OUTLINE" fill="#1c3a6b" />
+          <clipPath :id="animalInsideId">
+            <path :d="ANIMAL_OUTLINE" />
+          </clipPath>
           <g v-bind="hitProps('membrane')">
+            <!-- Outer half of this stroke is outside the cell (nothing else there), inner
+                 half overlaps the cytoplasm edge; clipped inside like the plant cell. -->
             <path
-              d="M60 120 C55 60 120 28 175 34 C240 40 282 78 272 132 C264 186 210 214 150 208 C92 202 64 172 60 120 Z"
+              class="hit-area"
+              :d="ANIMAL_OUTLINE"
               fill="none"
               stroke="transparent"
               stroke-width="14"
               pointer-events="stroke"
+              :clip-path="`url(#${animalInsideId})`"
             />
             <path
-              d="M60 120 C55 60 120 28 175 34 C240 40 282 78 272 132 C264 186 210 214 150 208 C92 202 64 172 60 120 Z"
+              :d="ANIMAL_OUTLINE"
               fill="none"
               stroke="#2dd4bf"
               stroke-width="5"
@@ -219,8 +254,13 @@ const hitProps = (id: StructureId) => ({
             <ellipse cx="104" cy="94" rx="13" ry="6.5" transform="rotate(-20 104 94)" />
             <ellipse cx="226" cy="150" rx="13" ry="6.5" transform="rotate(15 226 150)" />
             <ellipse cx="122" cy="168" rx="13" ry="6.5" transform="rotate(25 122 168)" />
+            <g fill="none" stroke-width="1.5" pointer-events="none">
+              <path d="M96 95 q2.5 -5 5 0 t5 0 t5 0" transform="rotate(-20 104 94)" />
+              <path d="M218 151 q2.5 -5 5 0 t5 0 t5 0" transform="rotate(15 226 150)" />
+              <path d="M114 169 q2.5 -5 5 0 t5 0 t5 0" transform="rotate(25 122 168)" />
+            </g>
           </g>
-          <g v-bind="hitProps('vacuole')" fill="#93c5fd" opacity="0.8">
+          <g v-bind="hitProps('vacuole')" fill="#93c5fd" opacity="0.7">
             <circle cx="226" cy="86" r="6" />
             <circle cx="200" cy="184" r="5" />
           </g>
@@ -249,7 +289,7 @@ const hitProps = (id: StructureId) => ({
             :data-structure="id"
             :aria-pressed="selected === id"
             :class="[
-              'min-h-11 rounded-pill border px-4 text-sm font-semibold transition-colors',
+              'min-h-11 rounded-pill border px-4 text-sm font-semibold transition-colors motion-reduce:transition-none',
               selected === id
                 ? 'border-reward bg-reward/15 text-reward'
                 : 'border-border text-text hover:border-explore',
@@ -278,13 +318,20 @@ const hitProps = (id: StructureId) => ({
           <span v-else class="text-muted">○ {{ item.label }}</span>
         </li>
       </ul>
-      <p v-if="remaining.length" data-testid="explore-hint" class="text-sm text-muted">
+      <p
+        v-if="remaining.length"
+        :id="hintId"
+        data-testid="explore-hint"
+        aria-live="polite"
+        class="text-sm text-muted"
+      >
         還差：{{ remaining.map((i) => i.label).join('、') }}
       </p>
       <BaseButton
         data-testid="explore-done"
         variant="reward"
         :disabled="remaining.length > 0"
+        :aria-describedby="remaining.length ? hintId : undefined"
         @click="finish"
       >
         任務完成，下一步：互動挑戰 →
@@ -294,10 +341,14 @@ const hitProps = (id: StructureId) => ({
 </template>
 
 <style scoped>
-/* White: distinct from every fill and from the (yellow) cell-wall border. */
+/* White: distinct from every fill and from the (yellow) cell-wall border.
+   Hit areas keep their transparent wide stroke, or selecting would shrink them. */
 .is-selected,
-.is-selected > * {
+.is-selected > :not(.hit-area) {
   stroke: #ffffff;
   stroke-width: 4px;
+}
+.is-selected-fill {
+  fill: #2f5ea8;
 }
 </style>

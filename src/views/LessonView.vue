@@ -82,7 +82,7 @@ function enterGame() {
       />
     </section>
     <section v-else data-testid="game-content" aria-labelledby="game-heading">
-      <!-- Placeholder: interactive games are TASK-007/008/009. -->
+      <!-- Placeholder: interactive games are TASK-008/009. -->
       <h2 id="game-heading" ref="gameHeading" tabindex="-1">互動挑戰</h2>
     </section>
   </main>

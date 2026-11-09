@@ -4,9 +4,18 @@ import { finishLesson, playStory } from './helpers'
 // Points inside each structure, in the diagram's 320x240 viewBox coordinates.
 // Thin or overlapped structures (wall band, membrane edge, cytoplasm gaps)
 // are exactly where a center-of-box click would hit the wrong thing.
+// Several points per thin structure: the wall band is x 34–48 and must be
+// fully the wall; the membrane hit area may only extend inward.
+const PLANT_EXTRA = [
+  ['wall', [36, 120]],
+  ['wall', [41, 120]],
+  ['wall', [46, 120]],
+  ['membrane', [50, 120]],
+  ['cytoplasm', [56, 150]],
+] as const
 const PLANT = {
   wall: [40, 120],
-  membrane: [48, 150],
+  membrane: [49, 150],
   cytoplasm: [88, 150],
   nucleus: [74, 120],
   vacuole: [170, 120],
@@ -52,6 +61,14 @@ test.describe('Cell explorer (TASK-007)', () => {
       await tapAt(page, point)
       await expect(info.locator('h3')).toContainText(NAME[id as keyof typeof NAME])
     }
+    for (const [id, point] of PLANT_EXTRA) {
+      await tapAt(page, point)
+      await expect(info.locator('h3')).toContainText(NAME[id])
+    }
+    // Selecting the membrane must not shrink its own hit area.
+    await tapAt(page, [49, 150])
+    await tapAt(page, [52, 120])
+    await expect(info.locator('h3')).toContainText('細胞膜')
     await page.getByTestId('cell-animal').click()
     for (const [id, point] of Object.entries(ANIMAL)) {
       await tapAt(page, point)

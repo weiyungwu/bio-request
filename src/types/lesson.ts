@@ -55,13 +55,13 @@ export interface Lesson {
   knowledgePoints: KnowledgePoint[]
 }
 
-/** Per-course lesson file: src/data/lessons/<courseId>.json. */
 /** Cell explorer (TASK-007): structures to find before moving on (FR-02 mission). */
 export interface ExplorerConfig {
   /** KnowledgePoint ids, e.g. "b-nucleus". */
   targets: string[]
 }
 
+/** Per-course lesson file: src/data/lessons/<courseId>.json. */
 export interface LessonData {
   courseId: string
   story: Story

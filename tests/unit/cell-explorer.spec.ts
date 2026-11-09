@@ -65,6 +65,29 @@ describe('CellExplorer', () => {
   )
 
   // Small shapes (mitochondria) are hard to hit on a phone; chips are the reliable control.
+  it('announces the selection to screen readers', () => {
+    expect(info(mountExplorer()).attributes('aria-live')).toBe('polite')
+  })
+
+  // The disabled 下一步 must say why, also to screen readers.
+  it('links the hint to the disabled 下一步 button', () => {
+    const w = mountExplorer()
+    const hintId = w.find('[data-testid="explore-hint"]').attributes('id')
+    expect(hintId).toBeTruthy()
+    expect(w.find('[data-testid="explore-done"]').attributes('aria-describedby')).toBe(hintId)
+  })
+
+  // Students must see WHERE the selected structure is. Cytoplasm is a filled
+  // region whose outline is covered by the membrane, so it is highlighted by fill.
+  it('highlights the selected structure on the diagram', async () => {
+    const w = mountExplorer()
+    await tapShape(w, 'nucleus')
+    expect(w.find('svg [data-structure="nucleus"]').classes()).toContain('is-selected')
+    await tapShape(w, 'cytoplasm')
+    expect(w.find('svg [data-structure="cytoplasm"]').classes()).toContain('is-selected-fill')
+    expect(w.find('svg [data-structure="nucleus"]').classes()).not.toContain('is-selected')
+  })
+
   it('chips select the same structure as the shapes', async () => {
     const w = mountExplorer()
     await tapChip(w, 'mitochondrion')
@@ -98,14 +121,20 @@ describe('CellExplorer', () => {
   })
 
   // FR-02: 完成任務後才能進入下一階段 — the story's mission objectives gate 下一步.
-  it('unlocks 下一步 only after the mission targets are found in both cells', async () => {
+  // FR-02 objective 分辨植物細胞與動物細胞: find what the animal cell lacks
+  // (wall, chloroplast) in the plant cell, and look at the animal cell.
+  it('unlocks 下一步 only after the mission targets are found and the cells are told apart', async () => {
     const w = mountExplorer()
     const next = () => w.find('[data-testid="explore-done"]')
     for (const id of ['nucleus', 'mitochondrion', 'membrane']) await tapShape(w, id)
-    expect(next().attributes('disabled')).toBeDefined()
-    expect(w.find('[data-testid="explore-hint"]').text()).toContain('動物細胞')
     await showCell(w, 'animal')
     await tapShape(w, 'cytoplasm')
+    expect(next().attributes('disabled')).toBeDefined()
+    expect(w.find('[data-testid="explore-hint"]').text()).toContain('細胞壁')
+    await showCell(w, 'plant')
+    await tapShape(w, 'wall')
+    expect(next().attributes('disabled')).toBeDefined()
+    await tapShape(w, 'chloroplast')
     expect(next().attributes('disabled')).toBeUndefined()
     await next().trigger('click')
     await next().trigger('click')
