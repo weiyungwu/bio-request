@@ -7,18 +7,18 @@
   <!-- nucleus (dark, central) with nucleolus -->
   <circle cx="165" cy="120" r="36" fill="#3b1f6b" stroke="#c4b5fd" stroke-width="3"/>
   <circle cx="158" cy="114" r="11" fill="#c4b5fd" opacity="0.8"/>
-  <!-- mitochondria: ovals with inner folds -->
+  <!-- mitochondria: ovals with inner folds; same scale as the plant cell (smaller than chloroplasts) -->
   <g fill="#f59e0b" stroke="#7c2d12" stroke-width="2">
-    <ellipse cx="102" cy="92" rx="20" ry="10" transform="rotate(-20 102 92)"/>
-    <ellipse cx="228" cy="152" rx="20" ry="10" transform="rotate(15 228 152)"/>
-    <ellipse cx="120" cy="170" rx="18" ry="9" transform="rotate(25 120 170)"/>
+    <ellipse cx="104" cy="94" rx="13" ry="6.5" transform="rotate(-20 104 94)"/>
+    <ellipse cx="226" cy="150" rx="13" ry="6.5" transform="rotate(15 226 150)"/>
+    <ellipse cx="122" cy="168" rx="13" ry="6.5" transform="rotate(25 122 168)"/>
   </g>
-  <g fill="none" stroke="#7c2d12" stroke-width="2" stroke-linecap="round">
-    <path d="M90 94 q4 -8 8 0 t8 0 t8 0" transform="rotate(-20 102 92)"/>
-    <path d="M216 152 q4 -8 8 0 t8 0 t8 0" transform="rotate(15 228 152)"/>
-    <path d="M109 170 q4 -7 7 0 t7 0 t7 0" transform="rotate(25 120 170)"/>
+  <g fill="none" stroke="#7c2d12" stroke-width="1.5" stroke-linecap="round">
+    <path d="M96 95 q2.5 -5 5 0 t5 0 t5 0" transform="rotate(-20 104 94)"/>
+    <path d="M218 151 q2.5 -5 5 0 t5 0 t5 0" transform="rotate(15 226 150)"/>
+    <path d="M114 169 q2.5 -5 5 0 t5 0 t5 0" transform="rotate(25 122 168)"/>
   </g>
-  <!-- small vesicles -->
+  <!-- small vacuoles (light blue; captioned as 小型液胞) -->
   <g fill="#93c5fd" opacity="0.7">
     <circle cx="226" cy="86" r="6"/>
     <circle cx="200" cy="184" r="5"/>

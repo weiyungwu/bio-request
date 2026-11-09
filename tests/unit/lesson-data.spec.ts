@@ -41,22 +41,24 @@ describe('bio-01 lessons', () => {
   it('every image exists in public/ and has alt text and a caption', () => {
     const broken = lessons
       .flatMap((l) => l.knowledgePoints)
+      .flatMap((k) => (k.images ?? []).map((img) => ({ id: k.id, img })))
       .filter(
-        (k) =>
-          k.image &&
-          (!existsSync(resolve('public', `.${k.image.src}`)) ||
-            k.image.alt.trim() === '' ||
-            k.image.caption.trim() === ''),
+        ({ img }) =>
+          !existsSync(resolve('public', `.${img.src}`)) ||
+          img.alt.trim() === '' ||
+          img.caption.trim() === '',
       )
-      .map((k) => k.id)
+      .map(({ id }) => id)
     expect(broken).toEqual([])
   })
 
-  // spec 5.2 unit C compares two diagrams.
-  it('unit C shows both the plant and the animal cell diagram', () => {
-    const srcs = lessons[2]!.knowledgePoints.map((k) => k.image?.src)
-    expect(srcs).toContain('/images/cells/plant-cell.svg')
-    expect(srcs).toContain('/images/cells/animal-cell.svg')
+  // spec 5.2 unit C: 以兩張細胞示意圖進行比較 — on one card, side by side (I3, Human decision).
+  it('unit C compares the plant and animal diagrams on one card', () => {
+    const both = lessons[2]!.knowledgePoints.find((k) => k.id === 'c-both')!
+    expect(both.images?.map((img) => img.src)).toEqual([
+      '/images/cells/plant-cell.svg',
+      '/images/cells/animal-cell.svg',
+    ])
   })
 
   it('point ids are unique', () => {
@@ -80,5 +82,13 @@ describe('bio-01 lessons', () => {
     const all = [r.definition, r.plain, r.example, r.examTip].join('')
     expect(all).not.toContain('刺激 → 感應 → 反應')
     expect(r.examTip).toContain('稱為感應')
+  })
+
+  // Review items adopted by Human (B3, B5, B7).
+  it('keeps adopted curriculum wording', () => {
+    const text = JSON.stringify(lessons)
+    expect(text).not.toContain('ATP') // not in 國中 108 curriculum
+    expect(point('c-plant').example).toContain('沒有葉綠體') // onion epidermis
+    expect(point('b-wall').examTip).toContain('真菌、細菌也有細胞壁')
   })
 })

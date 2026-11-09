@@ -42,9 +42,9 @@ export interface KnowledgePoint {
   example: string
   /** 考試重點提示 */
   examTip: string
-  /** 圖片或示意圖 (optional; see docs/known-issues.md) */
-  image?: LessonImage
-  /** Decorative emoji when there is no image. */
+  /** 圖片或示意圖 (optional; see docs/known-issues.md). Two images are shown side by side for comparison. */
+  images?: LessonImage[]
+  /** Decorative emoji when there are no images. */
   icon?: string
 }
 

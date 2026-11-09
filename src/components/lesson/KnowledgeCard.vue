@@ -9,7 +9,7 @@ defineProps<{ point: KnowledgePoint }>()
 <template>
   <article class="space-y-4">
     <h3 class="flex flex-wrap items-baseline gap-x-2">
-      <span v-if="point.icon && !point.image" aria-hidden="true">{{ point.icon }}</span>
+      <span v-if="point.icon && !point.images?.length" aria-hidden="true">{{ point.icon }}</span>
       <span data-testid="term-zh" class="whitespace-nowrap">{{ point.term.zh }}</span>
       <span class="text-base font-normal text-muted">{{ point.term.en }}</span>
     </h3>
@@ -25,7 +25,13 @@ defineProps<{ point: KnowledgePoint }>()
       </div>
     </dl>
 
-    <ImageExplanation v-if="point.image" :image="point.image" />
+    <div
+      v-if="point.images?.length"
+      data-testid="image-compare"
+      :class="['grid gap-4', point.images.length > 1 && 'sm:grid-cols-2']"
+    >
+      <ImageExplanation v-for="image in point.images" :key="image.src" :image="image" />
+    </div>
 
     <div>
       <p class="text-sm font-semibold text-bio">生活例子</p>

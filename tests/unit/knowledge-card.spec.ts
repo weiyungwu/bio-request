@@ -10,7 +10,7 @@ const point: KnowledgePoint = {
   plain: '細胞的能量發電廠。',
   example: '跑步時肌肉需要很多能量。',
   examTip: '粒線體與細胞能量供應有關。',
-  image: { src: '/images/cells/animal-cell.svg', alt: '動物細胞示意圖', caption: '說明文字' },
+  images: [{ src: '/images/cells/animal-cell.svg', alt: '動物細胞示意圖', caption: '說明文字' }],
 }
 
 describe('KnowledgeCard', () => {
@@ -44,8 +44,26 @@ describe('KnowledgeCard', () => {
     expect(w.find('figure figcaption').text()).toBe('說明文字')
   })
 
+  // spec 5.2 unit C: compare two diagrams — both must be visible at once.
+  it('shows two images side by side for a comparison point', () => {
+    const w = mount(KnowledgeCard, {
+      props: {
+        point: {
+          ...point,
+          images: [
+            { src: '/images/cells/plant-cell.svg', alt: '植物細胞示意圖', caption: '植物' },
+            { src: '/images/cells/animal-cell.svg', alt: '動物細胞示意圖', caption: '動物' },
+          ],
+        },
+      },
+    })
+    const figures = w.findAll('figure')
+    expect(figures.map((f) => f.find('figcaption').text())).toEqual(['植物', '動物'])
+    expect(w.find('[data-testid="image-compare"]').classes()).toContain('sm:grid-cols-2')
+  })
+
   it('renders no figure when the point has no image', () => {
-    const { image: _image, ...noImage } = point
+    const { images: _images, ...noImage } = point
     expect(
       mount(KnowledgeCard, { props: { point: noImage } })
         .find('figure')
