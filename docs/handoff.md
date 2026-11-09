@@ -45,7 +45,6 @@ npm run build && CI=1 npx playwright test --retries=0  # 連跑兩次，確認�
 ## 等 Human 處理
 
 - 確認配對遊戲文字（`bio-01.json` 的 `matching`：功能敘述與錯誤提示）。
-- 確認分類遊戲的解析文字（歸類已確認）。
 - Phase 3 審查（不同模型或 Human），報告存成上層資料夾的 `phase-3-review.md`。
 - 其餘見 `known-issues.md`「待 Human 確認」。
 
