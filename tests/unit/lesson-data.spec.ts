@@ -63,4 +63,20 @@ describe('bio-01 lessons', () => {
     const ids = lessons.flatMap((l) => l.knowledgePoints.map((k) => k.id))
     expect(new Set(ids).size).toBe(ids.length)
   })
+
+  // Misconception guards (TASK-006 review B1, B2; wording confirmed by Human).
+  const point = (id: string) => lessons.flatMap((l) => l.knowledgePoints).find((k) => k.id === id)!
+
+  it('does not say digestion itself releases energy (消化 ≠ 呼吸作用)', () => {
+    const m = point('a-metabolism')
+    expect(m.example).toContain('呼吸作用')
+    expect(m.example).not.toMatch(/食物被分解，釋放/)
+  })
+
+  it('defines 感應 as the whole phenomenon, not a step between stimulus and response', () => {
+    const r = point('a-response')
+    const all = [r.definition, r.plain, r.example, r.examTip].join('')
+    expect(all).not.toContain('刺激 → 感應 → 反應')
+    expect(r.examTip).toContain('稱為感應')
+  })
 })

@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import LessonCard from '@/components/lesson/LessonCard.vue'
 import type { Lesson } from '@/types/lesson'
@@ -63,5 +64,45 @@ describe('LessonCard', () => {
     for (let i = 0; i < 3; i++) await btn(w, 'lesson-next').trigger('click')
     await btn(w, 'lesson-prev').trigger('click')
     expect(term(w)).toBe('丙')
+  })
+
+  // Focus stays on the button the student is pressing; screen readers hear the
+  // new term via the live region instead (I2).
+  it('announces the new term when the point changes', async () => {
+    const w = mount(LessonCard, { props: { lessons } })
+    await btn(w, 'lesson-next').trigger('click')
+    expect(w.find('[data-testid="lesson-position"]').text()).toContain('乙')
+    expect(w.find('[data-testid="lesson-position"]').attributes('aria-live')).toBe('polite')
+  })
+
+  // I1: entering the summary must not drop keyboard focus to <body>.
+  it('keeps focus on the forward button when entering the summary', async () => {
+    const w = mount(LessonCard, { props: { lessons }, attachTo: document.body })
+    const forward = btn(w, 'lesson-next').element as HTMLElement
+    forward.focus()
+    for (let i = 0; i < 3; i++) await btn(w, 'lesson-next').trigger('click')
+    await nextTick()
+    expect(btn(w, 'lesson-done').element).toBe(forward)
+    expect(document.activeElement).toBe(forward)
+    w.unmount()
+  })
+
+  // I1: 上一個 becomes disabled on point 1; move focus to 下一個 instead of losing it.
+  it('moves focus to the next button when going back to the first point', async () => {
+    const w = mount(LessonCard, { props: { lessons }, attachTo: document.body })
+    await btn(w, 'lesson-next').trigger('click')
+    ;(btn(w, 'lesson-prev').element as HTMLElement).focus()
+    await btn(w, 'lesson-prev').trigger('click')
+    await nextTick()
+    expect(document.activeElement).toBe(btn(w, 'lesson-next').element)
+    w.unmount()
+  })
+
+  it('keeps terms unbroken in the summary too', async () => {
+    const w = mount(LessonCard, { props: { lessons } })
+    for (let i = 0; i < 3; i++) await btn(w, 'lesson-next').trigger('click')
+    const terms = w.findAll('[data-testid="summary-term"]')
+    expect(terms.map((t) => t.text())).toEqual(['甲', '乙', '丙'])
+    expect(terms.every((t) => t.classes().includes('whitespace-nowrap'))).toBe(true)
   })
 })
