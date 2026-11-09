@@ -5,6 +5,11 @@ import BaseCard from '@/components/common/BaseCard.vue'
 import type { CellCategory, ClassificationItem, KnowledgePoint } from '@/types/lesson'
 import { shuffle } from '@/utils/shuffle'
 
+const emit = defineEmits<{
+  /** The result was reached (TASK-015: 完成互動小遊戲). Fires again after 重新挑戰. */
+  complete: []
+}>()
+
 const props = defineProps<{
   items: ClassificationItem[]
   /** Knowledge points that give each structure its name. */
@@ -61,6 +66,7 @@ function next() {
     nextTick(() => itemEl.value?.focus())
   } else {
     showResult.value = true
+    emit('complete')
     nextTick(() => resultHeading.value?.focus())
   }
 }

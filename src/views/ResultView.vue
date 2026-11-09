@@ -6,6 +6,8 @@ import courses from '@/data/courses.json'
 import { useProgressStore } from '@/stores/progress'
 import { useQuizStore } from '@/stores/quiz'
 import type { Course } from '@/types/course'
+import { BADGES } from '@/utils/achievements'
+import { DAILY_QUIZ_EXP_CAP } from '@/utils/exp'
 import { PASS_SCORE, correctAnswerText, responseText } from '@/utils/quiz'
 
 const route = useRoute()
@@ -19,6 +21,7 @@ const award = computed(() =>
   quiz.finished && quiz.courseId === courseId.value ? quiz.award : null,
 )
 const total = computed(() => quiz.questions.length)
+const newBadges = computed(() => BADGES.filter((b) => award.value?.newBadges.includes(b.id)))
 const wrong = computed(() => quiz.results.filter((r) => !r.correct))
 
 const heading = ref<HTMLElement | null>(null)
@@ -76,11 +79,30 @@ const linkClass = {
           <li v-if="award.quiz > 0">測驗分數獎勵 +{{ award.quiz }}</li>
           <li v-if="award.firstClear > 0">首次通關獎勵 +{{ award.firstClear }}</li>
         </ul>
-        <p v-else class="text-muted">60 分以上才能獲得 EXP，再試一次吧！</p>
+        <p v-else-if="!award.capped" class="text-muted">60 分以上才能獲得 EXP，再試一次吧！</p>
+        <p v-if="award.capped" data-testid="result-capped" class="text-sm text-muted">
+          今天的測驗 EXP 已達上限（每天 {{ DAILY_QUIZ_EXP_CAP }} EXP），明天再來挑戰吧！
+        </p>
         <p class="text-sm text-muted">
           目前 Lv.{{ progress.levelInfo.level }} {{ progress.levelInfo.title }} ·
           {{ progress.levelInfo.exp }} EXP
         </p>
+      </BaseCard>
+
+      <BaseCard
+        v-if="newBadges.length"
+        as="section"
+        data-testid="result-badges"
+        class="space-y-2"
+        aria-labelledby="result-badges-title"
+      >
+        <h2 id="result-badges-title" class="text-lg">新取得徽章</h2>
+        <ul class="flex flex-wrap gap-3">
+          <li v-for="b in newBadges" :key="b.id" class="flex items-center gap-2 font-semibold">
+            <span aria-hidden="true" class="text-2xl">{{ b.icon }}</span
+            >{{ b.name }}
+          </li>
+        </ul>
       </BaseCard>
 
       <BaseCard

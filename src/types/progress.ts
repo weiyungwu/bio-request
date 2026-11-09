@@ -21,6 +21,8 @@ export interface LearningRecord {
   passed: boolean
   /** ISO 8601 timestamp; write with Date#toISOString() (UTC). */
   completedAt: string
+  /** Quiz-score EXP actually paid, after the daily cap (TASK-015). Optional: older saves lack it. */
+  exp?: number
 }
 
 /** A question answered wrong in a quiz (TASK-013 saves it; TASK-014's 錯題本 uses it). */
@@ -51,4 +53,9 @@ export interface SavedProgress {
   wrongQuestions: Record<string, WrongQuestion>
   /** Badge ids (TASK-015). */
   badges: string[]
+  /**
+   * First-time rewards already paid (TASK-015), e.g. "unit:bio-01:lesson-01",
+   * "game:bio-01:matching", "review:bio-01". Missing in older saves → [].
+   */
+  claimed: string[]
 }

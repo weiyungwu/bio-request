@@ -5,6 +5,7 @@ import { playQuiz } from './helpers'
 test.describe('Saved progress (TASK-013)', () => {
   test('a finished quiz survives a reload and a new browser tab', async ({ page, context }) => {
     await playQuiz(page, [2])
+    await expect(page.getByTestId('result-badges')).toContainText('初級探索員')
     await page.reload()
     // The attempt itself is in memory; the saved progress is what remains.
     await expect(page.getByTestId('result-empty')).toBeVisible()
@@ -12,6 +13,8 @@ test.describe('Saved progress (TASK-013)', () => {
     await page.goto('/')
     await expect(page.getByTestId('recent-record')).toHaveCount(1)
     await expect(page.getByTestId('recent-record')).toContainText('80 分')
+    // TASK-015: 成就狀態重新載入後仍存在.
+    await expect(page.locator('[data-testid="badge"][data-earned="true"]')).toHaveText(/初級探索員/)
     await expect(page.locator('main')).toContainText('50 EXP')
 
     // Same storage, new page: what reopening the site sees.

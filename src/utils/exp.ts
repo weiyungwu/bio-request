@@ -1,7 +1,4 @@
-/**
- * Quiz EXP rules, docs/progression.md §2 (wired with TASK-011/012). The daily cap and
- * other first-completion rewards are TASK-015.
- */
+/** EXP rules, docs/progression.md §2–§3 (quiz rewards TASK-012; the rest TASK-015). */
 
 /** 首次通關關卡: once per stage. */
 export const FIRST_CLEAR_EXP = 30
@@ -17,7 +14,19 @@ export function quizScoreExp(score: number): number {
 
 /** EXP earned by one finished quiz, itemised for the result page. */
 export interface QuizExpAward {
+  /** Paid after the daily cap. */
   quiz: number
+  /** True when the daily cap cut the quiz reward. */
+  capped: boolean
   firstClear: number
   total: number
+  /** Badge ids first earned by this quiz. */
+  newBadges: string[]
 }
+
+/** docs/progression.md §3: quiz-score EXP per local day. First-time rewards are not capped. */
+export const DAILY_QUIZ_EXP_CAP = 100
+/** §2 first-time rewards. */
+export const UNIT_EXP = 10
+export const GAME_EXP = 15
+export const REVIEW_EXP = 10

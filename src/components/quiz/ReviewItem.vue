@@ -20,6 +20,8 @@ const progress = useProgressStore()
 const showAnswer = ref(false)
 // One retry at a time: answering → submitted; 再作答一次 starts a clean one.
 const retrying = ref(false)
+/** EXP paid for finishing this stage's 錯題補強 (TASK-015), shown once. */
+const reward = ref(0)
 // Bumped per retry: QuizQuestion remounts and takes focus, also on 再作答一次 (review I3).
 const attempt = ref(0)
 const titleEl = ref<HTMLElement | null>(null)
@@ -46,7 +48,10 @@ function choose(slot: number, value: number | null) {
 function submit() {
   if (submitted.value || hint.value) return
   submitted.value = true
-  progress.recordReviewAnswer(props.question.id, isCorrect(props.question, response.value))
+  reward.value = progress.recordReviewAnswer(
+    props.question.id,
+    isCorrect(props.question, response.value),
+  )
 }
 </script>
 
@@ -98,6 +103,9 @@ function submit() {
       </div>
       <p v-else-if="isCorrect(question, response) && !entry.mastered" class="text-sm text-muted">
         答對了！如果已經學會，可以把這題標記為已熟悉。
+      </p>
+      <p v-if="reward > 0" data-testid="review-reward" class="text-sm font-semibold text-reward">
+        🎉 這一關的錯題全部重新答對，完成錯題補強：+{{ reward }} EXP
       </p>
     </div>
 

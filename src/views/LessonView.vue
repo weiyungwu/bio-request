@@ -7,6 +7,8 @@ import CellExplorer from '@/components/lesson/CellExplorer.vue'
 import LessonCard from '@/components/lesson/LessonCard.vue'
 import StoryDialog from '@/components/lesson/StoryDialog.vue'
 import courses from '@/data/courses.json'
+import { useProgressStore } from '@/stores/progress'
+import { GAME_EXP, UNIT_EXP } from '@/utils/exp'
 import { getLessonData } from '@/data/lessons'
 import type { Course } from '@/types/course'
 
@@ -46,7 +48,23 @@ function enterGame() {
 
 // ClassificationGame focuses its own title when it mounts.
 function enterClassification() {
+  rewardGame('matching', '細胞器配對')
   game.value = 'classification'
+}
+
+// First-time rewards (docs/progression.md §2, TASK-015): +10 per unit, +15 per game; claim()
+// pays once, so re-reading or replaying shows nothing.
+const progress = useProgressStore()
+const reward = ref('')
+function notify(paid: number, what: string) {
+  if (paid > 0) reward.value = `🎉 ${what}：+${paid} EXP`
+}
+function rewardUnit(lessonId: string) {
+  const title = lesson.value?.lessons.find((l) => l.id === lessonId)?.title ?? lessonId
+  notify(progress.claim(`unit:${courseId.value}:${lessonId}`, UNIT_EXP), `完成單元「${title}」`)
+}
+function rewardGame(id: string, name: string) {
+  notify(progress.claim(`game:${courseId.value}:${id}`, GAME_EXP), `完成小遊戲「${name}」`)
 }
 </script>
 
@@ -58,6 +76,13 @@ function enterClassification() {
       >← 回關卡地圖</RouterLink
     >
     <h1>{{ course?.storyTitle }}</h1>
+    <p
+      data-testid="reward-notice"
+      aria-live="polite"
+      class="text-sm font-semibold text-reward empty:hidden"
+    >
+      {{ reward }}
+    </p>
 
     <StoryDialog
       v-if="phase === 'story' && lesson"
@@ -77,6 +102,7 @@ function enterClassification() {
         :key="courseId"
         :lessons="lesson.lessons"
         @complete="enterExplore"
+        @unit-complete="rewardUnit"
       />
     </section>
     <section
@@ -107,6 +133,7 @@ function enterClassification() {
         :key="courseId"
         :items="lesson.classification.items"
         :points="points"
+        @complete="rewardGame('classification', '植物還是動物？')"
       >
         <!-- The games lead into the stage quiz (TASK-011). -->
         <template #next>

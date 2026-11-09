@@ -17,6 +17,8 @@ async function openGame(page: Page) {
   await finishLesson(page)
   await finishExplorer(page)
   await finishMatching(page)
+  // TASK-015: first-time game reward is announced.
+  await expect(page.getByTestId('reward-notice')).toContainText('細胞器配對')
 }
 
 test.describe('Classification game (TASK-009)', () => {

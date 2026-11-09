@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { createPinia } from 'pinia'
 import { createMemoryHistory } from 'vue-router'
 import { createAppRouter } from '@/router'
 import LessonView from '@/views/LessonView.vue'
@@ -14,7 +15,7 @@ async function mountLesson(attach = false) {
   const router = createAppRouter(createMemoryHistory())
   await router.push('/lesson/bio-01')
   return mount(LessonView, {
-    global: { plugins: [router] },
+    global: { plugins: [router, createPinia()] },
     ...(attach ? { attachTo: document.body } : {}),
   })
 }

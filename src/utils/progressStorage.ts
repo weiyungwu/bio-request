@@ -10,6 +10,7 @@ export const emptyProgress = (): SavedProgress => ({
   courseProgress: {},
   wrongQuestions: {},
   badges: [],
+  claimed: [],
 })
 
 type Raw = Record<string, unknown>
@@ -24,7 +25,8 @@ const isRecord = (r: unknown): r is LearningRecord =>
   isText(r.courseId) &&
   isScore(r.score) &&
   typeof r.passed === 'boolean' &&
-  isDate(r.completedAt)
+  isDate(r.completedAt) &&
+  (r.exp === undefined || (typeof r.exp === 'number' && Number.isFinite(r.exp) && r.exp >= 0))
 
 const isCourseProgress = (key: string, c: unknown): c is CourseProgress =>
   isObject(c) &&
@@ -75,6 +77,7 @@ export function parseProgress(text: string | null): SavedProgress {
     courseProgress: pickEntries(raw.courseProgress, isCourseProgress),
     wrongQuestions: pickEntries(raw.wrongQuestions, isWrongQuestion),
     badges: Array.isArray(raw.badges) ? [...new Set(raw.badges.filter(isText))] : [],
+    claimed: Array.isArray(raw.claimed) ? [...new Set(raw.claimed.filter(isText))] : [],
   }
 }
 

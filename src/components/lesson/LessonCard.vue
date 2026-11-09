@@ -9,7 +9,11 @@ import ImportantNote from './ImportantNote.vue'
 import { STORY_ADVANCE_COOLDOWN_MS } from './storyDialog'
 
 const props = defineProps<{ lessons: Lesson[] }>()
-const emit = defineEmits<{ complete: [] }>()
+const emit = defineEmits<{
+  complete: []
+  /** The last point of a unit was read (TASK-015: 完成一個知識單元). Repeats are harmless. */
+  'unit-complete': [lessonId: string]
+}>()
 
 // All knowledge points in reading order; index === points.length is the summary.
 const points = computed(() =>
@@ -36,7 +40,9 @@ function forward() {
     if (summaryReady.value) finish()
     return
   }
+  const left = current.value
   index.value++
+  if (left && current.value?.unitIndex !== left.unitIndex) emit('unit-complete', left.lesson.id)
   if (onSummary.value) {
     summaryReady.value = false
     clearTimeout(summaryTimer)

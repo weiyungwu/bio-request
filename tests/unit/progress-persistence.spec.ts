@@ -9,7 +9,13 @@ import { STORAGE_KEY, emptyProgress, parseProgress, writeStorage } from '@/utils
 import HomeView from '@/views/HomeView.vue'
 
 const at = new Date('2026-11-09T10:00:00Z')
-const record = { courseId: 'bio-01', score: 80, passed: true, completedAt: at.toISOString() }
+const record = {
+  courseId: 'bio-01',
+  score: 80,
+  passed: true,
+  completedAt: at.toISOString(),
+  exp: 20,
+}
 const cp = { courseId: 'bio-01', completed: true, bestScore: 80, latestScore: 80 }
 const wrong = {
   questionId: 'bio-01-q03',
@@ -24,6 +30,7 @@ const valid = {
   courseProgress: { 'bio-01': cp },
   wrongQuestions: { 'bio-01-q03': wrong },
   badges: ['first-clear'],
+  claimed: ['unit:bio-01:lesson-01'],
 }
 
 /** A fresh Pinia = what a page reload or a reopened browser sees. */

@@ -9,6 +9,7 @@ import CellIllustration from '@/components/common/CellIllustration.vue'
 import courses from '@/data/courses.json'
 import type { Course } from '@/types/course'
 import { useProgressStore } from '@/stores/progress'
+import { BADGES } from '@/utils/achievements'
 
 const router = useRouter()
 const progress = useProgressStore()
@@ -88,6 +89,30 @@ function confirmReset() {
         </div>
       </BaseCard>
 
+      <BaseCard as="section" data-testid="badges" aria-labelledby="badges-heading">
+        <h2 id="badges-heading" class="mb-3 text-xl">成就徽章</h2>
+        <ul class="grid gap-2 sm:grid-cols-2">
+          <li
+            v-for="b in BADGES"
+            :key="b.id"
+            data-testid="badge"
+            :data-earned="progress.badges.includes(b.id)"
+            class="flex items-center gap-3"
+            :class="progress.badges.includes(b.id) ? '' : 'text-muted'"
+          >
+            <span aria-hidden="true" class="text-2xl">{{
+              progress.badges.includes(b.id) ? b.icon : '🔒'
+            }}</span>
+            <span>
+              <span class="font-semibold">{{ b.name }}</span>
+              <span class="block text-sm">
+                {{ progress.badges.includes(b.id) ? '✓ 已取得' : '未取得' }}・{{ b.condition }}
+              </span>
+            </span>
+          </li>
+        </ul>
+      </BaseCard>
+
       <BaseCard as="section" aria-labelledby="recent-heading">
         <h2 id="recent-heading" class="mb-3 text-xl">最近學習紀錄</h2>
         <p v-if="progress.latestRecords.length === 0" data-testid="recent-empty" class="text-muted">
@@ -140,7 +165,7 @@ function confirmReset() {
       >
         <p id="reset-confirm-title" class="font-bold text-danger-text">⚠ 確定要重設學習資料嗎？</p>
         <p id="reset-confirm-detail">
-          經驗值、等級、各關成績與通關狀態、學習紀錄和錯題都會被清除，而且無法復原。
+          經驗值、等級、各關成績與通關狀態、學習紀錄、錯題和徽章都會被清除，而且無法復原。
         </p>
         <div class="flex flex-wrap gap-3">
           <BaseButton

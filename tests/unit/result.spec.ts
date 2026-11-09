@@ -35,7 +35,13 @@ describe('progress.recordQuizResult (TASK-012)', () => {
   it('records score, cleared status, an activity entry and EXP', () => {
     const p = useProgressStore()
     const award = p.recordQuizResult('bio-01', 80, [], at)
-    expect(award).toEqual({ quiz: 20, firstClear: FIRST_CLEAR_EXP, total: 50 })
+    expect(award).toEqual({
+      quiz: 20,
+      capped: false,
+      firstClear: FIRST_CLEAR_EXP,
+      total: 50,
+      newBadges: ['first-clear'],
+    })
     expect(p.exp).toBe(50)
     expect(p.courseProgress['bio-01']).toEqual({
       courseId: 'bio-01',
@@ -44,7 +50,7 @@ describe('progress.recordQuizResult (TASK-012)', () => {
       latestScore: 80,
     })
     expect(p.records).toEqual([
-      { courseId: 'bio-01', score: 80, passed: true, completedAt: at.toISOString() },
+      { courseId: 'bio-01', score: 80, passed: true, completedAt: at.toISOString(), exp: 20 },
     ])
   })
 
@@ -52,7 +58,7 @@ describe('progress.recordQuizResult (TASK-012)', () => {
   it('pays the first-clear bonus once, never on a replay', () => {
     const p = useProgressStore()
     p.recordQuizResult('bio-01', 80, [], at)
-    expect(p.recordQuizResult('bio-01', 100, [], at)).toEqual({
+    expect(p.recordQuizResult('bio-01', 100, [], at)).toMatchObject({
       quiz: 40,
       firstClear: 0,
       total: 40,
@@ -73,7 +79,11 @@ describe('progress.recordQuizResult (TASK-012)', () => {
 
   it('a failing first attempt earns no bonus and does not clear the stage', () => {
     const p = useProgressStore()
-    expect(p.recordQuizResult('bio-01', 60, [], at)).toEqual({ quiz: 10, firstClear: 0, total: 10 })
+    expect(p.recordQuizResult('bio-01', 60, [], at)).toMatchObject({
+      quiz: 10,
+      firstClear: 0,
+      total: 10,
+    })
     expect(p.courseProgress['bio-01']!.completed).toBe(false)
   })
 })
@@ -145,6 +155,29 @@ describe('ResultView (TASK-012)', () => {
     w = await mountResult()
     expect(w.find('[data-testid="result-verdict"]').text()).toContain('未通過')
     expect(w.find('[data-testid="result-exp"]').text()).toContain('60 分以上才能獲得 EXP')
+    w.unmount()
+  })
+
+  // Spec page 6: 新取得徽章 — only on the attempt that earned them.
+  it('shows badges first earned by this attempt', async () => {
+    play(0)
+    let w = await mountResult()
+    expect(w.find('[data-testid="result-badges"]').text()).toContain('初級探索員')
+    expect(w.find('[data-testid="result-badges"]').text()).toContain('完美通關')
+    w.unmount()
+    play(0)
+    w = await mountResult()
+    expect(w.find('[data-testid="result-badges"]').exists()).toBe(false)
+    w.unmount()
+  })
+
+  // §3 daily cap: a capped attempt says why there is no quiz EXP, not "need 60 points".
+  it('explains a capped quiz reward', async () => {
+    for (let n = 0; n < 3; n++) play(0)
+    const w = await mountResult()
+    const exp = w.find('[data-testid="result-exp"]').text()
+    expect(exp).toContain('已達上限')
+    expect(exp).not.toContain('60 分以上')
     w.unmount()
   })
 
