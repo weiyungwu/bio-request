@@ -46,6 +46,7 @@ describe('HomeView', () => {
     // Bar shows progress within the current level: (520-450)/(700-450) = 28%.
     expect(wrapper.find('[role="progressbar"]').attributes('aria-valuenow')).toBe('70')
     expect(wrapper.find('[role="progressbar"]').attributes('aria-valuemax')).toBe('250')
+    expect(wrapper.find('[role="progressbar"]').attributes('aria-label')).toBe('升到 Lv.5 的進度')
     const items = wrapper.findAll('[data-testid="recent-record"]')
     expect(items).toHaveLength(1)
     // Students recognize stages by name, not by internal id.

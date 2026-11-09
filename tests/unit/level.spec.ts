@@ -73,4 +73,9 @@ describe('levelFromExp', () => {
     expect(levelFromExp(Number.NaN)).toMatchObject({ level: 1, exp: 0 })
     expect(levelFromExp(Number.POSITIVE_INFINITY)).toMatchObject({ level: 1, exp: 0 })
   })
+
+  // Fractional EXP never shows as "99.5 EXP"; it rounds down, so no early level-up.
+  it('floors fractional EXP', () => {
+    expect(levelFromExp(99.5)).toMatchObject({ level: 1, exp: 99, expToNext: 1 })
+  })
 })

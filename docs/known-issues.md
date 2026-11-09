@@ -25,6 +25,8 @@
 
 ## 觀察中（目前不處理）
 
+- 最近學習紀錄的 v-for key 為 `courseId-completedAt-score`，同關、同毫秒、同分數時仍會重複；TASK-013 若為紀錄加上 id 再改用 id。（TASK-003 複審 S-E）
+
 - 「開始冒險」是按鈕加 `router.push`，沒有連結語意（無法中鍵開新分頁）。（TASK-003 審查 S6）
 - 最近學習紀錄的日期只顯示月／日，跨年紀錄分不出年份。（TASK-003 審查 S8）
 - `CellIllustration` 的 SVG 顏色寫死 hex，未使用設計 token。（TASK-003 審查 S5）
