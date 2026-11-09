@@ -51,8 +51,15 @@ describe('bio-01 question bank', () => {
   })
 
   // Human removed ATP from stage 1 (not in 國中 108 curriculum); the quiz must not test it.
-  it('does not test content the lessons do not teach', () => {
+  // Other untaught terms are caught by Human review, not here (review S4).
+  it('does not test ATP', () => {
     expect(JSON.stringify(qs)).not.toContain('ATP')
+  })
+
+  // Review S2: an ordering question written in answer order answers itself if not shuffled.
+  it('ordering options are not authored in answer order', () => {
+    const ord = qs.filter((q) => q.type === 'ordering')
+    expect(ord.filter((q) => q.answer.every((v, i) => v === i))).toEqual([])
   })
 
   it('has no bank for a stage without questions', () => {

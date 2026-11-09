@@ -11,22 +11,22 @@ const base = {
 }
 const single = {
   ...base,
-  id: 'q-single',
+  id: 'bio-01-single',
   type: 'single_choice',
   options: ['A', 'B', 'C'],
   answer: 1,
 }
-const trueFalse = { ...base, id: 'q-tf', type: 'true_false', options: ['對', '錯'], answer: 1 }
+const trueFalse = { ...base, id: 'bio-01-tf', type: 'true_false', options: ['對', '錯'], answer: 1 }
 const matching = {
   ...base,
-  id: 'q-match',
+  id: 'bio-01-match',
   type: 'matching',
   options: { left: ['甲', '乙'], right: ['一', '二'] },
   answer: [1, 0],
 }
 const ordering = {
   ...base,
-  id: 'q-order',
+  id: 'bio-01-order',
   type: 'ordering',
   options: ['X', 'Y', 'Z'],
   answer: [2, 0, 1],
@@ -66,36 +66,43 @@ describe('validateQuestionBank (TASK-010)', () => {
     const bank = check(q)
     expect(bank.questions).toEqual([])
     expect(bank.errors.map((e) => e.message)).toContain(
-      `第 1 題${field === 'id' ? '' : '（q-single）'}：缺少 ${field}`,
+      `第 1 題${field === 'id' ? '' : '（bio-01-single）'}：缺少 ${field}`,
     )
   })
 
   // A blank explanation would show students an empty 解析 box (spec §10.3).
   it('treats blank text as missing content', () => {
     expect(messages({ ...single, explanation: '  ' })).toEqual([
-      '第 1 題（q-single）：explanation 必須是非空白文字',
+      '第 1 題（bio-01-single）：explanation 必須是非空白文字',
     ])
   })
 
   // One broken entry must not take the whole quiz down.
   it('keeps the valid questions when another is broken', () => {
     const bank = check(single, { ...trueFalse, type: 'essay' }, ordering)
-    expect(bank.questions.map((q) => q.id)).toEqual(['q-single', 'q-order'])
+    expect(bank.questions.map((q) => q.id)).toEqual(['bio-01-single', 'bio-01-order'])
     expect(bank.errors).toEqual([
-      { index: 1, id: 'q-tf', message: '第 2 題（q-tf）：未知的題型「essay」' },
+      { index: 1, id: 'bio-01-tf', message: '第 2 題（bio-01-tf）：未知的題型「essay」' },
     ])
   })
 
   // The wrong-answer book keys on id (TASK-014: 不會將不同題目錯誤合併).
   it('rejects a duplicate id', () => {
-    expect(messages(single, { ...trueFalse, id: 'q-single' })).toEqual([
-      '第 2 題（q-single）：id「q-single」重複',
+    expect(messages(single, { ...trueFalse, id: 'bio-01-single' })).toEqual([
+      '第 2 題（bio-01-single）：id「bio-01-single」重複',
+    ])
+  })
+
+  // Review I1: ids must stay unique across courses, or TASK-014 could merge two questions.
+  it('rejects an id without the course prefix', () => {
+    expect(messages({ ...single, id: 'bio-02-q01' })).toEqual([
+      '第 1 題（bio-02-q01）：id 必須以「bio-01-」開頭',
     ])
   })
 
   it('rejects a question filed under another course', () => {
     expect(messages({ ...single, courseId: 'bio-02' })).toEqual([
-      '第 1 題（q-single）：courseId「bio-02」與題庫檔案「bio-01」不符',
+      '第 1 題（bio-01-single）：courseId「bio-02」與題庫檔案「bio-01」不符',
     ])
   })
 
@@ -107,12 +114,20 @@ describe('validateQuestionBank (TASK-010)', () => {
   it.each([
     ['single choice answer out of range', { ...single, answer: 3 }],
     ['single choice answer not an integer', { ...single, answer: '1' }],
+    ['single choice negative answer', { ...single, answer: -1 }],
+    ['single choice fractional answer', { ...single, answer: 1.5 }],
     ['single choice duplicate options', { ...single, options: ['A', 'A', 'B'] }],
     ['true/false custom options', { ...trueFalse, options: ['是', '否'] }],
     ['true/false answer 2', { ...trueFalse, answer: 2 }],
     ['matching uneven columns', { ...matching, options: { left: ['甲', '乙'], right: ['一'] } }],
     ['matching answer reuses a right item', { ...matching, answer: [0, 0] }],
     ['matching options as a list', { ...matching, options: ['甲', '乙'] }],
+    [
+      'matching duplicate left items',
+      { ...matching, options: { left: ['甲', '甲'], right: ['一', '二'] } },
+    ],
+    ['matching answer not a list', { ...matching, answer: 1 }],
+    ['ordering answer not a list', { ...ordering, answer: '0,1,2' }],
     ['ordering answer missing an item', { ...ordering, answer: [0, 1] }],
     ['ordering answer repeats an item', { ...ordering, answer: [0, 0, 1] }],
   ])('rejects %s', (_, q) => {

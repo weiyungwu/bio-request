@@ -12,7 +12,7 @@
 | 3     | TASK-008 細胞器配對                                              | 完成，任務審查已處理（commit e0056e6）     |
 | 3     | TASK-009 分類遊戲（植物／動物／兩者皆有）                        | 完成，任務審查已處理（commit 1188f8a）     |
 | 3     | Phase 3 審查（Gemini）                                           | 已處理（commit a06fa0b）                   |
-| 4     | TASK-010 題庫資料結構與第一關 12 題                              | 完成，待任務審查                           |
+| 4     | TASK-010 題庫資料結構與第一關 12 題                              | 完成，任務審查已處理                       |
 | 4–5   | **TASK-011 測驗引擎** ← 下一步；之後結果頁、LocalStorage、錯題本 | 未開始                                     |
 
 第一關流程（`src/views/LessonView.vue`）：故事 → 探險者訓練（16 個知識點＋重點整理）→ 細胞城市探險（細胞互動圖）→ 互動挑戰（配對遊戲 → 分類遊戲 → 回關卡地圖；TASK-011 起改為進入測驗，替換 `LessonView` 中 `ClassificationGame` 的 `#next` slot）。Phase 3 審查（Gemini）已處理。
@@ -20,7 +20,8 @@
 ## 下一步要知道的
 
 - 測驗從 `getQuestionBank(courseId)`（`src/data/questions/index.ts`）取題；`errors` 不為空時要在畫面上顯示資料錯誤（TASK-010 驗收「能顯示資料錯誤」的畫面部分）。題型與答案格式見 README。
-- 分類遊戲結束後要進入測驗：替換 `LessonView` 中 `ClassificationGame` 的 `#next` slot。
+- 分類遊戲結束後要進入測驗：替換 `LessonView` 中 `ClassificationGame` 的 `#next` slot（`ClassificationGame.vue` 沒有 `emit('complete')`，下一步由 slot 決定）。
+- 題目物件是共用的 JSON 物件（型別為 readonly）：洗牌或打亂選項前先複製。有效題目少於 5 題時要能處理（TASK-010 審查 S6）。
 - 遊戲 UI 模式（點選、`aria-disabled` 保留焦點、✓／✗／▶ 不只靠顏色、`aria-live` 回饋每次重新渲染）建議測驗選項比照。
 
 ## 工作流程（規格 §1.2）

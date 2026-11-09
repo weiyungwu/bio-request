@@ -25,7 +25,7 @@ interface QuestionBase {
 
 export interface SingleChoiceQuestion extends QuestionBase {
   type: 'single_choice'
-  options: string[]
+  options: readonly string[]
   /** Index into options. */
   answer: number
 }
@@ -38,17 +38,18 @@ export interface TrueFalseQuestion extends QuestionBase {
 
 export interface MatchingQuestion extends QuestionBase {
   type: 'matching'
-  options: { left: string[]; right: string[] }
+  /** One-to-one: left and right have the same length, no extra distractors. */
+  options: { readonly left: readonly string[]; readonly right: readonly string[] }
   /** answer[i] is the index in `right` that belongs with left[i]. */
-  answer: number[]
+  answer: readonly number[]
 }
 
 export interface OrderingQuestion extends QuestionBase {
   type: 'ordering'
   /** Items as authored; the quiz shuffles them for display. */
-  options: string[]
+  options: readonly string[]
   /** Option indices in the correct order. */
-  answer: number[]
+  answer: readonly number[]
 }
 
 export type Question =
@@ -63,6 +64,10 @@ export interface QuestionDataError {
   message: string
 }
 
+/**
+ * Questions are the imported JSON objects, shared by every quiz attempt: copy before
+ * shuffling or reordering (the readonly types enforce this at compile time).
+ */
 export interface QuestionBank {
   /** Valid questions only; invalid ones are left out and reported in `errors`. */
   questions: Question[]

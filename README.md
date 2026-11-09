@@ -71,7 +71,8 @@ Handover notes (current status, workflow, next task): [`docs/handoff.md`](docs/h
   and validated by `getQuestionBank()` in `src/data/questions/index.ts`. Types and answer formats
   (`src/types/question.ts`): `single_choice` (answer = option index), `true_false` (options fixed
   `["對","錯"]`, answer 0/1), `matching` (options `{left, right}`, answer[i] = right index for
-  left[i]), `ordering` (answer = option indices in correct order). Invalid questions are dropped
+  left[i]), `ordering` (answer = option indices in correct order). Matching is one-to-one (equal columns,
+  no extra distractors). Invalid questions are dropped
   and listed in `errors` with a Chinese message naming the question and field. Ids are
   `<courseId>-qNN`, unique across courses (the wrong-answer book keys on them).
 - 「任務完成提示」(TASK-005) is read as the mission briefing card shown after the opening story

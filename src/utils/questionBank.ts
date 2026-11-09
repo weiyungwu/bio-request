@@ -82,6 +82,9 @@ export function validateQuestionBank(raw: unknown, courseId: string): QuestionBa
     }
     if (isText(q.courseId) && q.courseId !== courseId)
       problems.push(`courseId「${q.courseId}」與題庫檔案「${courseId}」不符`)
+    // Prefix + per-file uniqueness keeps ids unique across courses (file names are unique).
+    if (id && !id.startsWith(`${courseId}-`)) problems.push(`id 必須以「${courseId}-」開頭`)
+    // An id counts as taken even if its first question was invalid; both are reported.
     if (id && seen.has(id)) problems.push(`id「${id}」重複`)
     if (!('difficulty' in q)) problems.push('缺少 difficulty')
     else if (!DIFFICULTIES.includes(q.difficulty as never))
