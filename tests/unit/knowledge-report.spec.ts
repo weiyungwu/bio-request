@@ -3,6 +3,7 @@ import { getLessonData } from '@/data/lessons'
 import { getQuestionBank } from '@/data/questions'
 import type { LearningEvent } from '@/types/learningEvent'
 import { courseReport } from '@/utils/knowledgeReport'
+import { MASTERY_RULES } from '@/utils/mastery'
 
 // v1.1 §4.7 acceptance: 學習報表能指出具體弱點 Knowledge.
 const lesson = getLessonData('bio-01')!
@@ -12,8 +13,8 @@ const now = new Date('2026-11-12T12:00:00Z')
 let n = 0
 
 /** One answer to a real stage-1 question, tagged with that question's knowledge points. */
-function answer(questionId: string, correct: boolean): LearningEvent {
-  const at = new Date(Date.UTC(2026, 10, 10, 0, 0, n++)).toISOString()
+function answer(questionId: string, correct: boolean, day = 10): LearningEvent {
+  const at = new Date(Date.UTC(2026, 10, day, 0, 0, n++)).toISOString()
   return {
     id: `e${n}`,
     playerId: PLAYER,
@@ -73,6 +74,34 @@ describe('courseReport', () => {
     expect(r.weakest.map((p) => p.id)).toEqual(['a-response', 'c-plant', 'c-animal'])
     expect(point(r, 'a-metabolism').mastery.accuracy).toBe(0.5)
     expect(r.weakest.every((p) => p.mastery.accuracy < 0.8)).toBe(true)
+  })
+
+  // Review I1: weak means weak now (the latest answers), as mastery is judged. A student who
+  // recovered must not be told 需要加強 next to ⭐ 已精熟; one who slipped must be.
+  it('judges weakness by the latest answers, and never lists a mastered point', () => {
+    // Stage-1 points have at most 3 questions, so lower the variety thresholds to let
+    // b-mitochondrion (q06, q08, q12) reach mastered.
+    const rules = { ...MASTERY_RULES, minQuestions: 3, recentMinQuestions: 3 }
+    const qs = ['bio-01-q06', 'bio-01-q08', 'bio-01-q12', 'bio-01-q06', 'bio-01-q08']
+    const recovered = [
+      ...qs.map((q) => answer(q, false, 10)),
+      ...qs.map((q) => answer(q, true, 11)),
+    ]
+    const r = courseReport(lesson, questions, recovered, { playerId: PLAYER, now, rules })
+    expect(point(r, 'b-mitochondrion').mastery).toMatchObject({
+      masteryLevel: 'mastered',
+      accuracy: 0.5,
+    })
+    expect(r.weakest.map((p) => p.id)).not.toContain('b-mitochondrion')
+
+    // 7 of 10 overall, but 2 of the last 5 (q01 tests only a-response).
+    const slipped = [
+      ...Array.from({ length: 5 }, () => answer('bio-01-q01', true, 10)),
+      ...[true, true, false, false, false].map((c) => answer('bio-01-q01', c, 11)),
+    ]
+    const s = report(slipped)
+    expect(point(s, 'a-response').mastery).toMatchObject({ accuracy: 0.7, recentAccuracy: 0.4 })
+    expect(s.weakest.map((p) => p.id)).toEqual(['a-response'])
   })
 
   it('never calls an unanswered point weak', () => {

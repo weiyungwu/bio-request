@@ -79,6 +79,12 @@ describe('MasteryView (v1.1 step 5)', () => {
     expect(row(w, 'a-response').text()).toContain('未開始')
   })
 
+  // Viewing a report has no side effects: no player id is made just by looking.
+  it('does not create a player id', async () => {
+    await mountView()
+    expect(localStorage.getItem(PLAYER_KEY)).toBeNull()
+  })
+
   it('is reachable from the home page', async () => {
     const { w } = await mountView(HomeView)
     expect(w.find('[data-testid="home-mastery-link"]').attributes('href')).toBe('/mastery')

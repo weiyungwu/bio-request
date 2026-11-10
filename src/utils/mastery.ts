@@ -62,12 +62,17 @@ function answersAbout(events: readonly LearningEvent[], knowledgeId: string, pla
     .sort((a, b) => Date.parse(a.occurredAt) - Date.parse(b.occurredAt))
 }
 
+const recentOf = (answers: readonly LearningEvent[], rules: MasteryRules) =>
+  answers.slice(-rules.recentWindow)
+const shareRight = (answers: readonly LearningEvent[]) =>
+  answers.length ? answers.filter((e) => e.isCorrect).length / answers.length : 0
+
 function levelOf(answers: readonly LearningEvent[], rules: MasteryRules): MasteryLevel {
   if (answers.length === 0) return 'not_started'
   if (answers.length < rules.practicingFrom) return 'learning'
-  const recent = answers.slice(-rules.recentWindow)
+  const recent = recentOf(answers, rules)
   const recentCorrect = recent.filter((e) => e.isCorrect)
-  const recentRight = recentCorrect.length / recent.length
+  const recentRight = shareRight(recent)
   const recentQuestions = new Set(recentCorrect.map((e) => e.questionId)).size
   const days = new Set(answers.map((e) => localDay(new Date(e.occurredAt)))).size
   const questions = new Set(answers.map((e) => e.questionId)).size
@@ -94,7 +99,8 @@ export function knowledgeMastery(
     totalAttempts: answers.length,
     correctAttempts: correct.length,
     wrongAttempts: answers.length - correct.length,
-    accuracy: answers.length ? correct.length / answers.length : 0,
+    accuracy: shareRight(answers),
+    recentAccuracy: shareRight(recentOf(answers, rules)),
     masteryLevel: levelOf(answers, rules),
     updatedAt: now.toISOString(),
   }

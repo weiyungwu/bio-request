@@ -17,6 +17,15 @@ export function newId(): string {
 
 /** Used only while storage is unavailable: one id for this page load. */
 let fallbackPlayerId: string | undefined
+/** This browser's player id, without creating one (for pages that only read). */
+export function readPlayerId(): string | undefined {
+  try {
+    return globalThis.localStorage?.getItem(PLAYER_KEY) || fallbackPlayerId
+  } catch {
+    return fallbackPlayerId
+  }
+}
+
 /** This browser's anonymous player id (created on first use). */
 export function getPlayerId(): string {
   try {

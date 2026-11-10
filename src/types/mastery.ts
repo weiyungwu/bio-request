@@ -9,6 +9,11 @@ export interface KnowledgeMastery {
   wrongAttempts: number
   /** correct / total, 0 with no attempts. */
   accuracy: number
+  /**
+   * Share right among the latest MASTERY_RULES.recentWindow answers, the window mastery is
+   * judged on; 0 with no attempts. Not in the §4.4 interface: added so "weak" means weak now.
+   */
+  recentAccuracy: number
   masteryLevel: MasteryLevel
   lastAttemptAt?: string
   lastCorrectAt?: string

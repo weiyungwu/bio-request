@@ -10,7 +10,7 @@ import type { Course } from '@/types/course'
 import type { MasteryLevel } from '@/types/mastery'
 import { courseReport } from '@/utils/knowledgeReport'
 import { parseEventStore, readEventStorage } from '@/utils/learningEventStorage'
-import { getPlayerId } from '@/utils/learningEvents'
+import { readPlayerId } from '@/utils/learningEvents'
 import { isCourseOpen } from '@/utils/stages'
 
 // Text and icon, not colour alone (README: 狀態不可只靠顏色表示).
@@ -27,7 +27,8 @@ const percent = (accuracy: number) => `${Math.round(accuracy * 100)}%`
 
 // Read once per visit: answers are only added on other pages.
 const events = parseEventStore(readEventStorage()).events
-const options = { playerId: getPlayerId(), now: new Date() }
+// No id yet means no answers yet; looking must not create one.
+const options = { playerId: readPlayerId() ?? '', now: new Date() }
 const reports = [...(courses as Course[])]
   .sort((a, b) => a.order - b.order)
   .filter((c) => isCourseOpen(c.id))
@@ -71,11 +72,11 @@ onMounted(() => heading.value?.focus())
         class="space-y-3"
         :aria-labelledby="`weak-${r.course.id}`"
       >
-        <h2 :id="`weak-${r.course.id}`" class="text-xl">需要加強</h2>
+        <h2 :id="`weak-${r.course.id}`" class="text-xl">第 {{ r.course.order }} 關 需要加強</h2>
         <ol class="space-y-1">
           <li v-for="p in r.weakest" :key="p.id">
             <span class="font-semibold">{{ p.term }}</span>
-            <span class="text-muted">：答對 {{ percent(p.mastery.accuracy) }}</span>
+            <span class="text-muted">：最近答對 {{ percent(p.mastery.recentAccuracy) }}</span>
           </li>
         </ol>
         <RouterLink

@@ -17,7 +17,11 @@ export interface PointReport {
 
 export interface CourseReport {
   units: { id: string; title: string; points: PointReport[] }[]
-  /** Answered points under the mastered accuracy, lowest first (v1.1 §4.7 弱點). */
+  /**
+   * Answered, not yet mastered points whose latest answers are under the mastered accuracy,
+   * lowest first (v1.1 §4.7 弱點). Judged on the same window as mastery, so a student who has
+   * recovered is not still told 需要加強, and one who slipped is.
+   */
   weakest: PointReport[]
 }
 
@@ -49,8 +53,13 @@ export function courseReport(
   // Stable sort: equal accuracy keeps lesson order.
   const weakest = units
     .flatMap((u) => u.points)
-    .filter((p) => p.mastery.totalAttempts > 0 && p.mastery.accuracy < rules.recentAccuracy)
-    .sort((a, b) => a.mastery.accuracy - b.mastery.accuracy)
+    .filter(
+      ({ mastery: m }) =>
+        m.totalAttempts > 0 &&
+        m.masteryLevel !== 'mastered' &&
+        m.recentAccuracy < rules.recentAccuracy,
+    )
+    .sort((a, b) => a.mastery.recentAccuracy - b.mastery.recentAccuracy)
     .slice(0, WEAK_LIMIT)
   return { units, weakest }
 }

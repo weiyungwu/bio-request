@@ -47,6 +47,7 @@ describe('knowledgeMastery', () => {
       correctAttempts: 0,
       wrongAttempts: 0,
       accuracy: 0,
+      recentAccuracy: 0,
       masteryLevel: 'not_started',
       updatedAt: now.toISOString(),
     })
@@ -61,6 +62,18 @@ describe('knowledgeMastery', () => {
       accuracy: 1 / 3,
       lastAttemptAt: events[2]!.occurredAt,
       lastCorrectAt: events[0]!.occurredAt,
+    })
+  })
+
+  // The latest answers judge the student now; old mistakes don't drag it down forever.
+  it('reports accuracy over the latest answers separately', () => {
+    const events = [
+      ...fiveQuestions([false, false, false, false, false], [10, 10, 10, 10, 10]),
+      ...fiveQuestions([true, true, true, true, false], [11, 11, 11, 11, 11]),
+    ]
+    expect(knowledgeMastery(events, K, { playerId: PLAYER, now })).toMatchObject({
+      accuracy: 0.4,
+      recentAccuracy: 0.8,
     })
   })
 
