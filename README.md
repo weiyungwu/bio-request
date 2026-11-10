@@ -36,6 +36,11 @@ npm install
 
 ## Deploy (Cloudflare Pages)
 
+**Live:** https://bio-request.weiyung-wu.workers.dev/ — deployed as a Cloudflare **Worker**
+(static assets, set up in the dashboard), not a Pages project. Unknown paths already fall
+back to `index.html` there (checked: `/review`, `/quiz/bio-01` return the app), and the
+main-flow E2E passes against it. The Pages steps below remain a valid alternative.
+
 A static site: no server, no environment variables, no secrets. Progress lives in each
 student's browser (LocalStorage), so deploys never touch student data.
 
