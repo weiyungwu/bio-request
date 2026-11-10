@@ -17,6 +17,7 @@ import {
 const base = {
   courseId: 'bio-01',
   topic: 't',
+  knowledgeIds: ['k'],
   difficulty: 'easy' as const,
   question: 'q',
   explanation: 'e',

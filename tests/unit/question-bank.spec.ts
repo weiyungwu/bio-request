@@ -4,6 +4,7 @@ import { validateQuestionBank } from '@/utils/questionBank'
 const base = {
   courseId: 'bio-01',
   topic: '細胞器功能',
+  knowledgeIds: ['b-nucleus'],
   difficulty: 'easy',
   question: '題目',
   explanation: '解析',
@@ -32,7 +33,9 @@ const ordering = {
   answer: [2, 0, 1],
 }
 
-const check = (...qs: unknown[]) => validateQuestionBank(qs, 'bio-01')
+// The stage's knowledge point ids, as getQuestionBank takes them from the lesson data.
+const POINTS = new Set(['b-nucleus', 'b-wall'])
+const check = (...qs: unknown[]) => validateQuestionBank(qs, 'bio-01', POINTS)
 const messages = (...qs: unknown[]) => check(...qs).errors.map((e) => e.message)
 
 describe('validateQuestionBank (TASK-010)', () => {
@@ -136,10 +139,43 @@ describe('validateQuestionBank (TASK-010)', () => {
   })
 
   it('reports a file that is not a list of questions', () => {
-    expect(validateQuestionBank({ questions: [] }, 'bio-01')).toEqual({
+    expect(validateQuestionBank({ questions: [] }, 'bio-01', POINTS)).toEqual({
       questions: [],
       errors: [{ index: -1, message: '題庫檔案必須是題目陣列' }],
     })
     expect(messages('q')).toEqual(['第 1 題不是物件'])
+  })
+
+  // v1.1: mastery is worked out per knowledge point, so every question must name the
+  // points it tests, and only points that exist in this stage's lessons.
+  describe('knowledgeIds', () => {
+    it('accepts one or several known points', () => {
+      expect(check({ ...single, knowledgeIds: ['b-nucleus', 'b-wall'] }).errors).toEqual([])
+    })
+
+    it.each([
+      ['missing', { ...single, knowledgeIds: undefined }, '缺少 knowledgeIds'],
+      ['empty', { ...single, knowledgeIds: [] }, 'knowledgeIds 必須是至少 1 個不重複的知識點 id'],
+      [
+        'not a list',
+        { ...single, knowledgeIds: 'b-nucleus' },
+        'knowledgeIds 必須是至少 1 個不重複的知識點 id',
+      ],
+      [
+        'repeated',
+        { ...single, knowledgeIds: ['b-wall', 'b-wall'] },
+        'knowledgeIds 必須是至少 1 個不重複的知識點 id',
+      ],
+      [
+        'unknown',
+        { ...single, knowledgeIds: ['b-nucleus', 'c-moon', 'x'] },
+        'knowledgeIds 有這一關沒有的知識點：c-moon、x',
+      ],
+    ])('rejects knowledgeIds that are %s', (_, q, message) => {
+      const { ['knowledgeIds']: ids, ...rest } = q
+      const input = ids === undefined ? rest : q
+      expect(check(input).questions).toEqual([])
+      expect(messages(input)).toEqual([`第 1 題（bio-01-single）：${message}`])
+    })
   })
 })

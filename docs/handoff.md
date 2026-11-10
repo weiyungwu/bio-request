@@ -23,6 +23,7 @@
 | M7    | 規格 4.2 主流程 E2E（`tests/e2e/main-flow.spec.ts`）；E2E 檔納入型別檢查          | 完成，任務審查已處理（commit 97f162b）     |
 | M7    | README 部署說明（Cloudflare Pages）、`.node-version`                              | 完成                                       |
 | M7    | 部署：https://bio-request.weiyung-wu.workers.dev/ （Cloudflare Worker，非 Pages） | 完成；主流程等 16 個 E2E 對正式網址通過    |
+| v1.1  | 第 1 步：題目加 `knowledgeIds` 與驗證（稽核文件第 8 節）                          | 完成，待任務審查                           |
 
 第一關流程（`src/views/LessonView.vue`）：故事 → 探險者訓練（16 個知識點＋重點整理）→ 細胞城市探險（細胞互動圖）→ 互動挑戰（配對遊戲 → 分類遊戲）→ 關卡測驗（`QuizView`，5 題）。Phase 3 審查（Gemini）已處理。
 

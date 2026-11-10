@@ -1,14 +1,19 @@
+import { getLessonData } from '@/data/lessons'
 import type { QuestionBank } from '@/types/question'
 import { validateQuestionBank } from '@/utils/questionBank'
 
 // Every src/data/questions/<courseId>.json, bundled at build time. The file name is the
-// course id; each question's courseId must match it.
+// course id; each question's courseId must match it, and its knowledgeIds must be
+// knowledge points of that course's lessons (none without lesson data: all are reported).
 const files = import.meta.glob<{ default: unknown }>('./*.json', { eager: true })
 
 const byCourseId = new Map(
   Object.entries(files).map(([path, m]) => {
     const courseId = path.replace(/^\.\/(.+)\.json$/, '$1')
-    return [courseId, validateQuestionBank(m.default, courseId)]
+    const points = new Set(
+      getLessonData(courseId)?.lessons.flatMap((l) => l.knowledgePoints.map((p) => p.id)) ?? [],
+    )
+    return [courseId, validateQuestionBank(m.default, courseId, points)]
   }),
 )
 

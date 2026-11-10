@@ -62,6 +62,25 @@ describe('bio-01 question bank', () => {
     expect(ord.filter((q) => q.answer.every((v, i) => v === i))).toEqual([])
   })
 
+  // Human-confirmed mapping (docs/audit/v1.1-learning-foundation-audit.md §4.2): the
+  // v1.1 mastery numbers rest on it, so any change must go back through Human review.
+  it('links each question to the confirmed knowledge points', () => {
+    expect(Object.fromEntries(qs.map((q) => [q.id, q.knowledgeIds]))).toEqual({
+      'bio-01-q01': ['a-response'],
+      'bio-01-q02': ['a-metabolism'],
+      'bio-01-q03': ['a-metabolism'],
+      'bio-01-q04': ['b-cytoplasm'],
+      'bio-01-q05': ['b-nucleus', 'b-membrane', 'b-cytoplasm', 'b-wall'],
+      'bio-01-q06': ['b-mitochondrion'],
+      'bio-01-q07': ['b-nucleus', 'b-cytoplasm', 'b-vacuole', 'b-wall'],
+      'bio-01-q08': ['b-mitochondrion', 'b-chloroplast'],
+      'bio-01-q09': ['c-plant', 'c-animal'],
+      'bio-01-q10': ['b-chloroplast', 'c-plant'],
+      'bio-01-q11': ['c-plant', 'c-both'],
+      'bio-01-q12': ['b-mitochondrion', 'c-both'],
+    })
+  })
+
   it('has no bank for a stage without questions', () => {
     expect(getQuestionBank('bio-02')).toBeUndefined()
   })

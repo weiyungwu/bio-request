@@ -15,6 +15,11 @@ interface QuestionBase {
   courseId: string
   /** 知識點分類, e.g. "細胞器功能". */
   topic: string
+  /**
+   * Knowledge point ids from the stage's lesson data (e.g. "b-nucleus"); at least one.
+   * v1.1 works out mastery per point, so the mapping is Human-confirmed content.
+   */
+  knowledgeIds: readonly string[]
   difficulty: Difficulty
   question: string
   /** 詳細解析: why the answer is right (spec §10: every question has one). */

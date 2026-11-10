@@ -160,6 +160,10 @@ Handover notes (current status, workflow, next task): [`docs/handoff.md`](docs/h
   no extra distractors). Invalid questions are dropped
   and listed in `errors` with a Chinese message naming the question and field. Ids are
   `<courseId>-qNN`, unique across courses (the wrong-answer book keys on them).
+  Each question has `knowledgeIds` (v1.1): one or more knowledge point ids from the same
+  course's lesson data (e.g. `b-nucleus`); unknown ids reject the question. The mapping is
+  Human-confirmed content (`docs/audit/v1.1-learning-foundation-audit.md` §4.2) and only
+  lives in the question data, so saved progress is unaffected.
 - 「任務完成提示」(TASK-005) is read as the mission briefing card shown after the opening story
   (title + objectives + 接受任務). Pending Human confirmation (see `docs/known-issues.md`).
 - E2E: `CI=1 npm run test:e2e` builds first, then tests the production preview (a stale
