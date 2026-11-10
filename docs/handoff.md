@@ -27,7 +27,7 @@
 ## 下一步要知道的
 
 - 下一步：規格 4.2 主流程 E2E（11 步，一次走完）。開始前先處理 known-issues 的「E2E 測試檔納入型別檢查」。之後 README 部署說明、M7 部署（Cloudflare Pages，需 Human 的帳號）。
-- 「直接測驗」讓學生不上課也能直接考；若規格要求先上課，需 Human 決定後再寫主流程 E2E。
+- 「直接測驗」讓學生不上課也能直接考：Human 已確認（學生可能已在課堂上或先前學過）。主流程 E2E 仍照規格 4.2 走完整課程，另有單元測試涵蓋直接測驗。
 - 保存的資料格式若要加欄位，必須是選填或有預設值（見 known-issues）。多個分頁會透過 `storage` 事件同步。
 - 讀 `useQuizStore()` 時要確認 `quiz.courseId` 是目前的關卡。
 - 單元測試每個測試前會清空 LocalStorage（`tests/unit/setup.ts`）；重新建立 Pinia 等於重新整理頁面。
