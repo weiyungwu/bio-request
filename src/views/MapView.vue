@@ -36,15 +36,16 @@ const completedCount = computed(() => stages.value.filter((s) => s.status === 'c
 const lockedCount = computed(() => stages.value.filter((s) => s.status === 'locked').length)
 
 const STATUS_LABEL = {
-  completed: '✓ 已完成',
-  'in-progress': '⏳ 進行中',
-  open: '▶ 可挑戰',
+  completed: { icon: '✓', text: '已完成' },
+  'in-progress': { icon: '⏳', text: '進行中' },
+  open: { icon: '▶', text: '可挑戰' },
 } as const
 // BaseTag look, made clickable: hover rings it in its text colour, deepens the fill (20%:
 // tag text stays >= 4.9:1; 30% would drop below AA) and shows a pointer.
-// before: widens the hit area to 44px without changing the look.
+// before: widens the hit area without changing the look; the two stacked pills extend it
+// only 4px towards each other so their boxes meet at the gap instead of overlapping.
 const pill =
-  'relative z-10 inline-flex cursor-pointer items-center gap-1 rounded-pill px-3 py-0.5 text-sm font-semibold transition-[background-color,box-shadow] hover:ring-2 hover:ring-current before:absolute before:inset-x-0 before:-inset-y-2.5 motion-reduce:transition-none'
+  'relative z-10 inline-flex cursor-pointer items-center gap-1 rounded-pill px-3 py-0.5 text-sm font-semibold transition-[background-color,box-shadow] hover:ring-2 hover:ring-current before:absolute before:inset-x-0 motion-reduce:transition-none'
 const pillExplore = 'bg-explore/15 text-explore hover:bg-explore/20'
 const pillSuccess = 'bg-success/15 text-success hover:bg-success/20'
 
@@ -94,20 +95,21 @@ const cardInteractive =
                 :to="`/lesson/${course.id}`"
                 tabindex="-1"
                 data-testid="stage-status"
-                :class="[pill, status === 'completed' ? pillSuccess : pillExplore]"
-                >{{ STATUS_LABEL[status] }}</RouterLink
+                :aria-label="`${STATUS_LABEL[status].text}：第 ${course.order} 關`"
+                :class="[
+                  pill,
+                  'before:-top-2.5 before:-bottom-1',
+                  status === 'completed' ? pillSuccess : pillExplore,
+                ]"
+                >{{ STATUS_LABEL[status].icon }} {{ STATUS_LABEL[status].text }}</RouterLink
               >
-              <!-- Above the card link (z-10); the before: box keeps a 44px touch target. -->
+              <!-- Above the card link (z-10); uses the global :focus-visible outline. -->
               <RouterLink
                 v-if="status !== 'locked'"
                 :to="`/quiz/${course.id}`"
                 data-testid="stage-quiz"
                 :aria-label="`直接測驗：第 ${course.order} 關`"
-                :class="[
-                  pill,
-                  pillExplore,
-                  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-explore',
-                ]"
+                :class="[pill, 'before:-top-1 before:-bottom-2.5', pillExplore]"
                 >📝 直接測驗</RouterLink
               >
             </div>
@@ -115,12 +117,13 @@ const cardInteractive =
           <span aria-hidden="true" class="text-4xl">{{ THEME_ICON[course.id] }}</span>
           <div class="space-y-1">
             <h2 :class="['text-lg', status === 'locked' && 'text-muted']">
-              <!-- Stretched over the whole card (after:inset-0), so the card still enters the lesson. -->
+              <!-- Stretched over the whole card (after:inset-0), so the card still enters the lesson.
+                   Focus draws the app's usual outline around the card, not the title. -->
               <RouterLink
                 v-if="status !== 'locked'"
                 :to="`/lesson/${course.id}`"
                 data-testid="stage-link"
-                class="outline-none after:absolute after:inset-0 after:rounded-card"
+                class="after:absolute after:inset-0 after:rounded-card focus-visible:outline-none focus-visible:after:outline-3 focus-visible:after:outline-offset-2 focus-visible:after:outline-reward"
                 >{{ course.storyTitle }}</RouterLink
               >
               <template v-else>{{ course.storyTitle }}</template>

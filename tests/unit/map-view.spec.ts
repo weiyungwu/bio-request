@@ -99,10 +99,26 @@ describe('MapView', () => {
     for (const card of cards.slice(1)) {
       expect(card.find('[data-testid="stage-quiz"]').exists()).toBe(false)
     }
+    // The status tag is a mouse shortcut to the lesson, not an extra Tab stop.
+    const tag = cards[0]!.find('[data-testid="stage-status"]')
+    expect(tag.attributes('href')).toBe('/lesson/bio-01')
+    expect(tag.attributes('tabindex')).toBe('-1')
+    expect(tag.attributes('aria-label')).toBe('可挑戰：第 1 關')
     await quiz.trigger('click')
     await vi.waitFor(() => expect(router.currentRoute.value.fullPath).toBe('/quiz/bio-01'), {
       timeout: 5000,
     })
+  })
+
+  // A student who cleared the stage can still go straight to practising the quiz.
+  it('keeps 直接測驗 on a completed stage', async () => {
+    useProgressStore().courseProgress = {
+      'bio-01': { courseId: 'bio-01', completed: true, bestScore: 90, latestScore: 90 },
+    }
+    const { wrapper } = await mountMap(pinia)
+    const first = wrapper.findAll('[data-testid="stage-card"]')[0]!
+    expect(first.find('[data-testid="stage-quiz"]').attributes('href')).toBe('/quiz/bio-01')
+    expect(first.find('[data-testid="stage-status"]').text()).toBe('✓ 已完成')
   })
 
   // TASK-004 acceptance: 完成第一關後，進度狀態正確更新 (live, without reload).

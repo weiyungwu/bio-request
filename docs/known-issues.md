@@ -9,6 +9,7 @@
 | 內文句子中的專有名詞仍可能被斷行（標題與重點整理的名詞已不斷行）；如需要，在教材文字中標記名詞                                  | 教材 Human 審閱後視需要      | Gemini Phase 0 #6 |
 | `tests/unit/app.spec.ts` 仍使用 router singleton，改為每個測試各自建立 router（Pinia 是否接上 `main.ts` 已由 E2E 首頁測試涵蓋） | 下次修改 app.spec 時         | TASK-001 審查 S3  |
 | E2E 測試檔納入型別檢查（`tests/e2e/tsconfig.json` 未被根 tsconfig 引用）                                                        | 開始寫規格 4.2 主流程 E2E 前 | TASK-001 審查 S2  |
+| 關卡卡片的 Tab 順序是「直接測驗」在課程連結（標題）之前；如要課程優先，把測驗連結移到標題之後、用 CSS 維持位置                  | 有使用者反映或無障礙審查時   | 直接測驗審查 S3   |
 
 ## 待 Human 確認（規格 1.2：教材正確性由 Human 驗收）
 

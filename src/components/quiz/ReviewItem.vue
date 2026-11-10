@@ -53,6 +53,7 @@ function submit() {
     isCorrect(props.question, response.value),
   )
   // Keep the message once paid: a later 再作答一次 returns 0 (already claimed), not a revoke (S-01).
+  // It stays after a later wrong retry too: it records the reward earned, not the current answer.
   if (paid > 0) reward.value = paid
 }
 </script>
