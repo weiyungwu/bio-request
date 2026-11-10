@@ -58,19 +58,21 @@ test('main flow: home → stage 1 → quiz → result → 錯題本, kept after 
   await expect(items).toHaveCount(1)
   expect(wrongQuestion).toContain((await items.first().locator('h3').textContent())!.trim())
 
-  // 10. 重新整理頁面. 11. 確認學習紀錄仍存在 — on every page that shows it.
-  await page.reload()
-  await expect(items).toHaveCount(1)
-  await expect(page.getByTestId('review-summary')).toContainText('還有 1 題待複習')
-
-  await page.goto('/')
+  // Back home inside the app (no reload) to note the EXP this run earned.
+  await page.getByRole('link', { name: '← 回首頁' }).click()
+  await expect(page.getByTestId('player-exp')).not.toContainText(/\b0 EXP/)
   const exp = (await page.getByTestId('player-exp').textContent())!
+
+  // 10. 重新整理頁面. 11. 確認學習紀錄仍存在 — the same EXP, and the record on every page.
   await page.reload()
   await expect(page.getByTestId('player-exp')).toHaveText(exp)
-  await expect(page.getByTestId('player-exp')).not.toContainText(/\b0 EXP/)
   await expect(page.getByTestId('recent-record')).toHaveCount(1)
   await expect(page.getByTestId('recent-record')).toContainText('80 分')
   await expect(page.getByTestId('home-review-link')).toContainText('1 題待複習')
+
+  await page.goto('/review')
+  await expect(items).toHaveCount(1)
+  await expect(page.getByTestId('review-summary')).toContainText('還有 1 題待複習')
 
   await page.goto('/map')
   await expect(page.getByTestId('stage-card').first()).toContainText('✓ 已完成')

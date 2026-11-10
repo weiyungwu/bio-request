@@ -6,7 +6,9 @@
     "module": "preserve",
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
-    // DOM: page.evaluate callbacks run in the browser.
+    // lib replaces, not extends, the base list: copied from @tsconfig/node24 (keep in sync
+    // when upgrading it) plus DOM for page.evaluate callbacks. DOM types then type-check
+    // anywhere in E2E files, not only inside page.evaluate; accepted trade-off.
     "lib": [
       "es2024",
       "ESNext.Array",

@@ -7,8 +7,6 @@ import {
   playStory,
 } from './helpers'
 
-const answers = CLASSIFICATION_KEY
-
 async function openGame(page: Page) {
   await playStory(page)
   await finishLesson(page)
@@ -32,7 +30,7 @@ test.describe('Classification game (TASK-009)', () => {
       await expect(page.getByTestId('classification-progress')).toHaveText(`第 ${n} / 7 題`)
       const name = (await item.textContent())!.trim()
       // Get the first structure wrong on purpose; "動物細胞" is never right in stage 1.
-      await choice(n === 1 ? '動物細胞' : answers[name]!).click()
+      await choice(n === 1 ? '動物細胞' : CLASSIFICATION_KEY[name]!).click()
       await expect(feedback).toContainText(n === 1 ? '不對喔' : '答對了')
       await page.getByTestId('classification-next').click()
     }
