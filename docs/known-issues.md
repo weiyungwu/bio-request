@@ -15,8 +15,6 @@
 
 ## 待 Human 確認（規格 1.2：教材正確性由 Human 驗收）
 
-- 精熟度「至少跨 2 次不同學習時段」解讀為**跨 2 個不同的日子**（裝置當地時間），不是 2 個 `sessionId`：重新整理頁面就會換 session，一分鐘內就能達成，無法代表分散練習；也與稽核文件 §7 的「跨 2 天」一致。門檻在 `src/utils/mastery.ts` 的 `MASTERY_RULES.minDays`。（v1.1 第 4 步）
-- 精熟度另加一條規格沒有的條件：**最近 5 次中答對的題目至少涵蓋 3 道不同題目**（`MASTERY_RULES.recentMinQuestions`）。否則先把 5 題都答錯、隔天把同一題連續答對 5 次也會被判定 mastered，違反「只靠重複回答同一道題不能達成 mastered」。（v1.1 第 4 步審查）
 - 精熟度門檻（3 次進入 practicing；mastered 需 5 次、近 5 次 ≥ 80%、2 天、5 道不同題目）照規格 §4.4 初始規則，規格註明正式上線前需經教學設計校準。第一關每個知識點最多 3 題，補題前沒有知識點能達到 mastered。（v1.1 第 4 步）
 - 第一關故事對白與角色（`src/data/lessons/bio-01.json` 的 `story`，賽爾隊長、米可）由 Claude 依 spec.txt 5.1 撰寫，需確認用語與知識正確性。（TASK-005）
 - 第一關教材（`bio-01.json` 的 `lessons`：單元 A 6 項、B 7 項、C 3 項，含定義、白話解釋、生活例子、考試重點、圖說）由 Claude 依 spec.txt 5.2／FR-03 撰寫，需確認正確性與是否符合學校課程範圍。（TASK-006）
@@ -28,6 +26,7 @@
 
 ## 使用限制（設計上的取捨，已寫入 README）
 
+- 精熟度「跨 2 次學習時段」= 跨 2 個不同的日子（裝置當地時間）；mastered 另需最近 5 次中答對的題目涵蓋至少 3 道不同題目。Human 已確認（2026-11-10）。門檻在 `src/utils/mastery.ts` 的 `MASTERY_RULES`。（v1.1 第 4 步）
 - 狀態不可只靠顏色表示，必須同時有文字或圖示。
 - `BaseTag` 放在 `bg` 或 `surface` 上；放在 `surface-2` 上時 explore tone 對比僅 4.50:1。
 - `bio` 色只作裝飾或主題標記，不代表答對或答錯。

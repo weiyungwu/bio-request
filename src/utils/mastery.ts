@@ -27,6 +27,7 @@ export const MASTERY_RULES: MasteryRules = Object.freeze({
   /**
    * …on at least this many different local days. Spec: "至少跨 2 次不同學習時段"; a session
    * here is one page load, which a reload restarts, so days show spacing and sessions don't.
+   * Human-confirmed (2026-11-10).
    */
   minDays: 2,
   /** …to at least this many different questions ("只靠重複回答同一道題不能達成 mastered")… */
@@ -34,7 +35,7 @@ export const MASTERY_RULES: MasteryRules = Object.freeze({
   /**
    * …and the right answers among the latest `recentWindow` cover at least this many
    * different questions: otherwise old (even wrong) answers supply the variety while the
-   * recent rights are one question repeated. Not in the spec; pending Human confirmation.
+   * recent rights are one question repeated. Not in the spec; Human-confirmed (2026-11-10).
    */
   recentMinQuestions: 3,
 })
