@@ -78,6 +78,19 @@ describe('bio-01 question bank', () => {
       'bio-01-q10': ['b-chloroplast', 'c-plant'],
       'bio-01-q11': ['c-plant', 'c-both'],
       'bio-01-q12': ['b-mitochondrion', 'c-both'],
+      // v1.1 step 6, batch 1 (Human confirmed 2026-11-10): the four points that had no questions.
+      'bio-01-q13': ['a-growth'],
+      'bio-01-q14': ['a-growth'],
+      'bio-01-q15': ['a-growth'],
+      'bio-01-q16': ['a-reproduction'],
+      'bio-01-q17': ['a-reproduction'],
+      'bio-01-q18': ['a-reproduction'],
+      'bio-01-q19': ['a-heredity'],
+      'bio-01-q20': ['a-heredity', 'b-nucleus'],
+      'bio-01-q21': ['a-heredity'],
+      'bio-01-q22': ['a-adaptation'],
+      'bio-01-q23': ['a-adaptation'],
+      'bio-01-q24': ['a-adaptation'],
     })
   })
 

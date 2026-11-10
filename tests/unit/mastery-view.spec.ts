@@ -70,7 +70,20 @@ describe('MasteryView (v1.1 step 5)', () => {
     expect(row(w, 'b-cytoplasm').find('[data-testid="mastery-few"]').text()).toContain(
       '題目還在增加中',
     )
-    expect(row(w, 'a-growth').find('[data-testid="mastery-few"]').text()).toContain('還沒有題目')
+    expect(row(w, 'b-membrane').find('[data-testid="mastery-few"]').text()).toContain('目前 1 題')
+  })
+
+  // Every stage-1 point has questions now, but a later stage's points start with none.
+  it('says when a point has no questions at all', async () => {
+    const bank = getQuestionBank('bio-01')!
+    const all = bank.questions
+    bank.questions = all.filter((q) => !q.knowledgeIds.includes('a-growth'))
+    try {
+      const { w } = await mountView()
+      expect(row(w, 'a-growth').find('[data-testid="mastery-few"]').text()).toContain('還沒有題目')
+    } finally {
+      bank.questions = all
+    }
   })
 
   it("ignores another player's answers on a shared device", async () => {

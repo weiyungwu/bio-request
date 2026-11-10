@@ -52,7 +52,11 @@ describe('courseReport', () => {
   it('counts the questions per point and flags points with too few', () => {
     const r = report([])
     expect(point(r, 'b-cytoplasm')).toMatchObject({ questionCount: 3, enoughQuestions: false })
-    expect(point(r, 'a-growth')).toMatchObject({ questionCount: 0, enoughQuestions: false })
+    expect(point(r, 'a-growth')).toMatchObject({ questionCount: 3, enoughQuestions: false })
+    // Every stage-1 point has questions now; a later stage starts with points that have none.
+    const without = questions.filter((q) => !q.knowledgeIds.includes('a-growth'))
+    const empty = courseReport(lesson, without, [], { playerId: PLAYER, now })
+    expect(point(empty, 'a-growth')).toMatchObject({ questionCount: 0, enoughQuestions: false })
   })
 
   it('picks the answered points under 80%, lowest first, at most 3', () => {
