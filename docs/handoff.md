@@ -24,6 +24,7 @@
 | M7    | README 部署說明（Cloudflare Pages）、`.node-version`                              | 完成                                       |
 | M7    | 部署：https://bio-request.weiyung-wu.workers.dev/ （Cloudflare Worker，非 Pages） | 完成；主流程等 16 個 E2E 對正式網址通過    |
 | v1.1  | 第 1 步：題目加 `knowledgeIds` 與驗證（稽核文件第 8 節）                          | 完成，任務審查已處理                       |
+| v1.1  | 第 2 步：學習事件儲存層（`bio-quest:events`，稽核文件第 8 節）                    | 完成，待任務審查                           |
 
 第一關流程（`src/views/LessonView.vue`）：故事 → 探險者訓練（16 個知識點＋重點整理）→ 細胞城市探險（細胞互動圖）→ 互動挑戰（配對遊戲 → 分類遊戲）→ 關卡測驗（`QuizView`，5 題）。Phase 3 審查（Gemini）已處理。
 
@@ -33,6 +34,10 @@
 - 對正式網址跑 E2E：暫時建一個 config 匯入 `playwright.config.ts`，`webServer` 設為 `undefined`、每個 project 的 `baseURL` 改成正式網址，跑完刪掉。
 - 之後的方向：v1.1 學習地基，依 `docs/audit/v1.1-learning-foundation-audit.md` 第 8 節的順序；文末「Human 決定」已回答（對照表正確、現有內容視為已確認、課本為新文京《生物學》第四版、補題由 Claude 出草稿）。另一個方向是規格 M8 第二至第八關。
 - 主流程 E2E 全程點擊、不直接輸入網址；`playStory(page, { open: false })` 從目前頁面開始玩故事，呼叫前要先 `page.clock.install()`。
+- 學習事件（v1.1）：`src/types/learningEvent.ts`、`src/utils/learningEventStorage.ts`。存在 `bio-quest:events`，與 `bio-quest:progress` 分開；遇到較新版本只讀不寫。第 3 步接到畫面時要決定：
+  - `playerId`（匿名、每個瀏覽器一個）與 `sessionId` 從哪裡來、存在哪裡。
+  - 首頁「重設學習資料」也要清除 `bio-quest:events`（目前只清 progress）。
+  - 稽核文件 §7 寫錯題本事件的 `source` 標為 review，但規格 §4.2 的 `source` 只有 `2d`／`3d`；建議改用 `activityId`（例如 `review`、`quiz:bio-01`）區分，`source` 照規格。
 - 「直接測驗」讓學生不上課也能直接考：Human 已確認（學生可能已在課堂上或先前學過）。主流程 E2E 仍照規格 4.2 走完整課程，另有單元測試涵蓋直接測驗。
 - 保存的資料格式若要加欄位，必須是選填或有預設值（見 known-issues）。多個分頁會透過 `storage` 事件同步。
 - 讀 `useQuizStore()` 時要確認 `quiz.courseId` 是目前的關卡。
