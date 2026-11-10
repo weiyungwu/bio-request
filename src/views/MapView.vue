@@ -35,9 +35,23 @@ const stages = computed(() =>
 const completedCount = computed(() => stages.value.filter((s) => s.status === 'completed').length)
 const lockedCount = computed(() => stages.value.filter((s) => s.status === 'locked').length)
 
-const cardBase = 'flex h-full flex-col gap-3 rounded-card border bg-surface p-4 shadow-card sm:p-5'
+const STATUS_LABEL = {
+  completed: '✓ 已完成',
+  'in-progress': '⏳ 進行中',
+  open: '▶ 可挑戰',
+} as const
+// BaseTag look, made clickable: hover rings it in its text colour, deepens the fill (20%:
+// tag text stays >= 4.9:1; 30% would drop below AA) and shows a pointer.
+// before: widens the hit area to 44px without changing the look.
+const pill =
+  'relative z-10 inline-flex cursor-pointer items-center gap-1 rounded-pill px-3 py-0.5 text-sm font-semibold transition-[background-color,box-shadow] hover:ring-2 hover:ring-current before:absolute before:inset-x-0 before:-inset-y-2.5 motion-reduce:transition-none'
+const pillExplore = 'bg-explore/15 text-explore hover:bg-explore/20'
+const pillSuccess = 'bg-success/15 text-success hover:bg-success/20'
+
+const cardBase =
+  'relative flex h-full flex-col gap-3 rounded-card border bg-surface p-4 shadow-card sm:p-5'
 const cardInteractive =
-  'transition-[border-color,box-shadow,translate] hover:border-explore hover:shadow-glow-explore focus-visible:border-explore focus-visible:shadow-glow-explore active:translate-y-0.5 motion-reduce:transition-none'
+  'transition-[border-color,box-shadow,translate] hover:border-explore hover:shadow-glow-explore has-[[data-testid=stage-link]:focus-visible]:border-explore has-[[data-testid=stage-link]:focus-visible]:shadow-glow-explore has-[[data-testid=stage-link]:active]:translate-y-0.5 motion-reduce:transition-none'
 </script>
 
 <template>
@@ -60,9 +74,7 @@ const cardInteractive =
 
     <ol class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <li v-for="{ course, status, bestScore } in stages" :key="course.id" data-testid="stage-card">
-        <component
-          :is="status === 'locked' ? 'div' : RouterLink"
-          v-bind="status === 'locked' ? {} : { to: `/lesson/${course.id}` }"
+        <div
           :class="[
             cardBase,
             status === 'locked' ? 'border-dashed border-border' : cardInteractive,
@@ -70,17 +82,48 @@ const cardInteractive =
             status === 'open' || status === 'in-progress' ? 'border-explore' : '',
           ]"
         >
-          <div class="flex items-center justify-between gap-2">
+          <div class="flex items-start justify-between gap-2">
             <span class="text-sm font-semibold text-muted">第 {{ course.order }} 關</span>
-            <BaseTag v-if="status === 'completed'" tone="success">✓ 已完成</BaseTag>
-            <BaseTag v-else-if="status === 'in-progress'" tone="explore">⏳ 進行中</BaseTag>
-            <BaseTag v-else-if="status === 'open'" tone="explore">▶ 可挑戰</BaseTag>
-            <BaseTag v-else>🔒 未開放</BaseTag>
+            <!-- Status tag with 直接測驗 under it, left edges aligned. -->
+            <div class="flex flex-col items-start gap-2">
+              <BaseTag v-if="status === 'locked'">🔒 未開放</BaseTag>
+              <!-- Above the card link (z-10) so its own hover shows; tabindex -1: the title
+                   link already gives keyboard users the same lesson stop. -->
+              <RouterLink
+                v-else
+                :to="`/lesson/${course.id}`"
+                tabindex="-1"
+                data-testid="stage-status"
+                :class="[pill, status === 'completed' ? pillSuccess : pillExplore]"
+                >{{ STATUS_LABEL[status] }}</RouterLink
+              >
+              <!-- Above the card link (z-10); the before: box keeps a 44px touch target. -->
+              <RouterLink
+                v-if="status !== 'locked'"
+                :to="`/quiz/${course.id}`"
+                data-testid="stage-quiz"
+                :aria-label="`直接測驗：第 ${course.order} 關`"
+                :class="[
+                  pill,
+                  pillExplore,
+                  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-explore',
+                ]"
+                >📝 直接測驗</RouterLink
+              >
+            </div>
           </div>
           <span aria-hidden="true" class="text-4xl">{{ THEME_ICON[course.id] }}</span>
           <div class="space-y-1">
             <h2 :class="['text-lg', status === 'locked' && 'text-muted']">
-              {{ course.storyTitle }}
+              <!-- Stretched over the whole card (after:inset-0), so the card still enters the lesson. -->
+              <RouterLink
+                v-if="status !== 'locked'"
+                :to="`/lesson/${course.id}`"
+                data-testid="stage-link"
+                class="outline-none after:absolute after:inset-0 after:rounded-card"
+                >{{ course.storyTitle }}</RouterLink
+              >
+              <template v-else>{{ course.storyTitle }}</template>
             </h2>
             <p class="text-sm text-muted">{{ course.title }}・{{ course.description }}</p>
           </div>
@@ -93,7 +136,7 @@ const cardInteractive =
             </span>
             <span class="text-sm font-semibold text-explore">再次挑戰 →</span>
           </p>
-        </component>
+        </div>
       </li>
     </ol>
   </main>

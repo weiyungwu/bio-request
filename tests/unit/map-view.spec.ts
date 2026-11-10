@@ -35,7 +35,7 @@ describe('MapView', () => {
   it('makes only the open stage a link; locked stages say so in text', async () => {
     const { wrapper } = await mountMap(pinia)
     const cards = wrapper.findAll('[data-testid="stage-card"]')
-    expect(cards[0]!.find('a').attributes('href')).toBe('/lesson/bio-01')
+    expect(cards[0]!.find('[data-testid="stage-link"]').attributes('href')).toBe('/lesson/bio-01')
     for (const card of cards.slice(1)) {
       expect(card.find('a').exists()).toBe(false)
       expect(card.text()).toContain('🔒 未開放')
@@ -49,7 +49,7 @@ describe('MapView', () => {
     const { wrapper } = await mountMap(pinia)
     const first = wrapper.findAll('[data-testid="stage-card"]')[0]!
     expect(first.text()).toContain('⏳ 進行中')
-    expect(first.find('a').exists()).toBe(true)
+    expect(first.find('[data-testid="stage-link"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="map-progress"]').text()).toContain('已完成 0 / 8 關')
   })
 
@@ -79,10 +79,28 @@ describe('MapView', () => {
 
   it('enters stage 1 when its card is clicked', async () => {
     const { wrapper, router } = await mountMap(pinia)
-    await wrapper.findAll('[data-testid="stage-card"]')[0]!.find('a').trigger('click')
+    await wrapper
+      .findAll('[data-testid="stage-card"]')[0]!
+      .find('[data-testid="stage-link"]')
+      .trigger('click')
     // The lesson route is lazy-loaded, so navigation settles after the chunk import.
     // A cold import can take over waitFor's 1 s default, so allow longer.
     await vi.waitFor(() => expect(router.currentRoute.value.fullPath).toBe('/lesson/bio-01'), {
+      timeout: 5000,
+    })
+  })
+
+  // Students who already know the lesson can practise without replaying the story.
+  it('offers a direct quiz link on open stages only', async () => {
+    const { wrapper, router } = await mountMap(pinia)
+    const cards = wrapper.findAll('[data-testid="stage-card"]')
+    const quiz = cards[0]!.find('[data-testid="stage-quiz"]')
+    expect(quiz.attributes('href')).toBe('/quiz/bio-01')
+    for (const card of cards.slice(1)) {
+      expect(card.find('[data-testid="stage-quiz"]').exists()).toBe(false)
+    }
+    await quiz.trigger('click')
+    await vi.waitFor(() => expect(router.currentRoute.value.fullPath).toBe('/quiz/bio-01'), {
       timeout: 5000,
     })
   })
@@ -102,6 +120,6 @@ describe('MapView', () => {
     expect(first.text()).toContain('✓ 已完成')
     expect(first.text()).toContain('最佳 90 分')
     // A completed stage can still be replayed.
-    expect(first.find('a').attributes('href')).toBe('/lesson/bio-01')
+    expect(first.find('[data-testid="stage-link"]').attributes('href')).toBe('/lesson/bio-01')
   })
 })
