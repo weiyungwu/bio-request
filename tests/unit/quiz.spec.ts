@@ -1,9 +1,12 @@
 import { describe, it, expect } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useProgressStore } from '@/stores/progress'
+import { getQuestionBank } from '@/data/questions'
 import { useQuizStore } from '@/stores/quiz'
 import type { Question } from '@/types/question'
 import {
+  QUIZ_SIZE,
+  QUIZ_TOPIC_QUOTAS,
   correctAnswerText,
   drawQuestions,
   emptyResponse,
@@ -106,6 +109,40 @@ describe('quiz engine (TASK-011)', () => {
       draws.add(ids.join())
     }
     expect(draws.size).toBeGreaterThan(1)
+  })
+
+  // Human decision (2026-11-11): unit A has 15 of stage 1's 24 questions, so a plain draw
+  // left out cells in about 1 quiz in 14. Every stage-1 quiz has at least 2 cell questions.
+  const bank = getQuestionBank('bio-01')!.questions
+  const quota = QUIZ_TOPIC_QUOTAS['bio-01']!
+  const cellsIn = (qs: readonly Question[]) => qs.filter((q) => quota.topics.includes(q.topic))
+
+  it('a stage 1 draw always has at least 2 cell questions, and is still random', () => {
+    const unitA = new Set<number>()
+    for (let n = 0; n < 1000; n++) {
+      const qs = drawQuestions(bank, QUIZ_SIZE, Math.random, quota)
+      expect(cellsIn(qs).length).toBeGreaterThanOrEqual(2)
+      expect(new Set(qs.map((q) => q.id)).size).toBe(QUIZ_SIZE)
+      unitA.add(QUIZ_SIZE - cellsIn(qs).length)
+    }
+    // Unit A can fill anywhere from none to the 3 places left (all-cells is about 2% of
+    // draws, so 1000 draws make a miss vanishingly unlikely).
+    expect([...unitA].sort()).toEqual([0, 1, 2, 3])
+  })
+
+  // Without the quota about 1 stage-1 quiz in 3 has under 2 cell questions; 50 starts catch it.
+  it('the quiz store applies the stage quota', () => {
+    setActivePinia(createPinia())
+    const s = useQuizStore()
+    for (let n = 0; n < 50; n++) {
+      s.start('bio-01', bank)
+      expect(cellsIn(s.questions).length).toBeGreaterThanOrEqual(2)
+    }
+  })
+
+  it('a quota the bank cannot meet still draws a full quiz', () => {
+    const ids = drawQuestions(pool, 5, Math.random, { topics: ['沒有這個主題'], min: 2 })
+    expect(new Set(ids.map((q) => q.id)).size).toBe(5)
   })
 
   // 顯示解答 must be readable for every type, not an index.

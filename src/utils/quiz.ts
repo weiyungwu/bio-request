@@ -13,13 +13,40 @@ export const PASS_SCORE = 80
  */
 export type QuizResponse = (number | null)[]
 
-/** Draws `count` distinct questions in random order (ids are unique in a bank). */
+/** At least `min` questions of a draw come from `topics`. */
+export interface TopicQuota {
+  topics: readonly string[]
+  min: number
+}
+
+/**
+ * Per-stage quotas. Stage 1 (Human decision, 2026-11-11): unit A now has most of the bank,
+ * so a plain random draw could leave out cells, the stage's main content; at least 2 of
+ * the 5 come from units B and C.
+ */
+export const QUIZ_TOPIC_QUOTAS: Readonly<Record<string, TopicQuota>> = {
+  'bio-01': { topics: ['細胞構造', '細胞器功能', '動植物細胞差異'], min: 2 },
+}
+
+/**
+ * Draws `count` distinct questions in random order (ids are unique in a bank). With a
+ * quota, its `min` questions are drawn first from its topics (as many as the bank has),
+ * the rest from everything left.
+ */
 export function drawQuestions(
   pool: readonly Question[],
   count: number,
   random: () => number = Math.random,
+  quota?: TopicQuota,
 ): Question[] {
-  return shuffle(pool, random).slice(0, count)
+  const shuffled = shuffle(pool, random)
+  if (!quota) return shuffled.slice(0, count)
+  const required = shuffled
+    .filter((q) => quota.topics.includes(q.topic))
+    .slice(0, Math.min(quota.min, count))
+  const rest = shuffled.filter((q) => !required.includes(q)).slice(0, count - required.length)
+  // Mixed again, so the required questions aren't always first.
+  return shuffle([...required, ...rest], random)
 }
 
 export function emptyResponse(q: Question): QuizResponse {

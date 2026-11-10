@@ -6,6 +6,7 @@ import type { QuizExpAward } from '@/utils/exp'
 import { logEvent, newId } from '@/utils/learningEvents'
 import {
   QUIZ_SIZE,
+  QUIZ_TOPIC_QUOTAS,
   drawQuestions,
   emptyResponse,
   isAnswered,
@@ -46,7 +47,7 @@ export const useQuizStore = defineStore('quiz', () => {
   /** Starts (or restarts) a quiz: a new draw, and nothing kept from the last round. */
   function start(id: string, pool: readonly Question[], random: () => number = Math.random) {
     courseId.value = id
-    questions.value = drawQuestions(pool, QUIZ_SIZE, random)
+    questions.value = drawQuestions(pool, QUIZ_SIZE, random, QUIZ_TOPIC_QUOTAS[id])
     responses.value = questions.value.map(emptyResponse)
     submitted.value = questions.value.map(() => false)
     index.value = 0
