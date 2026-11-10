@@ -187,6 +187,27 @@ describe('ReviewView (TASK-014)', () => {
   })
 
   // Two retries open at once must not share ids (labels, aria references).
+  // Review S-01: the +10 is paid once; retrying again must not make the message vanish.
+  it('keeps the 錯題補強 reward message after 再作答一次', async () => {
+    const p = reload()
+    p.recordQuizResult('bio-01', 60, ['bio-01-q01'], t1)
+    const w = await mountReview()
+    const it = () => item(w, 'bio-01-q01')
+    const key = (q('bio-01-q01') as Extract<Question, { type: 'single_choice' }>).answer
+    const answerRight = async () => {
+      await it().find('[data-testid="review-retry"]').trigger('click')
+      await it().find(`[data-testid="quiz-option"][data-index="${key}"]`).trigger('click')
+      await it().find('[data-testid="review-submit"]').trigger('click')
+    }
+    await answerRight()
+    expect(it().find('[data-testid="review-reward"]').text()).toContain('+10 EXP')
+    const exp = p.exp
+    await answerRight()
+    expect(p.exp).toBe(exp)
+    expect(it().find('[data-testid="review-reward"]').text()).toContain('+10 EXP')
+    w.unmount()
+  })
+
   it('keeps ids unique with two retries open', async () => {
     reload().recordQuizResult('bio-01', 60, ['bio-01-q05', 'bio-01-q07'], t1)
     const w = await mountReview()

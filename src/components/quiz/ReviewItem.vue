@@ -48,10 +48,12 @@ function choose(slot: number, value: number | null) {
 function submit() {
   if (submitted.value || hint.value) return
   submitted.value = true
-  reward.value = progress.recordReviewAnswer(
+  const paid = progress.recordReviewAnswer(
     props.question.id,
     isCorrect(props.question, response.value),
   )
+  // Keep the message once paid: a later 再作答一次 returns 0 (already claimed), not a revoke (S-01).
+  if (paid > 0) reward.value = paid
 }
 </script>
 
