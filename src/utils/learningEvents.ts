@@ -35,6 +35,8 @@ function getPlayerId(): string {
 
 /** One page load. */
 const sessionId = newId()
+/** Last occurredAt of this session, in ms: times only go up, so its events never tie. */
+let lastAt = 0
 
 export type EventInput = Pick<LearningEvent, 'eventType' | 'knowledgeIds'> &
   Partial<Pick<LearningEvent, 'questionId' | 'activityId' | 'isCorrect'>>
@@ -42,8 +44,10 @@ export type EventInput = Pick<LearningEvent, 'eventType' | 'knowledgeIds'> &
 /**
  * Records one learning event from the 2D game. Never throws and returns nothing: losing an
  * event (storage full, newer data stored) must not interrupt learning (audit R3).
+ * Two events in the same millisecond get 1 ms apart, keeping the order they happened in.
  */
 export function logEvent(input: EventInput, now = new Date()): void {
+  lastAt = Math.max(now.getTime(), lastAt + 1)
   recordEvents([
     {
       ...input,
@@ -51,7 +55,7 @@ export function logEvent(input: EventInput, now = new Date()): void {
       playerId: getPlayerId(),
       sessionId,
       source: '2d',
-      occurredAt: now.toISOString(),
+      occurredAt: new Date(lastAt).toISOString(),
       recordedAt: new Date().toISOString(),
     },
   ])

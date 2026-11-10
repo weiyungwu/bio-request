@@ -6,6 +6,12 @@ import { EVENT_SOURCES, EVENT_TYPES, type LearningEvent } from '@/types/learning
  */
 export const EVENTS_KEY = 'bio-quest:events'
 const VERSION = 1
+/**
+ * ~350 B each → ~1.75 MB. The site's ~5 MB LocalStorage is shared with saved progress, so
+ * past this the log stops growing (nothing is deleted) instead of ever blocking progress
+ * saves. See known-issues for export or cleanup before it is reached.
+ */
+export const MAX_EVENTS = 5000
 
 type Raw = Record<string, unknown>
 const isObject = (v: unknown): v is Raw => typeof v === 'object' && v !== null && !Array.isArray(v)
@@ -33,14 +39,18 @@ const isEvent = (e: unknown): e is LearningEvent =>
   isDate(e.occurredAt) &&
   isDate(e.recordedAt)
 
-// Array.sort is stable: events at the same moment keep the order they were recorded in.
+const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
+// Time, then session, then id: the same set sorts the same on every device, whatever order
+// it was merged in. logEvent keeps one session's times strictly increasing, so ties only
+// happen between sessions.
 const byTime = (a: LearningEvent, b: LearningEvent) =>
-  Date.parse(a.occurredAt) - Date.parse(b.occurredAt)
+  Date.parse(a.occurredAt) - Date.parse(b.occurredAt) ||
+  compare(a.sessionId, b.sessionId) ||
+  compare(a.id, b.id)
 
 /**
- * Union by id, in time order; events at the same moment keep their saved order, then the new
- * ones in the order given. Events never change, so on a repeated id the copy from `saved`
- * (or the earlier one in a list) is kept.
+ * Union by id, in time order (see byTime). Events never change, so on a repeated id the copy
+ * from `saved` (or the earlier one in a list) is kept.
  */
 export function mergeEvents(
   saved: readonly LearningEvent[],
@@ -107,16 +117,19 @@ export function readEventStorage(): string | null {
 /**
  * Appends events. Re-reads storage first so events another tab saved are kept (rule 4);
  * repeated ids are saved once (rule 7). Returns false when nothing could be written: a newer
- * version is stored, or storage is full or unavailable (the game carries on either way).
+ * version is stored, the log is at `max`, or storage is full or unavailable (the game carries
+ * on either way).
  */
-export function recordEvents(added: readonly LearningEvent[]): boolean {
+export function recordEvents(added: readonly LearningEvent[], max = MAX_EVENTS): boolean {
   const storage = globalThis.localStorage
   if (!storage) return false
   try {
     // Read inside the try: a failed read must stop the write, not look like "nothing saved".
     const saved = parseEventStore(storage.getItem(EVENTS_KEY))
     if (!saved.writable) return false
-    const events = [...mergeEvents(saved.events, added), ...saved.unreadable]
+    const merged = mergeEvents(saved.events, added)
+    if (merged.length + saved.unreadable.length > max) return false
+    const events = [...merged, ...saved.unreadable]
     storage.setItem(EVENTS_KEY, JSON.stringify({ version: VERSION, events }))
     return true
   } catch {

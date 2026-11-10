@@ -75,6 +75,7 @@ export const useQuizStore = defineStore('quiz', () => {
   }
 
   function submit() {
+    // Also guards a reset quiz: no current question means no answer (isAnswered([]) is false).
     if (isSubmitted.value || !isAnswered(response.value)) return
     submitted.value[index.value] = true
     const q = current.value!

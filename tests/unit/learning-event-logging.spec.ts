@@ -58,6 +58,25 @@ describe('quiz events', () => {
     expect(answers.map((e) => e.isCorrect)).toEqual(drawn.map((_, i) => i !== 1))
   })
 
+  it('records nothing for a submit without an answer', () => {
+    const { quiz } = reload()
+    quiz.start('bio-01', pool)
+    quiz.submit()
+    expect(events().map((e) => e.eventType)).toEqual(['quiz_started'])
+  })
+
+  // Two answers in one millisecond must stay in the order they happened.
+  it('keeps one session in order even within the same millisecond', () => {
+    const { progress } = reload()
+    progress.recordQuizResult('bio-01', 60, ['bio-01-q05'])
+    const at = new Date('2026-11-10T01:00:00.000Z')
+    for (const correct of [false, true, false])
+      progress.recordReviewAnswer('bio-01-q05', correct, at)
+    const log = events()
+    expect(log.map((e) => e.isCorrect)).toEqual([false, true, false])
+    expect(new Set(log.map((e) => e.occurredAt)).size).toBe(3)
+  })
+
   // An attempt that is started again counts as a new one (and the old one as abandoned).
   it('gives a restarted quiz a new activity id', () => {
     const { quiz } = reload()
@@ -122,6 +141,15 @@ describe('player id and reset', () => {
     quiz.start('bio-01', pool)
     progress.resetAll()
     expect(localStorage.getItem(EVENTS_KEY)).toBeNull()
+  })
+
+  // A shared classroom computer keeps one anonymous id across resets (Human decision).
+  it('keeps the player id after 重設學習資料', () => {
+    const { quiz, progress } = reload()
+    quiz.start('bio-01', pool)
+    const id = localStorage.getItem(PLAYER_KEY)
+    progress.resetAll()
+    expect(localStorage.getItem(PLAYER_KEY)).toBe(id)
   })
 
   // R3: storage full or disabled — events are lost, the quiz is not.

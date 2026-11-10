@@ -33,4 +33,10 @@ test('a quiz and a 錯題本 retry are saved as learning events, kept after relo
   events = (await read(page, 'bio-quest:events')).events
   expect(events).toHaveLength(8)
   expect(events.at(-1)).toMatchObject({ eventType: 'question_answered', activityId: 'review' })
+
+  // 再挑戰 from the result page is one new attempt: exactly one more quiz_started.
+  await page.goto('/result/bio-01')
+  await playQuiz(page)
+  events = (await read(page, 'bio-quest:events')).events
+  expect(events.filter((e) => e.eventType === 'quiz_started')).toHaveLength(2)
 })

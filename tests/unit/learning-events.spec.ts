@@ -114,12 +114,15 @@ describe('mergeEvents', () => {
     expect(mergeEvents([e1], [{ ...e1, isCorrect: false }])).toEqual([e1])
   })
 
-  // Two answers in the same millisecond (ids are random) must stay in the order they happened.
-  it('keeps events at the same moment in the order they were recorded', () => {
-    const b = event('b', e1.occurredAt)
-    const a = event('a', e1.occurredAt)
-    expect(mergeEvents([b], [a])).toEqual([b, a])
-    expect(mergeEvents([], [b, a])).toEqual([b, a])
+  // Ties (different sessions, same millisecond) sort by session, then id: any device merging
+  // the same events in any direction gets the same order. Within one session logEvent keeps
+  // times strictly increasing, so its events never tie.
+  it('orders events at the same moment the same way whichever side they come from', () => {
+    const a = event('a', e1.occurredAt, { sessionId: 's2' })
+    const b = event('b', e1.occurredAt, { sessionId: 's1' })
+    const c = event('c', e1.occurredAt, { sessionId: 's1' })
+    expect(mergeEvents([a], [c, b])).toEqual([b, c, a])
+    expect(mergeEvents([c, b], [a])).toEqual([b, c, a])
   })
 })
 
@@ -143,6 +146,16 @@ describe('recordEvents (LocalStorage)', () => {
     recordEvents([e1])
     recordEvents([e1])
     expect(JSON.parse(saved()!).events).toEqual([e1])
+  })
+
+  // The log shares the site's ~5 MB storage with saved progress: past the cap it stops
+  // growing (nothing is deleted) rather than ever crowding out progress saves.
+  it('stops recording at the cap, keeping what is saved', () => {
+    recordEvents([e1, e2], 2)
+    expect(recordEvents([e3], 2)).toBe(false)
+    expect(JSON.parse(saved()!).events).toEqual([e1, e2])
+    // An event already saved is not new, so resending it at the cap is still fine.
+    expect(recordEvents([e1], 2)).toBe(true)
   })
 
   it('leaves a newer version untouched', () => {
