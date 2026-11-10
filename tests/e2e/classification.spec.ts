@@ -1,16 +1,13 @@
 import { test, expect, type Page } from '@playwright/test'
-import { finishExplorer, finishLesson, finishMatching, playStory } from './helpers'
+import {
+  CLASSIFICATION_KEY,
+  finishExplorer,
+  finishLesson,
+  finishMatching,
+  playStory,
+} from './helpers'
 
-// Answer key per spec.txt 5.2 unit C.
-const answers: Record<string, string> = {
-  細胞核: '兩者皆有',
-  細胞膜: '兩者皆有',
-  細胞質: '兩者皆有',
-  粒線體: '兩者皆有',
-  葉綠體: '植物細胞',
-  液胞: '兩者皆有',
-  細胞壁: '植物細胞',
-}
+const answers = CLASSIFICATION_KEY
 
 async function openGame(page: Page) {
   await playStory(page)

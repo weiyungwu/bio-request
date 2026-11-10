@@ -4,10 +4,16 @@ import { STORY_ADVANCE_COOLDOWN_MS } from '../../src/components/lesson/storyDial
 
 const PAST_COOLDOWN = STORY_ADVANCE_COOLDOWN_MS + 50
 
-/** Opens stage 1 with a fake clock and plays through the story into the lesson. */
-export async function playStory(page: Page) {
-  await page.clock.install()
-  await page.goto('/lesson/bio-01')
+/**
+ * Opens stage 1 with a fake clock and plays through the story into the lesson.
+ * With `open: false` it plays from the lesson page already shown; the caller must have
+ * installed the clock before loading the app.
+ */
+export async function playStory(page: Page, { open = true } = {}) {
+  if (open) {
+    await page.clock.install()
+    await page.goto('/lesson/bio-01')
+  }
   const counter = page.getByText(/^\d+ \/ 6$/)
   await expect(counter).toHaveText('1 / 6')
   for (let n = 2; n <= 6; n++) {
@@ -64,6 +70,31 @@ export async function finishMatching(page: Page) {
   }
   await page.getByTestId('matching-done').click()
   await expect(page.getByRole('heading', { name: '植物還是動物？' })).toBeFocused()
+}
+
+/** Classification answer key per spec.txt 5.2 unit C. */
+export const CLASSIFICATION_KEY: Record<string, string> = {
+  細胞核: '兩者皆有',
+  細胞膜: '兩者皆有',
+  細胞質: '兩者皆有',
+  粒線體: '兩者皆有',
+  葉綠體: '植物細胞',
+  液胞: '兩者皆有',
+  細胞壁: '植物細胞',
+}
+
+/** Sorts all 7 structures correctly and waits for the game's result. */
+export async function finishClassification(page: Page) {
+  for (let n = 1; n <= 7; n++) {
+    const name = (await page.getByTestId('classification-item').textContent())!.trim()
+    await page
+      .getByTestId('classification-choice')
+      .filter({ hasText: CLASSIFICATION_KEY[name]! })
+      .click()
+    await expect(page.getByTestId('classification-feedback')).toContainText('答對了')
+    await page.getByTestId('classification-next').click()
+  }
+  await expect(page.getByRole('heading', { name: '分類完成！' })).toBeFocused()
 }
 
 type Q = {
