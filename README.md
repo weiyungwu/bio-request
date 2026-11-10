@@ -175,6 +175,12 @@ Handover notes (current status, workflow, next task): [`docs/handoff.md`](docs/h
   never overwritten. The log stops growing at `MAX_EVENTS` (5000, ~1.75 MB) so it can never
   crowd out progress saves in the site's ~5 MB storage. Events sort by time, then session,
   then id; within one page load times only go up (same-millisecond events get 1 ms apart).
+- 知識掌握度 (`/mastery`, v1.1 step 5; linked from home): per open stage, the answered
+  points under 80% correct (lowest first, at most `WEAK_LIMIT` 3) with a link to the 錯題本,
+  then every knowledge point by unit with its level (`src/utils/mastery.ts`), answer count and
+  accuracy, and a note when the bank has fewer than `minQuestions` questions for it. Built by
+  `courseReport()` (`src/utils/knowledgeReport.ts`) from this browser's player's events,
+  read once per visit. States that mastery is separate from stage completion (v1.1 §4.1).
 - 「任務完成提示」(TASK-005) is read as the mission briefing card shown after the opening story
   (title + objectives + 接受任務). Pending Human confirmation (see `docs/known-issues.md`).
 - E2E: `CI=1 npm run test:e2e` builds first, then tests the production preview (a stale

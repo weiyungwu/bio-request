@@ -148,6 +148,12 @@ function confirmReset() {
           }}
           題待複習）→</RouterLink
         >
+        <RouterLink
+          to="/mastery"
+          data-testid="home-mastery-link"
+          class="inline-flex min-h-11 items-center font-semibold text-explore hover:underline"
+          ><span aria-hidden="true">🎯 </span>知識掌握度：看看哪些觀念需要加強 →</RouterLink
+        >
       </BaseCard>
     </div>
 

@@ -29,6 +29,11 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('../views/ReviewView.vue'),
   },
   {
+    path: '/mastery',
+    name: 'mastery',
+    component: () => import('../views/MasteryView.vue'),
+  },
+  {
     path: '/result/:courseId',
     name: 'result',
     component: () => import('../views/ResultView.vue'),

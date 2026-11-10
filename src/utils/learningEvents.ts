@@ -17,7 +17,8 @@ export function newId(): string {
 
 /** Used only while storage is unavailable: one id for this page load. */
 let fallbackPlayerId: string | undefined
-function getPlayerId(): string {
+/** This browser's anonymous player id (created on first use). */
+export function getPlayerId(): string {
   try {
     const storage = globalThis.localStorage
     if (storage) {
