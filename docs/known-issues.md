@@ -14,6 +14,8 @@
 
 ## 待 Human 確認（規格 1.2：教材正確性由 Human 驗收）
 
+- 精熟度「至少跨 2 次不同學習時段」解讀為**跨 2 個不同的日子**（裝置當地時間），不是 2 個 `sessionId`：重新整理頁面就會換 session，一分鐘內就能達成，無法代表分散練習；也與稽核文件 §7 的「跨 2 天」一致。門檻在 `src/utils/mastery.ts` 的 `MASTERY_RULES.minDays`。（v1.1 第 4 步）
+- 精熟度門檻（3 次進入 practicing；mastered 需 5 次、近 5 次 ≥ 80%、2 天、5 道不同題目）照規格 §4.4 初始規則，規格註明正式上線前需經教學設計校準。第一關每個知識點最多 3 題，補題前沒有知識點能達到 mastered。（v1.1 第 4 步）
 - 第一關故事對白與角色（`src/data/lessons/bio-01.json` 的 `story`，賽爾隊長、米可）由 Claude 依 spec.txt 5.1 撰寫，需確認用語與知識正確性。（TASK-005）
 - 第一關教材（`bio-01.json` 的 `lessons`：單元 A 6 項、B 7 項、C 3 項，含定義、白話解釋、生活例子、考試重點、圖說）由 Claude 依 spec.txt 5.2／FR-03 撰寫，需確認正確性與是否符合學校課程範圍。（TASK-006）
 - 細胞示意圖（`public/images/cells/*.svg`）為 Claude 繪製的簡化示意圖，需確認構造位置與比例不會誤導。（TASK-006）
