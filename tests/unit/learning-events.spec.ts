@@ -114,10 +114,12 @@ describe('mergeEvents', () => {
     expect(mergeEvents([e1], [{ ...e1, isCorrect: false }])).toEqual([e1])
   })
 
-  it('orders events at the same moment by id, so every tab agrees', () => {
+  // Two answers in the same millisecond (ids are random) must stay in the order they happened.
+  it('keeps events at the same moment in the order they were recorded', () => {
     const b = event('b', e1.occurredAt)
     const a = event('a', e1.occurredAt)
-    expect(mergeEvents([b], [a])).toEqual([a, b])
+    expect(mergeEvents([b], [a])).toEqual([b, a])
+    expect(mergeEvents([], [b, a])).toEqual([b, a])
   })
 })
 

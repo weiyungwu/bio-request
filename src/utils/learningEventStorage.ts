@@ -33,12 +33,14 @@ const isEvent = (e: unknown): e is LearningEvent =>
   isDate(e.occurredAt) &&
   isDate(e.recordedAt)
 
+// Array.sort is stable: events at the same moment keep the order they were recorded in.
 const byTime = (a: LearningEvent, b: LearningEvent) =>
-  Date.parse(a.occurredAt) - Date.parse(b.occurredAt) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
+  Date.parse(a.occurredAt) - Date.parse(b.occurredAt)
 
 /**
- * Union by id, in time order (ties by id, so every tab sorts the same). Events never change,
- * so on a repeated id the copy from `saved` (or the earlier one in a list) is kept.
+ * Union by id, in time order; events at the same moment keep their saved order, then the new
+ * ones in the order given. Events never change, so on a repeated id the copy from `saved`
+ * (or the earlier one in a list) is kept.
  */
 export function mergeEvents(
   saved: readonly LearningEvent[],
@@ -81,6 +83,15 @@ export function parseEventStore(text: string | null): EventStore {
     events: mergeEvents([], raw.events.filter(isEvent)),
     unreadable: raw.events.filter((e) => !isEvent(e)),
     writable: true,
+  }
+}
+
+/** 重設學習資料. Removes the events even if a newer version wrote them: the student asked. */
+export function clearEventStorage(): void {
+  try {
+    globalThis.localStorage?.removeItem(EVENTS_KEY)
+  } catch {
+    // Nothing we could remove.
   }
 }
 

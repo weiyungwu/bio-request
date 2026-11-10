@@ -26,6 +26,8 @@ import {
   writeStorage,
 } from '@/utils/progressStorage'
 import { isPassing } from '@/utils/quiz'
+import { clearEventStorage } from '@/utils/learningEventStorage'
+import { logEvent } from '@/utils/learningEvents'
 
 const RECENT_LIMIT = 3
 
@@ -166,6 +168,18 @@ export const useProgressStore = defineStore('progress', () => {
   function recordReviewAnswer(questionId: string, correct: boolean, now = new Date()): number {
     const entry = wrongQuestions.value[questionId]
     if (!entry) return 0
+    // v1.1: every retry is kept as its own answer; a question dropped from the bank has none.
+    const question = getQuestionBank(entry.courseId)?.questions.find((q) => q.id === questionId)
+    logEvent(
+      {
+        eventType: 'question_answered',
+        knowledgeIds: question?.knowledgeIds ?? [],
+        questionId,
+        isCorrect: correct,
+        activityId: 'review',
+      },
+      now,
+    )
     if (!correct) {
       Object.assign(entry, { lastWrongAt: now.toISOString(), mastered: false })
       return 0
@@ -189,6 +203,8 @@ export const useProgressStore = defineStore('progress', () => {
   function resetAll() {
     apply(emptyProgress())
     clearStorage()
+    // The learning history goes too (Human decision, 2026-11-10); the anonymous player id stays.
+    clearEventStorage()
   }
 
   return {

@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { useProgressStore } from '@/stores/progress'
 import type { Question } from '@/types/question'
 import type { QuizExpAward } from '@/utils/exp'
+import { logEvent, newId } from '@/utils/learningEvents'
 import {
   QUIZ_SIZE,
   drawQuestions,
@@ -25,6 +26,8 @@ export const useQuizStore = defineStore('quiz', () => {
   const finished = ref(false)
   /** EXP paid for this attempt; set once, when the last question is passed. */
   const award = ref<QuizExpAward | null>(null)
+  /** Learning events of one attempt share this: `quiz:<courseId>:<attempt id>` (v1.1). */
+  let activityId = ''
 
   const current = computed(() => questions.value[index.value])
   const response = computed(() => responses.value[index.value] ?? [])
@@ -49,6 +52,8 @@ export const useQuizStore = defineStore('quiz', () => {
     index.value = 0
     finished.value = false
     award.value = null
+    activityId = `quiz:${id}:${newId()}`
+    logEvent({ eventType: 'quiz_started', knowledgeIds: [], activityId })
   }
 
   /** Forgets any attempt, e.g. when a course has no usable bank (review S1). */
@@ -72,6 +77,14 @@ export const useQuizStore = defineStore('quiz', () => {
   function submit() {
     if (isSubmitted.value || !isAnswered(response.value)) return
     submitted.value[index.value] = true
+    const q = current.value!
+    logEvent({
+      eventType: 'question_answered',
+      knowledgeIds: q.knowledgeIds,
+      questionId: q.id,
+      isCorrect: isCorrect(q, response.value),
+      activityId,
+    })
   }
 
   function next() {
@@ -84,6 +97,7 @@ export const useQuizStore = defineStore('quiz', () => {
     // Exactly once per attempt: the finished guard above stops a second call.
     const wrongIds = results.value.filter((r) => !r.correct).map((r) => r.question.id)
     award.value = useProgressStore().recordQuizResult(courseId.value!, score.value, wrongIds)
+    logEvent({ eventType: 'quiz_completed', knowledgeIds: [], activityId })
   }
 
   return {

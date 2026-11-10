@@ -164,6 +164,14 @@ Handover notes (current status, workflow, next task): [`docs/handoff.md`](docs/h
   course's lesson data (e.g. `b-nucleus`); unknown ids reject the question. The mapping is
   Human-confirmed content (`docs/audit/v1.1-learning-foundation-audit.md` §4.2) and only
   lives in the question data, so saved progress is unaffected.
+- Learning events (v1.1): every quiz start, answer and finish, and every 錯題本 retry, is
+  appended to LocalStorage `bio-quest:events` (`src/utils/learningEvents.ts` →
+  `learningEventStorage.ts`), separate from `bio-quest:progress`. Quiz events share
+  `activityId` `quiz:<courseId>:<attempt id>`; retries use `review`; `source` is `2d`.
+  `bio-quest:player` holds an anonymous random id per browser (no personal data).
+  重設學習資料 also clears the events (the player id stays). Saving an event never
+  interrupts the game; a newer stored version, or entries this version can't read, are
+  never overwritten.
 - 「任務完成提示」(TASK-005) is read as the mission briefing card shown after the opening story
   (title + objectives + 接受任務). Pending Human confirmation (see `docs/known-issues.md`).
 - E2E: `CI=1 npm run test:e2e` builds first, then tests the production preview (a stale
