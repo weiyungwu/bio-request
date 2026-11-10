@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { getLessonData } from '@/data/lessons'
 import { getQuestionBank } from '@/data/questions'
 import type { Question } from '@/types/question'
 
@@ -91,7 +92,26 @@ describe('bio-01 question bank', () => {
       'bio-01-q22': ['a-adaptation'],
       'bio-01-q23': ['a-adaptation'],
       'bio-01-q24': ['a-adaptation'],
+      // Batch 2 (Human confirmed 2026-11-11): the rest of the points up to 3 questions each.
+      'bio-01-q25': ['a-metabolism'],
+      'bio-01-q26': ['a-response'],
+      'bio-01-q27': ['a-response'],
+      'bio-01-q28': ['b-membrane'],
+      'bio-01-q29': ['b-membrane', 'c-animal'],
+      'bio-01-q30': ['b-chloroplast'],
+      'bio-01-q31': ['b-vacuole'],
+      'bio-01-q32': ['b-vacuole', 'c-plant'],
+      'bio-01-q33': ['b-wall'],
+      'bio-01-q34': ['c-animal', 'b-wall'],
+      'bio-01-q35': ['c-both'],
     })
+  })
+
+  // Audit §8 step 6: every stage-1 knowledge point has at least 3 questions.
+  it('gives every knowledge point at least 3 questions', () => {
+    const points = getLessonData('bio-01')!.lessons.flatMap((l) => l.knowledgePoints)
+    const thin = points.filter((p) => qs.filter((q) => q.knowledgeIds.includes(p.id)).length < 3)
+    expect(thin.map((p) => p.id)).toEqual([])
   })
 
   it('has no bank for a stage without questions', () => {

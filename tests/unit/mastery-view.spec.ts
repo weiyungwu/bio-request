@@ -70,7 +70,7 @@ describe('MasteryView (v1.1 step 5)', () => {
     expect(row(w, 'b-cytoplasm').find('[data-testid="mastery-few"]').text()).toContain(
       '題目還在增加中',
     )
-    expect(row(w, 'b-membrane').find('[data-testid="mastery-few"]').text()).toContain('目前 1 題')
+    expect(row(w, 'b-membrane').find('[data-testid="mastery-few"]').text()).toContain('目前 3 題')
   })
 
   // Every stage-1 point has questions now, but a later stage's points start with none.
