@@ -17,7 +17,8 @@ export type LearningEventType = (typeof EVENT_TYPES)[number]
 
 export const EVENT_SOURCES = ['2d', '3d'] as const
 
-export interface LearningEvent {
+/** Read-only: events are never changed after they are recorded (rule 4). */
+export type LearningEvent = Readonly<{
   /** Unique; a resent event with the same id is counted once (rule 7). */
   id: string
   /** Anonymous per-browser id, no personal data (rule 6). */
@@ -37,4 +38,4 @@ export interface LearningEvent {
   occurredAt: string
   /** When it was saved (rule 5: kept apart from occurredAt; missing from the §4.2 interface). */
   recordedAt: string
-}
+}>

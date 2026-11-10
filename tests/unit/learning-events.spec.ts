@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import type { LearningEvent } from '@/types/learningEvent'
 import {
   EVENTS_KEY,
@@ -31,11 +31,15 @@ const store = (events: unknown[], version: unknown = 1) => JSON.stringify({ vers
 // v1.1 §4.2 rules 2–4 and 7, and the audit's R1 (a newer save must never be wiped).
 describe('parseEventStore', () => {
   it('starts empty and writable when nothing is saved', () => {
-    expect(parseEventStore(null)).toEqual({ events: [], writable: true })
+    expect(parseEventStore(null)).toEqual({ events: [], unreadable: [], writable: true })
   })
 
   it('reads saved events in time order', () => {
-    expect(parseEventStore(store([e2, e1]))).toEqual({ events: [e1, e2], writable: true })
+    expect(parseEventStore(store([e2, e1]))).toEqual({
+      events: [e1, e2],
+      unreadable: [],
+      writable: true,
+    })
   })
 
   // Corrupt data is ours to replace (as with saved progress); there is nothing to keep.
@@ -44,12 +48,19 @@ describe('parseEventStore', () => {
     ['not an object', '[]'],
     ['no version', JSON.stringify({ events: [e1] })],
   ])('treats %s as empty and writable', (_, text) => {
-    expect(parseEventStore(text)).toEqual({ events: [], writable: true })
+    expect(parseEventStore(text)).toEqual({ events: [], unreadable: [], writable: true })
   })
 
   // A newer app wrote this; an old tab must not overwrite it with its own format.
-  it('reads a newer version as nothing, and refuses to write over it', () => {
-    expect(parseEventStore(store([e1], 2))).toEqual({ events: [], writable: false })
+  // Only a numeric version above 1 is protected; anything else is corrupt, as with progress.
+  it.each([
+    [2, false],
+    [1.5, false],
+    ['2', true],
+    [0, true],
+    [null, true],
+  ])('version %j: writable is %s', (version, writable) => {
+    expect(parseEventStore(store([e1], version))).toMatchObject({ events: [], writable })
   })
 
   it('drops only the bad events', () => {
@@ -58,6 +69,9 @@ describe('parseEventStore', () => {
       { ...e2, eventType: 'cheated' },
       { ...e2, source: 'vr' },
       { ...e2, occurredAt: 'yesterday' },
+      // Not ISO with an offset: read as local time, so devices would sort it differently.
+      { ...e2, occurredAt: 'Nov 10 2026' },
+      { ...e2, occurredAt: '2026-11-10T02:00:00' },
       { ...e2, recordedAt: undefined },
       { ...e2, knowledgeIds: 'b-nucleus' },
       { ...e2, isCorrect: 'yes' },
@@ -66,7 +80,9 @@ describe('parseEventStore', () => {
       { ...e2, playerId: undefined },
       'e2',
     ]
-    expect(parseEventStore(store([e1, ...bad, e3])).events).toEqual([e1, e3])
+    const parsed = parseEventStore(store([e1, ...bad, e3]))
+    expect(parsed.events).toEqual([e1, e3])
+    expect(parsed.unreadable).toEqual(bad)
   })
 
   // quiz_started / quiz_completed are about a whole quiz, not particular points.
@@ -142,14 +158,36 @@ describe('recordEvents (LocalStorage)', () => {
 
   // R3: storage full or disabled — the game goes on, as with saved progress.
   it('reports a failed write instead of throwing', () => {
-    const setItem = Storage.prototype.setItem
-    Storage.prototype.setItem = () => {
+    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new DOMException('full', 'QuotaExceededError')
-    }
+    })
     try {
       expect(recordEvents([e1])).toBe(false)
     } finally {
-      Storage.prototype.setItem = setItem
+      spy.mockRestore()
     }
+  })
+
+  // A failed read is not "nothing saved": writing then would replace the whole history.
+  it('does not write when the saved events cannot be read', () => {
+    recordEvents([e1])
+    const spy = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new DOMException('denied', 'SecurityError')
+    })
+    try {
+      expect(recordEvents([e2])).toBe(false)
+    } finally {
+      spy.mockRestore()
+    }
+    expect(JSON.parse(saved()!).events).toEqual([e1])
+  })
+
+  // A later app may add event types or sources without a new version. This tab can't read
+  // them, but must not delete them either (the audit's R1, one level down).
+  it('writes back saved entries it cannot read, untouched', () => {
+    const future = { ...e3, eventType: 'concept_mapped', source: 'vr' }
+    localStorage.setItem(EVENTS_KEY, store([future, e1]))
+    recordEvents([e2])
+    expect(JSON.parse(saved()!).events).toEqual([e1, e2, future])
   })
 })

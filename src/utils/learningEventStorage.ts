@@ -10,7 +10,10 @@ const VERSION = 1
 type Raw = Record<string, unknown>
 const isObject = (v: unknown): v is Raw => typeof v === 'object' && v !== null && !Array.isArray(v)
 const isText = (v: unknown): v is string => typeof v === 'string' && v !== ''
-const isDate = (v: unknown): v is string => isText(v) && !Number.isNaN(Date.parse(v))
+// ISO 8601 with an explicit offset (as toISOString writes): other strings Date.parse accepts
+// are read in local time, so devices in different zones would order events differently.
+const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/
+const isDate = (v: unknown): v is string => isText(v) && ISO.test(v) && !Number.isNaN(Date.parse(v))
 const optional = (v: unknown, valid: (v: unknown) => boolean) => v === undefined || valid(v)
 
 const isEvent = (e: unknown): e is LearningEvent =>
@@ -48,24 +51,37 @@ export function mergeEvents(
 
 export interface EventStore {
   events: LearningEvent[]
+  /**
+   * Saved entries this version can't read (e.g. an event type a later app added without a
+   * new version). Never used, but written back untouched so they are not deleted.
+   */
+  unreadable: unknown[]
   /** false when a newer app version wrote the value: read nothing, never overwrite it. */
   writable: boolean
 }
 
-/** Bad events are dropped one by one; unreadable data starts empty (and may be replaced). */
+const empty = (writable: boolean): EventStore => ({ events: [], unreadable: [], writable })
+
+/**
+ * Unreadable JSON or a non-numeric/older version is corrupt: starts empty and may be
+ * replaced (as with saved progress). Only a numeric version above 1 is protected.
+ */
 export function parseEventStore(text: string | null): EventStore {
-  if (text === null) return { events: [], writable: true }
+  if (text === null) return empty(true)
   let raw: unknown
   try {
     raw = JSON.parse(text)
   } catch {
-    return { events: [], writable: true }
+    return empty(true)
   }
-  if (!isObject(raw)) return { events: [], writable: true }
-  if (typeof raw.version === 'number' && raw.version > VERSION)
-    return { events: [], writable: false }
-  if (raw.version !== VERSION || !Array.isArray(raw.events)) return { events: [], writable: true }
-  return { events: mergeEvents([], raw.events.filter(isEvent)), writable: true }
+  if (!isObject(raw)) return empty(true)
+  if (typeof raw.version === 'number' && raw.version > VERSION) return empty(false)
+  if (raw.version !== VERSION || !Array.isArray(raw.events)) return empty(true)
+  return {
+    events: mergeEvents([], raw.events.filter(isEvent)),
+    unreadable: raw.events.filter((e) => !isEvent(e)),
+    writable: true,
+  }
 }
 
 /** LocalStorage can be missing or throw (private mode, quota, disabled); never crash on it. */
@@ -83,12 +99,15 @@ export function readEventStorage(): string | null {
  * version is stored, or storage is full or unavailable (the game carries on either way).
  */
 export function recordEvents(added: readonly LearningEvent[]): boolean {
-  const saved = parseEventStore(readEventStorage())
-  if (!saved.writable) return false
+  const storage = globalThis.localStorage
+  if (!storage) return false
   try {
-    const events = mergeEvents(saved.events, added)
-    globalThis.localStorage?.setItem(EVENTS_KEY, JSON.stringify({ version: VERSION, events }))
-    return globalThis.localStorage !== undefined
+    // Read inside the try: a failed read must stop the write, not look like "nothing saved".
+    const saved = parseEventStore(storage.getItem(EVENTS_KEY))
+    if (!saved.writable) return false
+    const events = [...mergeEvents(saved.events, added), ...saved.unreadable]
+    storage.setItem(EVENTS_KEY, JSON.stringify({ version: VERSION, events }))
+    return true
   } catch {
     return false
   }
