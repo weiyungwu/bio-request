@@ -34,6 +34,55 @@ npm install
 - `tests/unit/` — Vitest
 - `tests/e2e/` — Playwright
 
+## Deploy (Cloudflare Pages)
+
+A static site: no server, no environment variables, no secrets. Progress lives in each
+student's browser (LocalStorage), so deploys never touch student data.
+
+### Recommended: Git integration (deploys on every push)
+
+1. Cloudflare dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**,
+   pick this repo.
+2. Build settings:
+
+   | Setting                | Value           |
+   | ---------------------- | --------------- |
+   | Production branch      | `main`          |
+   | Framework preset       | None            |
+   | Build command          | `npm run build` |
+   | Build output directory | `dist`          |
+   | Root directory         | (leave empty)   |
+
+3. **Save and Deploy.** The site is served at `https://<project>.pages.dev`. Pushes to `main`
+   update production; other branches get preview URLs.
+
+Node comes from `.node-version` (22.23.4, the build image's current default, pinned so a
+future default cannot change it). The build image's npm 10 works with the committed
+`package-lock.json` (see Setup). Checked by building a
+fresh clone with `npm ci && npm run build` on Node 22.23 / npm 10.9.9.
+
+### Alternative: Direct Upload (manual, from this computer)
+
+```sh
+npm run build
+npx wrangler pages project create   # once; asks for a name and production branch
+npx wrangler pages deploy dist
+```
+
+A Direct Upload project cannot be switched to Git integration later; create a new project
+instead.
+
+### Routing
+
+The app uses history-mode URLs (`/quiz/bio-01`). `dist/` has no top-level `404.html`, so
+Pages serves `index.html` for unknown paths and Vue Router takes over. Do not add a
+`public/404.html`: it turns that fallback off and deep links would 404.
+
+### After deploying
+
+Open `/`, then a deep link such as `/review` directly, and play one quiz; reload and
+check the record is still on the home page.
+
 ## Design System (TASK-002)
 
 - Tokens live in `src/assets/main.css` (`@theme`) and become Tailwind utilities:
