@@ -30,7 +30,7 @@
 
 - MVP（第一關）已部署。正式網址部署成 Cloudflare Worker（規格寫 Pages；兩者皆可，深層連結已確認正常）。Worker 的建置設定在 Human 的 dashboard，不在 repo 裡。
 - 對正式網址跑 E2E：暫時建一個 config 匯入 `playwright.config.ts`，`webServer` 設為 `undefined`、每個 project 的 `baseURL` 改成正式網址，跑完刪掉。
-- 之後的方向：`docs/audit/v1.1-learning-foundation-audit.md`（先回答文末「待 Human 決定」），或規格 M8 第二至第八關。
+- 之後的方向：v1.1 學習地基，依 `docs/audit/v1.1-learning-foundation-audit.md` 第 8 節的順序；文末「Human 決定」已回答（對照表正確、現有內容視為已確認、課本為新文京《生物學》第四版、補題由 Claude 出草稿）。另一個方向是規格 M8 第二至第八關。
 - 主流程 E2E 全程點擊、不直接輸入網址；`playStory(page, { open: false })` 從目前頁面開始玩故事，呼叫前要先 `page.clock.install()`。
 - 「直接測驗」讓學生不上課也能直接考：Human 已確認（學生可能已在課堂上或先前學過）。主流程 E2E 仍照規格 4.2 走完整課程，另有單元測試涵蓋直接測驗。
 - 保存的資料格式若要加欄位，必須是選填或有預設值（見 known-issues）。多個分頁會透過 `storage` 事件同步。
