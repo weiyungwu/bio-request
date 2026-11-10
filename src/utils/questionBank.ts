@@ -59,15 +59,22 @@ function answerProblems(q: Raw): string[] {
 /**
  * Validates a course's question bank file (spec TASK-010: 缺少必要欄位時能顯示資料錯誤).
  * Invalid questions are dropped and reported, so one bad entry doesn't block the quiz.
- * `knowledgeIds` are the stage's knowledge point ids; each question must name only these.
+ * `knownPointIds` are the stage's knowledge point ids; each question must name only these.
+ * `undefined` means the stage has no lesson data: one file-level error, not one per question.
  */
 export function validateQuestionBank(
   raw: unknown,
   courseId: string,
-  knowledgeIds: ReadonlySet<string>,
+  knownPointIds: ReadonlySet<string> | undefined,
 ): QuestionBank {
   if (!Array.isArray(raw)) {
     return { questions: [], errors: [{ index: -1, message: '題庫檔案必須是題目陣列' }] }
+  }
+  if (!knownPointIds) {
+    return {
+      questions: [],
+      errors: [{ index: -1, message: `找不到「${courseId}」的課程資料，無法檢查 knowledgeIds` }],
+    }
   }
   const questions: Question[] = []
   const errors: QuestionDataError[] = []
@@ -95,7 +102,7 @@ export function validateQuestionBank(
     else if (!isTextList(q.knowledgeIds, 1))
       problems.push('knowledgeIds 必須是至少 1 個不重複的知識點 id')
     else {
-      const unknown = q.knowledgeIds.filter((k) => !knowledgeIds.has(k))
+      const unknown = q.knowledgeIds.filter((k) => !knownPointIds.has(k))
       if (unknown.length) problems.push(`knowledgeIds 有這一關沒有的知識點：${unknown.join('、')}`)
     }
     if (!('difficulty' in q)) problems.push('缺少 difficulty')

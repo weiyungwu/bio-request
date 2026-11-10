@@ -149,12 +149,13 @@ describe('validateQuestionBank (TASK-010)', () => {
   // v1.1: mastery is worked out per knowledge point, so every question must name the
   // points it tests, and only points that exist in this stage's lessons.
   describe('knowledgeIds', () => {
+    const { knowledgeIds: _, ...noIds } = single
     it('accepts one or several known points', () => {
       expect(check({ ...single, knowledgeIds: ['b-nucleus', 'b-wall'] }).errors).toEqual([])
     })
 
     it.each([
-      ['missing', { ...single, knowledgeIds: undefined }, '缺少 knowledgeIds'],
+      ['missing', noIds, '缺少 knowledgeIds'],
       ['empty', { ...single, knowledgeIds: [] }, 'knowledgeIds 必須是至少 1 個不重複的知識點 id'],
       [
         'not a list',
@@ -167,15 +168,26 @@ describe('validateQuestionBank (TASK-010)', () => {
         'knowledgeIds 必須是至少 1 個不重複的知識點 id',
       ],
       [
+        'not all text',
+        { ...single, knowledgeIds: ['b-nucleus', 1] },
+        'knowledgeIds 必須是至少 1 個不重複的知識點 id',
+      ],
+      [
         'unknown',
         { ...single, knowledgeIds: ['b-nucleus', 'c-moon', 'x'] },
         'knowledgeIds 有這一關沒有的知識點：c-moon、x',
       ],
     ])('rejects knowledgeIds that are %s', (_, q, message) => {
-      const { ['knowledgeIds']: ids, ...rest } = q
-      const input = ids === undefined ? rest : q
-      expect(check(input).questions).toEqual([])
-      expect(messages(input)).toEqual([`第 1 題（bio-01-single）：${message}`])
+      expect(check(q).questions).toEqual([])
+      expect(messages(q)).toEqual([`第 1 題（bio-01-single）：${message}`])
+    })
+
+    // Without lesson data the cause is the missing lesson file, not each question's ids.
+    it('reports a stage without lesson data once, at file level', () => {
+      expect(validateQuestionBank([single, trueFalse], 'bio-01', undefined)).toEqual({
+        questions: [],
+        errors: [{ index: -1, message: '找不到「bio-01」的課程資料，無法檢查 knowledgeIds' }],
+      })
     })
   })
 })

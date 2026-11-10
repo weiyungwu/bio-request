@@ -4,15 +4,17 @@ import { validateQuestionBank } from '@/utils/questionBank'
 
 // Every src/data/questions/<courseId>.json, bundled at build time. The file name is the
 // course id; each question's courseId must match it, and its knowledgeIds must be
-// knowledge points of that course's lessons (none without lesson data: all are reported).
+// knowledge points of that course's lessons (no lesson data: one file-level error).
 const files = import.meta.glob<{ default: unknown }>('./*.json', { eager: true })
 
 const byCourseId = new Map(
   Object.entries(files).map(([path, m]) => {
     const courseId = path.replace(/^\.\/(.+)\.json$/, '$1')
-    const points = new Set(
-      getLessonData(courseId)?.lessons.flatMap((l) => l.knowledgePoints.map((p) => p.id)) ?? [],
-    )
+    const lesson = getLessonData(courseId)
+    // `?? []`: lesson JSON is cast, not validated; a unit without points must not throw here,
+    // which would break every stage's quiz at module load.
+    const points =
+      lesson && new Set(lesson.lessons.flatMap((l) => (l.knowledgePoints ?? []).map((p) => p.id)))
     return [courseId, validateQuestionBank(m.default, courseId, points)]
   }),
 )
