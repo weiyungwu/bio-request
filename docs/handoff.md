@@ -20,7 +20,7 @@
 | 5     | TASK-015 成就系統（徽章、EXP 規則、每日上限）                              | 完成，任務審查已處理                       |
 | 4–5   | Phase 4–5 審查（Gemini，PASS；S-01 已修正）                                | 已處理（commit eff3059）                   |
 | —     | 需求變更：關卡地圖「直接測驗」（狀態標籤下方，直接進入 `/quiz/:courseId`） | 完成，任務審查已處理（commit 7c1b9d0）     |
-| M7    | 規格 4.2 主流程 E2E（`tests/e2e/main-flow.spec.ts`）；E2E 檔納入型別檢查   | 完成，待任務審查                           |
+| M7    | 規格 4.2 主流程 E2E（`tests/e2e/main-flow.spec.ts`）；E2E 檔納入型別檢查   | 完成，任務審查已處理（commit 97f162b）     |
 | M7    | **README 部署說明、Cloudflare Pages 部署** ← 下一步                        | 未開始                                     |
 
 第一關流程（`src/views/LessonView.vue`）：故事 → 探險者訓練（16 個知識點＋重點整理）→ 細胞城市探險（細胞互動圖）→ 互動挑戰（配對遊戲 → 分類遊戲）→ 關卡測驗（`QuizView`，5 題）。Phase 3 審查（Gemini）已處理。
