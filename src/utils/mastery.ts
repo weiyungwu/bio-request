@@ -6,7 +6,17 @@ import { localDay } from '@/utils/achievements'
  * v1.1 §4.4 initial mastery rules, in one place (spec: not scattered in components). The
  * spec calls them provisional, to be calibrated with teaching design before launch.
  */
-export const MASTERY_RULES = {
+export type MasteryRules = Readonly<{
+  practicingFrom: number
+  masteredFrom: number
+  recentWindow: number
+  recentAccuracy: number
+  minDays: number
+  minQuestions: number
+  recentMinQuestions: number
+}>
+
+export const MASTERY_RULES: MasteryRules = Object.freeze({
   /** practicing from this many answers; fewer is learning. */
   practicingFrom: 3,
   /** mastered needs at least this many answers… */
@@ -19,10 +29,15 @@ export const MASTERY_RULES = {
    * here is one page load, which a reload restarts, so days show spacing and sessions don't.
    */
   minDays: 2,
-  /** …to at least this many different questions ("只靠重複回答同一道題不能達成 mastered"). */
+  /** …to at least this many different questions ("只靠重複回答同一道題不能達成 mastered")… */
   minQuestions: 5,
-}
-export type MasteryRules = typeof MASTERY_RULES
+  /**
+   * …and the right answers among the latest `recentWindow` cover at least this many
+   * different questions: otherwise old (even wrong) answers supply the variety while the
+   * recent rights are one question repeated. Not in the spec; pending Human confirmation.
+   */
+  recentMinQuestions: 3,
+})
 
 export interface MasteryOptions {
   playerId: string
@@ -38,6 +53,8 @@ function answersAbout(events: readonly LearningEvent[], knowledgeId: string, pla
       (e) =>
         e.eventType === 'question_answered' &&
         typeof e.isCorrect === 'boolean' &&
+        // Without a question id an answer can't count towards "different questions".
+        e.questionId !== undefined &&
         e.playerId === playerId &&
         e.knowledgeIds.includes(knowledgeId),
     )
@@ -48,14 +65,17 @@ function levelOf(answers: readonly LearningEvent[], rules: MasteryRules): Master
   if (answers.length === 0) return 'not_started'
   if (answers.length < rules.practicingFrom) return 'learning'
   const recent = answers.slice(-rules.recentWindow)
-  const recentRight = recent.filter((e) => e.isCorrect).length / recent.length
+  const recentCorrect = recent.filter((e) => e.isCorrect)
+  const recentRight = recentCorrect.length / recent.length
+  const recentQuestions = new Set(recentCorrect.map((e) => e.questionId)).size
   const days = new Set(answers.map((e) => localDay(new Date(e.occurredAt)))).size
   const questions = new Set(answers.map((e) => e.questionId)).size
   const mastered =
     answers.length >= rules.masteredFrom &&
     recentRight >= rules.recentAccuracy &&
     days >= rules.minDays &&
-    questions >= rules.minQuestions
+    questions >= rules.minQuestions &&
+    recentQuestions >= rules.recentMinQuestions
   return mastered ? 'mastered' : 'practicing'
 }
 

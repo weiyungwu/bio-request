@@ -86,6 +86,35 @@ describe('knowledgeMastery', () => {
     expect(level(same)).toBe('practicing')
   })
 
+  // Review loophole: old wrong answers supply the variety, recent rights are one question.
+  it('is not mastered when the recent right answers are all the same question', () => {
+    const variedButWrong = fiveQuestions([false, false, false, false, false], [10, 10, 10, 10, 10])
+    const sameRight = [1, 2, 3, 4, 5].map(() => answer('q1', true, 11))
+    expect(level([...variedButWrong, ...sameRight])).toBe('practicing')
+  })
+
+  it('is mastered when the recent right answers cover 3 different questions', () => {
+    const earlier = fiveQuestions([false, false, false, false, false], [10, 10, 10, 10, 10])
+    const recent = ['q1', 'q2', 'q3', 'q1', 'q2'].map((q) => answer(q, true, 11))
+    expect(level([...earlier, ...recent])).toBe('mastered')
+  })
+
+  // Boundaries: exactly 3 is practicing; 4 right answers is still short of mastered.
+  it('switches level exactly at the thresholds', () => {
+    expect(level(fiveQuestions([true, true, true], [10, 10, 11]))).toBe('practicing')
+    expect(level(fiveQuestions([true, true, true, true], [10, 10, 11, 11]))).toBe('practicing')
+  })
+
+  // An answer with no question id can't count as "a different question".
+  it('ignores answers that name no question', () => {
+    const noId = [10, 10, 11, 11, 11].map((d) => answer('q', true, d, { questionId: undefined }))
+    expect(knowledgeMastery(noId, K, { playerId: PLAYER, now }).totalAttempts).toBe(0)
+  })
+
+  it('cannot have its shared rules changed', () => {
+    expect(Object.isFrozen(MASTERY_RULES)).toBe(true)
+  })
+
   it('needs at least 5 different questions', () => {
     const four = [
       ...fiveQuestions([true, true, true, true], [10, 10, 11, 11]),
