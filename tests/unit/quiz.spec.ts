@@ -125,12 +125,12 @@ describe('quiz engine (TASK-011)', () => {
       expect(new Set(qs.map((q) => q.id)).size).toBe(QUIZ_SIZE)
       unitA.add(QUIZ_SIZE - cellsIn(qs).length)
     }
-    // Unit A can fill anywhere from none to the 3 places left (all-cells is about 10% of
+    // Unit A can fill anywhere from none to the 3 places left (all-cells is about 8% of
     // draws, so 1000 draws make a miss vanishingly unlikely).
     expect([...unitA].sort()).toEqual([0, 1, 2, 3])
   })
 
-  // Without the quota about 1 stage-1 quiz in 7 has under 2 cell questions; 50 starts catch it.
+  // Without the quota about 1 stage-1 quiz in 5 has under 2 cell questions; 50 starts catch it.
   it('the quiz store applies the stage quota', () => {
     setActivePinia(createPinia())
     const s = useQuizStore()
