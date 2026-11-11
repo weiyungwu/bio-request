@@ -10,9 +10,10 @@ import { submitBlocker } from '@/utils/quiz'
 /**
  * The current attempt's question, progress and 提交／下一題 buttons, shared by the stage
  * quiz and 弱點練習. `round` changes per start, so the question remounts (and takes focus)
- * even when the index stays 0.
+ * even when the index stays 0. `describedBy` names text read with the card (e.g. what a
+ * practice covers), which focus moving to the question would otherwise skip.
  */
-defineProps<{ round: number }>()
+defineProps<{ round: number; describedBy?: string }>()
 const emit = defineEmits<{ next: [] }>()
 
 const quiz = useQuizStore()
@@ -26,6 +27,7 @@ const submitHint = computed(() => submitBlocker(quiz.response))
     as="section"
     class="space-y-5"
     aria-label="測驗題目"
+    :aria-describedby="describedBy"
   >
     <div class="space-y-2">
       <p data-testid="quiz-progress" class="text-sm font-semibold text-muted">

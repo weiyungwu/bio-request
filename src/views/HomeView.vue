@@ -18,7 +18,8 @@ const progress = useProgressStore()
 const storyTitleById = new Map((courses as Course[]).map((c) => [c.id, c.storyTitle]))
 const courseName = (id: string) => storyTitleById.get(id) ?? id
 
-// 弱點練習 for the stage last played, else the first open one.
+// 弱點練習 for the stage whose quiz was played last (records hold stage quizzes only), else
+// the first open one.
 const firstOpen = [...(courses as Course[])]
   .sort((a, b) => a.order - b.order)
   .find((c) => isCourseOpen(c.id))?.id
@@ -169,7 +170,7 @@ function confirmReset() {
           :to="`/practice/${practiceCourse}`"
           data-testid="home-practice-link"
           class="inline-flex min-h-11 items-center font-semibold text-explore hover:underline"
-          ><span aria-hidden="true">✏️ </span>弱點練習：針對需要加強的觀念練 5 題 →</RouterLink
+          ><span aria-hidden="true">✏️ </span>弱點練習：挑需要加強的觀念練 5 題 →</RouterLink
         >
       </BaseCard>
     </div>

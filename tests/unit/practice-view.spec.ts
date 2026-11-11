@@ -94,10 +94,11 @@ describe('PracticeView', () => {
     expect(progress.exp).toBe(40)
     const rows = w.findAll('[data-testid="practice-point"]')
     expect(rows).toHaveLength(3)
-    // Before: nothing answered; after: each point has answers, so it moved on.
+    // Before: nothing answered. After: worked out from the saved answers, so it moved on.
     for (const row of rows) {
       expect(row.text()).toContain('未開始')
-      expect(row.text()).toContain('最近答對')
+      expect(row.find('[data-testid="practice-after"]').text()).not.toContain('未開始')
+      expect(row.text()).toMatch(/最近答對 [1-9]\d*%/)
     }
     expect(w.find('[data-testid="practice-to-review"]').exists()).toBe(false)
   })

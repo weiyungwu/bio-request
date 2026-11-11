@@ -16,9 +16,9 @@ import {
   type QuizResponse,
 } from '@/utils/quiz'
 
-/** One quiz attempt (TASK-011). In memory only; results are saved by TASK-013. */
 export type AttemptKind = 'quiz' | 'practice'
 
+/** One quiz attempt (TASK-011). In memory only; results are saved by TASK-013. */
 export const useQuizStore = defineStore('quiz', () => {
   const courseId = ref<string | null>(null)
   // shallowRef: the bank's question objects are shared and never mutated.

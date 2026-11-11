@@ -25,17 +25,20 @@ test.describe('弱點練習', () => {
     await page.getByTestId('practice-to-review').click()
     await expect(page.getByTestId('review-status')).toHaveCount(1)
     await page.goto('/map')
-    await expect(page.getByText('✓ 已完成')).toHaveCount(0)
+    await expect(page.getByTestId('stage-status').first()).toContainText('可挑戰')
   })
 
   test('知識掌握度 offers practice on the weak points', async ({ page }) => {
+    // All wrong: every point answered is now weak.
     await page.goto('/practice/bio-01')
     for (let n = 1; n <= 5; n++) {
       await answer(page, true)
       await page.getByTestId('quiz-next').click()
     }
     await page.goto('/mastery')
-    await page.getByTestId('mastery-practice').first().click()
+    const weak = page.getByTestId('mastery-weak')
+    await expect(weak).toBeVisible()
+    await weak.getByTestId('mastery-practice').click()
     await expect(page).toHaveURL(/\/practice\/bio-01$/)
     await expect(page.getByTestId('quiz-submit')).toBeVisible()
   })

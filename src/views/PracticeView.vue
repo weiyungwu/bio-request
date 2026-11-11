@@ -63,13 +63,15 @@ watch(courseId, start, { immediate: true })
 const done = computed(
   () => quiz.finished && quiz.kind === 'practice' && quiz.courseId === courseId.value,
 )
-// After: worked out again once the practice's answers are saved.
-const after = computed(() => {
-  if (!done.value) return new Map<string, { level: MasteryLevel; recent: number }>()
-  const points = report()?.units.flatMap((u) => u.points) ?? []
-  return new Map(
-    points.map((p) => [p.id, { level: p.mastery.masteryLevel, recent: p.mastery.recentAccuracy }]),
-  )
+// Each practised point before and after, worked out again once the answers are saved
+// (they are logged on submit, before the result shows).
+const rows = computed(() => {
+  if (!done.value) return []
+  const points = new Map((report()?.units.flatMap((u) => u.points) ?? []).map((p) => [p.id, p]))
+  return targets.value.map((t) => {
+    const now = points.get(t.id)?.mastery
+    return { ...t, after: now?.masteryLevel ?? t.before, recent: now?.recentAccuracy }
+  })
 })
 const wrongCount = computed(() => quiz.results.filter((r) => !r.correct).length)
 
@@ -98,18 +100,26 @@ const link =
     </BaseCard>
 
     <template v-else-if="!done">
-      <p data-testid="practice-targets" class="text-muted">
+      <p id="practice-targets" data-testid="practice-targets" class="text-muted">
         這次練習：{{ targets.map((t) => t.term).join('、') }}
       </p>
-      <QuizPlayer :round="round" @next="next" />
+      <QuizPlayer :round="round" described-by="practice-targets" @next="next" />
     </template>
 
     <template v-else-if="quiz.award">
       <BaseCard as="section" class="space-y-2" aria-labelledby="practice-result-title">
-        <h2 id="practice-result-title" ref="resultHeading" tabindex="-1" class="text-lg">
+        <h2
+          id="practice-result-title"
+          ref="resultHeading"
+          tabindex="-1"
+          aria-describedby="practice-score"
+          class="text-lg"
+        >
           練習完成
         </h2>
-        <p data-testid="practice-score" class="text-3xl font-bold">{{ quiz.score }} 分</p>
+        <p id="practice-score" data-testid="practice-score" class="text-3xl font-bold">
+          {{ quiz.score }} 分
+        </p>
         <p>
           答對 {{ quiz.correctCount }} 題 · 答錯 {{ wrongCount }} 題（共
           {{ quiz.questions.length }} 題）
@@ -133,7 +143,7 @@ const link =
         <h2 id="practice-change-title" class="text-lg">知識點的變化</h2>
         <ul class="divide-y divide-border">
           <li
-            v-for="t in targets"
+            v-for="t in rows"
             :key="t.id"
             data-testid="practice-point"
             :data-id="t.id"
@@ -145,11 +155,11 @@ const link =
             }}</BaseTag>
             <span aria-hidden="true">→</span>
             <span class="sr-only">變成</span>
-            <BaseTag :tone="MASTERY_LEVEL[after.get(t.id)?.level ?? t.before].tone">
-              {{ MASTERY_LEVEL[after.get(t.id)?.level ?? t.before].label }}
+            <BaseTag data-testid="practice-after" :tone="MASTERY_LEVEL[t.after].tone">
+              {{ MASTERY_LEVEL[t.after].label }}
             </BaseTag>
-            <span v-if="after.get(t.id)" class="text-sm text-muted">
-              最近答對 {{ percent(after.get(t.id)!.recent) }}
+            <span v-if="t.recent !== undefined" class="text-sm text-muted">
+              最近答對 {{ percent(t.recent) }}
             </span>
           </li>
         </ul>
