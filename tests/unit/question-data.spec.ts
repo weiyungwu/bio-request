@@ -182,7 +182,7 @@ describe('bio-01 question bank', () => {
       'bio-01-q78': ['b-cytoplasm'],
       'bio-01-q79': ['b-mitochondrion'],
       'bio-01-q80': ['b-mitochondrion', 'b-chloroplast'],
-      'bio-01-q81': ['b-mitochondrion', 'b-chloroplast'],
+      'bio-01-q81': ['b-mitochondrion', 'b-chloroplast', 'c-plant'],
       'bio-01-q82': ['b-mitochondrion', 'b-chloroplast'],
       'bio-01-q83': ['b-mitochondrion', 'c-animal'],
       'bio-01-q84': ['b-chloroplast'],
@@ -190,7 +190,7 @@ describe('bio-01 question bank', () => {
       'bio-01-q86': ['b-vacuole', 'c-plant'],
       'bio-01-q87': ['b-vacuole'],
       'bio-01-q88': ['b-vacuole'],
-      'bio-01-q89': ['b-vacuole'],
+      'bio-01-q89': ['b-vacuole', 'b-wall'],
       'bio-01-q90': ['b-wall', 'b-nucleus'],
       'bio-01-q91': ['b-wall'],
     })
@@ -275,7 +275,7 @@ describe('bio-01 question bank', () => {
       'bio-01-q88': 0,
       'bio-01-q89': 2,
       'bio-01-q90': 2,
-      'bio-01-q91': 1,
+      'bio-01-q91': 0,
     })
   })
 
