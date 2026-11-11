@@ -1524,5 +1524,385 @@
     "answer": 0,
     "explanation": "「都有細胞壁，能維持固定的形狀」是錯的：只有植物細胞有細胞壁，動物細胞沒有，所以形狀較不固定。其他三項都是兩者的共同點。",
     "source": "第一關教材 單元 C：共同構造"
+  },
+  {
+    "id": "bio-01-q100",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-protein-line"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "研究人員用一種可以追蹤的記號標記胺基酸，提供給會分泌消化酵素的胰臟細胞。帶記號的胺基酸最先會在哪一個構造上被合成為蛋白質？",
+    "options": ["高基氏體", "溶體", "細胞核", "核糖體"],
+    "answer": 3,
+    "explanation": "答案是「核糖體」。核糖體是合成蛋白質的場所，胺基酸先在核糖體上連接成蛋白質，之後才經內質網送到高基氏體加工、包裝。溶體負責分解物質；細胞核保管遺傳物質，不是合成蛋白質的地方。",
+    "source": "第一關教材 單元 B：核糖體、內質網與高基氏體"
+  },
+  {
+    "id": "bio-01-q101",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-protein-line"],
+    "type": "ordering",
+    "difficulty": "medium",
+    "question": "胰臟細胞製造的消化酵素（一種蛋白質）要分泌到細胞外。請依序排出它經過的構造。",
+    "options": ["高基氏體", "細胞膜", "核糖體", "粗糙內質網"],
+    "answer": [2, 3, 0, 1],
+    "explanation": "蛋白質先在核糖體合成，進入粗糙內質網運送，再到高基氏體加工、包裝，最後經細胞膜送到細胞外：核糖體 → 粗糙內質網 → 高基氏體 → 細胞膜。",
+    "source": "第一關教材 單元 B：核糖體、內質網與高基氏體"
+  },
+  {
+    "id": "bio-01-q102",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-protein-line"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "甲細胞會分泌大量消化酵素，乙細胞主要用來儲存脂肪。比較兩種細胞，下列推論何者最合理？",
+    "options": [
+      "甲細胞的粗糙內質網和高基氏體比乙細胞發達",
+      "乙細胞的核糖體比甲細胞多，因為脂肪是一種蛋白質",
+      "甲細胞沒有平滑內質網，因為它只製造蛋白質",
+      "兩者的高基氏體一樣發達，因為都是人體細胞"
+    ],
+    "answer": 0,
+    "explanation": "最合理的是「甲細胞的粗糙內質網和高基氏體比乙細胞發達」。消化酵素是蛋白質，要大量製造和分泌，負責運送、包裝蛋白質的構造就特別發達。脂肪不是蛋白質；不同功能的細胞，胞器發達的程度也不同。",
+    "source": "第一關教材 單元 B：核糖體、內質網與高基氏體"
+  },
+  {
+    "id": "bio-01-q103",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-protein-line", "c-prokaryote"],
+    "type": "true_false",
+    "difficulty": "medium",
+    "question": "核糖體外面有一層膜包住，所以只有真核細胞才有核糖體。",
+    "options": ["對", "錯"],
+    "answer": 1,
+    "explanation": "錯誤。核糖體沒有膜包住，原核細胞和真核細胞都有核糖體；只有內質網、高基氏體這類膜狀胞器才只出現在真核細胞。",
+    "source": "第一關教材 單元 B：核糖體、內質網與高基氏體；單元 C：原核細胞與真核細胞"
+  },
+  {
+    "id": "bio-01-q104",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-protein-line"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "某種細胞需要大量合成脂質。這種細胞中，下列哪一個構造最可能特別發達？",
+    "options": ["粗糙內質網", "溶體", "平滑內質網", "葉綠體"],
+    "answer": 2,
+    "explanation": "答案是「平滑內質網」。沒有附著核糖體的平滑內質網與脂質的合成有關；粗糙內質網表面有核糖體，主要和蛋白質的運送有關。",
+    "source": "第一關教材 單元 B：核糖體、內質網與高基氏體"
+  },
+  {
+    "id": "bio-01-q105",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-protein-line"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "某種藥物會讓高基氏體無法運作。加入這種藥物後，下列哪一種變化最可能發生？",
+    "options": [
+      "核糖體完全無法合成蛋白質",
+      "細胞分泌到細胞外的蛋白質減少",
+      "細胞核中的 DNA 消失",
+      "細胞膜變成細胞壁"
+    ],
+    "answer": 1,
+    "explanation": "最可能的是「細胞分泌到細胞外的蛋白質減少」。高基氏體負責加工、包裝蛋白質並送出，它無法運作時，蛋白質就難以分泌；核糖體仍能合成蛋白質，DNA 也不會因此消失。",
+    "source": "第一關教材 單元 B：核糖體、內質網與高基氏體"
+  },
+  {
+    "id": "bio-01-q106",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-protein-line"],
+    "type": "matching",
+    "difficulty": "medium",
+    "question": "請將左邊的構造與右邊的功能配對。",
+    "options": {
+      "left": ["核糖體", "粗糙內質網", "高基氏體", "平滑內質網"],
+      "right": [
+        "與脂質的合成有關",
+        "加工、包裝蛋白質並送出",
+        "合成蛋白質的場所",
+        "表面附著核糖體，運送蛋白質"
+      ]
+    },
+    "answer": [2, 3, 1, 0],
+    "explanation": "核糖體是合成蛋白質的場所；粗糙內質網表面附著核糖體，運送蛋白質；高基氏體把蛋白質加工、包裝並送出；平滑內質網沒有核糖體，與脂質的合成有關。",
+    "source": "第一關教材 單元 B：核糖體、內質網與高基氏體"
+  },
+  {
+    "id": "bio-01-q107",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-protein-line", "c-prokaryote"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "細菌沒有內質網，也沒有高基氏體，卻仍然能合成蛋白質。最主要的原因是什麼？",
+    "options": [
+      "細菌的細胞壁能合成蛋白質",
+      "細菌的細胞核能直接送出蛋白質",
+      "細菌的粒線體負責合成蛋白質",
+      "細菌有核糖體，可以合成蛋白質"
+    ],
+    "answer": 3,
+    "explanation": "最主要的原因是「細菌有核糖體，可以合成蛋白質」。核糖體沒有膜包住，原核細胞也有；細菌沒有細胞核和粒線體，細胞壁也不能合成蛋白質。",
+    "source": "第一關教材 單元 B：核糖體、內質網與高基氏體；單元 C：原核細胞與真核細胞"
+  },
+  {
+    "id": "bio-01-q108",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-lysosome"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "下列哪一項是溶體的主要功能？",
+    "options": [
+      "分解老舊的胞器和從細胞外吞進來的物質",
+      "合成蛋白質",
+      "利用光能製造養分",
+      "保管細胞的遺傳物質"
+    ],
+    "answer": 0,
+    "explanation": "溶體的主要功能是「分解老舊的胞器和從細胞外吞進來的物質」。合成蛋白質的是核糖體，利用光能製造養分的是葉綠體，遺傳物質主要保管在細胞核。",
+    "source": "第一關教材 單元 B：溶體"
+  },
+  {
+    "id": "bio-01-q109",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-lysosome"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "研究人員發現，某種白血球能把細菌吞進細胞裡，卻無法把細菌消滅。這種白血球最可能是哪裡出了問題？",
+    "options": [
+      "細胞膜無法向內凹陷",
+      "細胞沒有細胞壁",
+      "溶體裡的分解酵素無法發揮作用",
+      "細胞沒有葉綠體"
+    ],
+    "answer": 2,
+    "explanation": "最可能是「溶體裡的分解酵素無法發揮作用」。白血球已經能把細菌吞進來，表示細胞膜可以向內凹陷；吞進來的細菌要靠溶體的分解酵素分解。動物細胞本來就沒有細胞壁和葉綠體。",
+    "source": "第一關教材 單元 B：溶體"
+  },
+  {
+    "id": "bio-01-q110",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-lysosome", "b-protein-line"],
+    "type": "true_false",
+    "difficulty": "medium",
+    "question": "溶體裡的分解酵素，是在溶體內部自己合成的。",
+    "options": ["對", "錯"],
+    "answer": 1,
+    "explanation": "錯誤。溶體裡的酵素是蛋白質，由核糖體合成，再經內質網、高基氏體送到溶體。",
+    "source": "第一關教材 單元 B：溶體、核糖體、內質網與高基氏體"
+  },
+  {
+    "id": "bio-01-q111",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-lysosome"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "溶體的分解酵素被一層膜包住。這層膜最重要的作用是什麼？",
+    "options": [
+      "讓溶體能利用光能製造養分",
+      "避免分解酵素分解細胞自己其他的構造",
+      "讓溶體能保管遺傳物質",
+      "讓分解酵素能直接穿過細胞膜到細胞外"
+    ],
+    "answer": 1,
+    "explanation": "最重要的作用是「避免分解酵素分解細胞自己其他的構造」。分解酵素能分解老舊的胞器，如果沒有膜包住、散在細胞質中，就可能破壞細胞正常的構造。",
+    "source": "第一關教材 單元 B：溶體"
+  },
+  {
+    "id": "bio-01-q112",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-lysosome", "b-vacuole"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "溶體在動物細胞中比較常見。在植物細胞中，哪一個構造也有類似的分解功能？",
+    "options": ["葉綠體", "細胞壁", "細胞核", "液胞"],
+    "answer": 3,
+    "explanation": "答案是「液胞」。植物細胞的液胞除了儲存水分與物質，也有類似溶體的分解功能。",
+    "source": "第一關教材 單元 B：溶體、液胞"
+  },
+  {
+    "id": "bio-01-q113",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-lysosome"],
+    "type": "true_false",
+    "difficulty": "medium",
+    "question": "溶體只會分解從細胞外吞進來的物質，不會分解細胞自己老舊的構造。",
+    "options": ["對", "錯"],
+    "answer": 1,
+    "explanation": "錯誤。溶體除了分解從細胞外吞進來的物質，也會分解細胞內老舊的胞器。",
+    "source": "第一關教材 單元 B：溶體"
+  },
+  {
+    "id": "bio-01-q114",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-lysosome", "d-bulk"],
+    "type": "ordering",
+    "difficulty": "hard",
+    "question": "白血球吞下細菌並把它消滅。請依序排出這個過程。",
+    "options": [
+      "溶體和包著細菌的小囊合併",
+      "細胞膜向內凹陷包住細菌",
+      "細菌被分解酵素分解",
+      "形成包著細菌的小囊進入細胞"
+    ],
+    "answer": [1, 3, 0, 2],
+    "explanation": "細胞膜先向內凹陷包住細菌，形成包著細菌的小囊進入細胞（胞吞作用）；接著溶體和小囊合併，溶體的分解酵素再把細菌分解。",
+    "source": "第一關教材 單元 B：溶體；單元 D：胞吞與胞吐"
+  },
+  {
+    "id": "bio-01-q115",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-lysosome"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "下列哪一種細胞，溶體最可能特別多？",
+    "options": [
+      "專門吞食細菌的白血球",
+      "進行光合作用的葉肉細胞",
+      "主要用來儲存脂肪的脂肪細胞",
+      "洋蔥鱗片葉的表皮細胞"
+    ],
+    "answer": 0,
+    "explanation": "最可能的是「專門吞食細菌的白血球」。白血球要把吞進來的細菌分解掉，需要大量溶體；溶體在動物細胞中比較常見，葉肉細胞和洋蔥表皮細胞是植物細胞。",
+    "source": "第一關教材 單元 B：溶體"
+  },
+  {
+    "id": "bio-01-q116",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["c-prokaryote"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "原核細胞和真核細胞最主要的差別是什麼？",
+    "options": [
+      "原核細胞沒有 DNA",
+      "原核細胞沒有細胞膜",
+      "原核細胞沒有核膜包住的細胞核",
+      "原核細胞沒有核糖體"
+    ],
+    "answer": 2,
+    "explanation": "最主要的差別是「原核細胞沒有核膜包住的細胞核」。原核細胞仍有 DNA、細胞膜和核糖體，只是 DNA 直接位在細胞質中。",
+    "source": "第一關教材 單元 C：原核細胞與真核細胞"
+  },
+  {
+    "id": "bio-01-q117",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["c-prokaryote"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "下列四種生物都可以只由一個細胞構成。哪一種的細胞屬於原核細胞？",
+    "options": ["酵母菌", "大腸桿菌", "草履蟲", "眼蟲"],
+    "answer": 1,
+    "explanation": "答案是「大腸桿菌」。細菌是原核生物；酵母菌是真菌，草履蟲和眼蟲是原生生物，它們雖然只有一個細胞，但都有細胞核，屬於真核細胞。",
+    "source": "第一關教材 單元 C：原核細胞與真核細胞"
+  },
+  {
+    "id": "bio-01-q118",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["c-prokaryote"],
+    "type": "true_false",
+    "difficulty": "hard",
+    "question": "只由一個細胞構成的生物，都是原核生物。",
+    "options": ["對", "錯"],
+    "answer": 1,
+    "explanation": "錯誤。原核或真核是看細胞有沒有細胞核，不是看細胞的數量。草履蟲、酵母菌只有一個細胞，但有細胞核，屬於真核生物。",
+    "source": "第一關教材 單元 C：原核細胞與真核細胞"
+  },
+  {
+    "id": "bio-01-q119",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["c-prokaryote", "b-wall"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "關於細菌和植物細胞的細胞壁，下列敘述何者正確？",
+    "options": [
+      "細菌沒有細胞壁，只有細胞膜",
+      "兩者細胞壁的主要成分都是纖維素",
+      "細菌的細胞壁位在細胞膜的內側",
+      "兩者都有細胞壁，但細菌細胞壁的成分和植物的不同"
+    ],
+    "answer": 3,
+    "explanation": "正確的是「兩者都有細胞壁，但細菌細胞壁的成分和植物的不同」。植物細胞壁的主要成分是纖維素，細菌的細胞壁成分不同；兩者的細胞壁都位在細胞膜外側。",
+    "source": "第一關教材 單元 B：細胞壁；單元 C：原核細胞與真核細胞"
+  },
+  {
+    "id": "bio-01-q120",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["c-prokaryote"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "原核細胞的遺傳物質（DNA）位在哪裡？",
+    "options": ["直接位在細胞質中", "位在核膜包住的細胞核中", "位在粒線體中", "位在細胞壁上"],
+    "answer": 0,
+    "explanation": "原核細胞沒有核膜包住的細胞核，DNA「直接位在細胞質中」；原核細胞也沒有粒線體。",
+    "source": "第一關教材 單元 C：原核細胞與真核細胞"
+  },
+  {
+    "id": "bio-01-q121",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["c-prokaryote", "b-protein-line"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "下列關於原核細胞的敘述，何者錯誤？",
+    "options": [
+      "原核細胞有細胞膜和細胞質",
+      "原核細胞通常比真核細胞小很多",
+      "原核細胞沒有核糖體，所以不能合成蛋白質",
+      "原核細胞沒有葉綠體這類膜狀胞器"
+    ],
+    "answer": 2,
+    "explanation": "錯誤的是「原核細胞沒有核糖體，所以不能合成蛋白質」。核糖體沒有膜包住，原核細胞也有，因此能合成蛋白質；其他三項都是正確的敘述。",
+    "source": "第一關教材 單元 B：核糖體、內質網與高基氏體；單元 C：原核細胞與真核細胞"
+  },
+  {
+    "id": "bio-01-q122",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["c-prokaryote"],
+    "type": "true_false",
+    "difficulty": "medium",
+    "question": "動物、植物和真菌的細胞都有細胞核，屬於真核細胞。",
+    "options": ["對", "錯"],
+    "answer": 0,
+    "explanation": "正確。動物、植物和真菌（例如酵母菌、香菇）的細胞都有細胞核，屬於真核細胞；細菌才是原核生物。",
+    "source": "第一關教材 單元 C：原核細胞與真核細胞"
+  },
+  {
+    "id": "bio-01-q123",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["c-prokaryote", "b-mitochondrion"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "某生說：「在細胞中找到粒線體，就可以確定它不是細菌。」這句話為什麼合理？",
+    "options": [
+      "粒線體負責合成蛋白質，細菌不需要蛋白質",
+      "粒線體是膜狀胞器，細菌是原核生物，沒有膜狀胞器",
+      "細菌的粒線體都位在細胞壁上，看不到",
+      "只有細菌才有粒線體，其他細胞沒有"
+    ],
+    "answer": 1,
+    "explanation": "因為「粒線體是膜狀胞器，細菌是原核生物，沒有膜狀胞器」。動物、植物、真菌等真核細胞才有粒線體；粒線體與能量供應有關，合成蛋白質的是核糖體。",
+    "source": "第一關教材 單元 B：粒線體；單元 C：原核細胞與真核細胞"
   }
 ]

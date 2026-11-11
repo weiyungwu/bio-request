@@ -97,6 +97,15 @@ describe('bio-01 question bank', () => {
       'RNA',
       '轉錄',
       '真核',
+      // Batch 4 (textbook cell sections, 2026-11-11).
+      '核糖體',
+      '粗糙內質網',
+      '平滑內質網',
+      '高基氏體',
+      '溶體',
+      '核膜',
+      '原生生物',
+      '胞吞',
     ]
     const used = terms.filter((t) => JSON.stringify(qs).includes(t))
     expect(used.filter((t) => !lesson.includes(t))).toEqual([])
@@ -216,6 +225,31 @@ describe('bio-01 question bank', () => {
       'bio-01-q97': ['c-both'],
       'bio-01-q98': ['c-both', 'c-plant'],
       'bio-01-q99': ['c-both'],
+      // Batch 4, part 1 (Human confirmed 2026-11-11): the textbook organelles and cell types.
+      'bio-01-q100': ['b-protein-line'],
+      'bio-01-q101': ['b-protein-line'],
+      'bio-01-q102': ['b-protein-line'],
+      'bio-01-q103': ['b-protein-line', 'c-prokaryote'],
+      'bio-01-q104': ['b-protein-line'],
+      'bio-01-q105': ['b-protein-line'],
+      'bio-01-q106': ['b-protein-line'],
+      'bio-01-q107': ['b-protein-line', 'c-prokaryote'],
+      'bio-01-q108': ['b-lysosome'],
+      'bio-01-q109': ['b-lysosome'],
+      'bio-01-q110': ['b-lysosome', 'b-protein-line'],
+      'bio-01-q111': ['b-lysosome'],
+      'bio-01-q112': ['b-lysosome', 'b-vacuole'],
+      'bio-01-q113': ['b-lysosome'],
+      'bio-01-q114': ['b-lysosome', 'd-bulk'],
+      'bio-01-q115': ['b-lysosome'],
+      'bio-01-q116': ['c-prokaryote'],
+      'bio-01-q117': ['c-prokaryote'],
+      'bio-01-q118': ['c-prokaryote'],
+      'bio-01-q119': ['c-prokaryote', 'b-wall'],
+      'bio-01-q120': ['c-prokaryote'],
+      'bio-01-q121': ['c-prokaryote', 'b-protein-line'],
+      'bio-01-q122': ['c-prokaryote'],
+      'bio-01-q123': ['c-prokaryote', 'b-mitochondrion'],
     })
   })
 
@@ -226,21 +260,13 @@ describe('bio-01 question bank', () => {
     const thin = points.filter((p) => qs.filter((q) => q.knowledgeIds.includes(p.id)).length < 8)
     // The textbook points (2026-11-11) wait for batch 4. Remove each one as its questions land;
     // the stage goes live only once this list is empty.
-    const pending = [
-      'a-levels',
-      'b-protein-line',
-      'b-lysosome',
-      'c-prokaryote',
-      'd-passive',
-      'd-active',
-      'd-bulk',
-    ]
+    const pending = ['a-levels', 'd-passive', 'd-active', 'd-bulk']
     expect(thin.map((p) => p.id)).toEqual(pending)
     // Raising the mastered rule's question count past 8 must bring this floor back up.
     expect(8).toBeGreaterThan(MASTERY_RULES.minQuestions)
   })
 
-  // Keys from q36 on, as Human confirmed them on the drafts (batch 3, 2026-11-11). Many
+  // Keys from q36 on, as Human confirmed them on the drafts (batches 3 and 4, 2026-11-11). Many
   // explanations paraphrase the correct option, so the check above can't catch a wrong key;
   // changing a key needs Human review again. Open-ended: a new question fails here until
   // its confirmed key is added.
@@ -319,6 +345,30 @@ describe('bio-01 question bank', () => {
       'bio-01-q97': 3,
       'bio-01-q98': 0,
       'bio-01-q99': 0,
+      'bio-01-q100': 3,
+      'bio-01-q101': [2, 3, 0, 1],
+      'bio-01-q102': 0,
+      'bio-01-q103': 1,
+      'bio-01-q104': 2,
+      'bio-01-q105': 1,
+      'bio-01-q106': [2, 3, 1, 0],
+      'bio-01-q107': 3,
+      'bio-01-q108': 0,
+      'bio-01-q109': 2,
+      'bio-01-q110': 1,
+      'bio-01-q111': 1,
+      'bio-01-q112': 3,
+      'bio-01-q113': 1,
+      'bio-01-q114': [1, 3, 0, 2],
+      'bio-01-q115': 0,
+      'bio-01-q116': 2,
+      'bio-01-q117': 1,
+      'bio-01-q118': 1,
+      'bio-01-q119': 3,
+      'bio-01-q120': 0,
+      'bio-01-q121': 2,
+      'bio-01-q122': 0,
+      'bio-01-q123': 1,
     })
   })
 
