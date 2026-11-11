@@ -34,6 +34,7 @@
 | v1.1  | 第 6 步第三批（單元 B）：每點補到 8 題（q66～q91）；教材依學校課本第 1 章擴充     | 完成，任務審查已處理                         |
 | v1.1  | 第 6 步第三批（單元 C）：每點補到 8 題（q92～q99），第一關每點至少 8 題           | 完成，任務審查已處理                         |
 | v1.1  | 部署第 1～6 步（至 commit ea9e8eb）：正式網址的 JS 與本機建置逐檔相同             | 完成；52 個 E2E 對正式網址通過（2026-11-11） |
+| v1.1  | Phase v1.1 審查（Gemini，PASS；I-01、S-01、S-02 照 Human 決定修正）               | 已處理                                       |
 
 第一關流程（`src/views/LessonView.vue`）：故事 → 探險者訓練（16 個知識點＋重點整理）→ 細胞城市探險（細胞互動圖）→ 互動挑戰（配對遊戲 → 分類遊戲）→ 關卡測驗（`QuizView`，5 題；第一關至少 2 題是細胞題，見 `QUIZ_TOPIC_QUOTAS`；每關最多 3 題 hard，見 `QUIZ_MAX_HARD`）。Phase 3 審查（Gemini）已處理。
 
@@ -91,7 +92,7 @@ npm run build && CI=1 npx playwright test --retries=0  # 連跑兩次，確認�
 
 - `BIO QUEST 生物冒險-MVP開發任務規格.md`（任務與驗收條件）
 - `BIO QUEST 生物冒險-spec.txt`（產品與技術規格）
-- `phase-0-review-gemini.md`、`phase-1-review.md`、`phase-2-review.md`
+- `phase-0-review-gemini.md`、`phase-1-review.md`、`phase-2-review.md`、`phase-v1.1-review.md`（與審查 prompt `phase-v1.1-review-prompt.md`）
 
 這個 repo 是公開的，所以這些檔案刻意不進 git，改用雲端硬碟（例如 iCloud、Google Drive）同步。在另一台電腦工作前，先把這些檔案同步下來，放在 repo 的上一層（與 `bio-quest/` 同一層），文件中的 `../BIO QUEST …` 路徑才找得到。
 
