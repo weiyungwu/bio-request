@@ -47,9 +47,12 @@ describe('bio-01 question bank', () => {
       (q): q is Extract<Question, { type: 'single_choice' }> => q.type === 'single_choice',
     )
     // These correct options are sentences; their explanations paraphrase them. Batch 3's
-    // keys were checked by Human on the draft, which marked each correct option.
+    // keys were checked by Human on the draft, which marked each correct option (q66, q70,
+    // q79, q85, q90 are Human's own wording) and are pinned below.
     const paraphrased = ['bio-01-q03', 'bio-01-q11']
-    for (const n of [36, 37, 39, 40, 41, 44, 46, 47, 50, 51, 54, 58, 61, 62, 64, 65])
+    for (const n of [
+      36, 37, 39, 40, 41, 44, 46, 47, 50, 51, 54, 58, 61, 62, 64, 65, 66, 70, 79, 85, 90,
+    ])
       paraphrased.push(`bio-01-q${n}`)
     const named = sc.filter((q) => !paraphrased.includes(q.id))
     expect(named.filter((q) => !q.explanation.includes(q.options[q.answer]!))).toEqual([])
@@ -77,6 +80,8 @@ describe('bio-01 question bank', () => {
       '蛋白質',
       '葡萄糖',
       '二氧化碳',
+      'RNA',
+      '轉錄',
     ]
     const used = terms.filter((t) => JSON.stringify(qs).includes(t))
     expect(used.filter((t) => !lesson.includes(t))).toEqual([])
@@ -160,6 +165,33 @@ describe('bio-01 question bank', () => {
       'bio-01-q63': ['a-adaptation'],
       'bio-01-q64': ['a-adaptation'],
       'bio-01-q65': ['a-adaptation'],
+      // Batch 3, unit B (Human confirmed 2026-11-11): every unit B point up to 8.
+      'bio-01-q66': ['b-nucleus'],
+      'bio-01-q67': ['b-nucleus', 'b-cytoplasm'],
+      'bio-01-q68': ['b-nucleus'],
+      'bio-01-q69': ['b-nucleus'],
+      'bio-01-q70': ['b-membrane', 'b-wall'],
+      'bio-01-q71': ['b-membrane'],
+      'bio-01-q72': ['b-membrane', 'b-wall'],
+      'bio-01-q73': ['b-membrane'],
+      'bio-01-q74': ['b-membrane', 'c-both'],
+      'bio-01-q75': ['b-cytoplasm', 'b-chloroplast'],
+      'bio-01-q76': ['b-cytoplasm'],
+      'bio-01-q77': ['b-cytoplasm'],
+      'bio-01-q78': ['b-cytoplasm'],
+      'bio-01-q79': ['b-mitochondrion'],
+      'bio-01-q80': ['b-mitochondrion', 'b-chloroplast'],
+      'bio-01-q81': ['b-mitochondrion', 'b-chloroplast'],
+      'bio-01-q82': ['b-mitochondrion', 'b-chloroplast'],
+      'bio-01-q83': ['b-mitochondrion', 'c-animal'],
+      'bio-01-q84': ['b-chloroplast'],
+      'bio-01-q85': ['b-vacuole', 'b-wall'],
+      'bio-01-q86': ['b-vacuole', 'c-plant'],
+      'bio-01-q87': ['b-vacuole'],
+      'bio-01-q88': ['b-vacuole'],
+      'bio-01-q89': ['b-vacuole'],
+      'bio-01-q90': ['b-wall', 'b-nucleus'],
+      'bio-01-q91': ['b-wall'],
     })
   })
 
@@ -170,7 +202,7 @@ describe('bio-01 question bank', () => {
     expect(thin.map((p) => p.id)).toEqual([])
   })
 
-  // Batch 3's keys, as Human confirmed them on the draft (2026-11-11). Their explanations
+  // Batch 3's keys (units A and B), as Human confirmed them on the drafts (2026-11-11). Their explanations
   // paraphrase the correct option, so the check above can't catch a wrong key; changing a
   // key here needs Human review again.
   it('keeps the Human-confirmed keys of batch 3', () => {
@@ -178,7 +210,7 @@ describe('bio-01 question bank', () => {
       qs
         .filter((q) => {
           const n = Number(q.id.replace('bio-01-q', ''))
-          return n >= 36 && n <= 65
+          return n >= 36 && n <= 91
         })
         .map((q) => [q.id, q.answer]),
     )
@@ -213,6 +245,32 @@ describe('bio-01 question bank', () => {
       'bio-01-q63': 1,
       'bio-01-q64': 3,
       'bio-01-q65': 0,
+      'bio-01-q66': 1,
+      'bio-01-q67': 1,
+      'bio-01-q68': 1,
+      'bio-01-q69': 3,
+      'bio-01-q70': 1,
+      'bio-01-q71': 0,
+      'bio-01-q72': 0,
+      'bio-01-q73': 2,
+      'bio-01-q74': 0,
+      'bio-01-q75': 2,
+      'bio-01-q76': 1,
+      'bio-01-q77': 1,
+      'bio-01-q78': 3,
+      'bio-01-q79': 0,
+      'bio-01-q80': 1,
+      'bio-01-q81': 1,
+      'bio-01-q82': 3,
+      'bio-01-q83': 0,
+      'bio-01-q84': 0,
+      'bio-01-q85': 1,
+      'bio-01-q86': 2,
+      'bio-01-q87': 0,
+      'bio-01-q88': 0,
+      'bio-01-q89': 2,
+      'bio-01-q90': 2,
+      'bio-01-q91': 1,
     })
   })
 

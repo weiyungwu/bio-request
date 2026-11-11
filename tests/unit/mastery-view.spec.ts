@@ -67,10 +67,11 @@ describe('MasteryView (v1.1 step 5)', () => {
   // Audit §6 point 7: tell students why a point can't reach 已精熟 yet.
   it('says when a point does not have enough questions yet', async () => {
     const { w } = await mountView()
-    expect(row(w, 'b-cytoplasm').find('[data-testid="mastery-few"]').text()).toContain(
+    // Batch 3 has filled units A and B; unit C waits for its batch, which will need a new case.
+    expect(row(w, 'c-animal').find('[data-testid="mastery-few"]').text()).toContain(
       '題目還在增加中',
     )
-    expect(row(w, 'b-membrane').find('[data-testid="mastery-few"]').text()).toContain('目前 3 題')
+    expect(row(w, 'c-both').find('[data-testid="mastery-few"]').text()).toContain('目前 4 題')
   })
 
   // Every stage-1 point has questions now, but a later stage's points start with none.

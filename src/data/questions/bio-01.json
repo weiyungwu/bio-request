@@ -987,5 +987,423 @@
     "answer": 0,
     "explanation": "仙人掌的刺能減少水分散失，北極熊的脂肪層能保暖，都是適合環境的構造。含羞草閉合是感應、蝌蚪變青蛙是生長與發育、毛色像父母是遺傳。",
     "source": "第一關教材 單元 A：適應"
+  },
+  {
+    "id": "bio-01-q66",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["b-nucleus"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "科學家將單細胞綠藻「傘藻」的細胞核去除後，發現該無核個體短時間內仍可進行基礎代謝，甚至還能再長出一次新的傘帽，但之後便無法再生，也無法長期維持生命活動。這個實驗現象主要支持下列哪一項生理機制？",
+    "options": [
+      "細胞核直接進行物質分解釋放能量",
+      "細胞核儲存遺傳物質，負責調控細胞長期的生長與生理活動",
+      "細胞核是細胞膜控制物質進出的主要輔助構造",
+      "細胞質內不含有任何代謝反應所需的酵素"
+    ],
+    "answer": 1,
+    "explanation": "細胞核內含有 DNA，能轉錄訊息以控制細胞長時間的蛋白質合成與生長活動。移除細胞核後，暫存的 RNA 和蛋白質雖能維持短暫代謝，但無法長期運作。",
+    "source": "第一關教材 單元 B：細胞核"
+  },
+  {
+    "id": "bio-01-q67",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["b-nucleus", "b-cytoplasm"],
+    "type": "true_false",
+    "difficulty": "hard",
+    "question": "細胞核是細胞的控制中心，所以細胞內多數的代謝反應都在細胞核中進行。",
+    "options": ["對", "錯"],
+    "answer": 1,
+    "explanation": "錯誤。細胞核是控制中心，負責儲存遺傳物質、調控細胞的活動；細胞內多數的代謝反應是在「細胞質」中進行。",
+    "source": "第一關教材 單元 B：細胞核、細胞質"
+  },
+  {
+    "id": "bio-01-q68",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["b-nucleus"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "下列哪一組「存放遺傳物質的構造」與「它受損時最可能直接受到的影響」配對正確？",
+    "options": [
+      "細胞膜；物質無法進出細胞",
+      "細胞核；細胞的生長與活動失去調控",
+      "液胞；細胞失去膨壓",
+      "粒線體；無法進行光合作用"
+    ],
+    "answer": 1,
+    "explanation": "遺傳物質（DNA）主要存在於細胞核，細胞核也調控細胞的活動，所以正確的配對是「細胞核；細胞的生長與活動失去調控」。細胞膜、液胞不是存放遺傳物質的構造；粒線體進行的是呼吸作用，不是光合作用。",
+    "source": "第一關教材 單元 B：細胞核"
+  },
+  {
+    "id": "bio-01-q69",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["b-nucleus"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "下列關於細胞核的敘述，何者正確？",
+    "options": [
+      "位於細胞膜外側，能支持和保護細胞",
+      "是細胞進行光合作用的場所",
+      "是細胞膜以內、細胞核以外的部分",
+      "儲存遺傳物質，是細胞的控制中心"
+    ],
+    "answer": 3,
+    "explanation": "細胞核「儲存遺傳物質，是細胞的控制中心」。位於細胞膜外側、支持保護細胞的是細胞壁；進行光合作用的是葉綠體；細胞膜以內、細胞核以外的部分是細胞質。",
+    "source": "第一關教材 單元 B：細胞核"
+  },
+  {
+    "id": "bio-01-q70",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["b-membrane", "b-wall"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "科學家利用酵素將植物細胞的細胞壁消化去除後獲得「裸胞（Protoplast）」。若將此裸胞置於特定溶液中，發現其仍能維持選擇性物質通透，但若加入脂溶性有機溶劑，細胞結構便迅速瓦解。此實驗最能支持下列哪一項推論？",
+    "options": [
+      "細胞壁為控制物質進出細胞的主要屏障",
+      "細胞膜具有控制物質進出的功能，且其成分包含脂質",
+      "去除細胞壁後，細胞內質網改為直接調控物質進出",
+      "細胞質基質能自發形成抗性外層代替細胞壁"
+    ],
+    "answer": 1,
+    "explanation": "裸胞失去細胞壁後仍具選擇性通透，證實控制物質進出為細胞膜的功能；脂溶性溶劑破壞膜結構，進一步說明細胞膜富含脂質（磷脂質雙層）。",
+    "source": "第一關教材 單元 B：細胞膜、細胞壁"
+  },
+  {
+    "id": "bio-01-q71",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["b-membrane"],
+    "type": "true_false",
+    "difficulty": "hard",
+    "question": "植物細胞的外層雖然有細胞壁，但在細胞壁的內側仍然有細胞膜。",
+    "options": ["對", "錯"],
+    "answer": 0,
+    "explanation": "正確。細胞壁位於細胞膜的外側；植物細胞和動物細胞都有細胞膜，植物細胞只是在細胞膜外多了一層細胞壁。",
+    "source": "第一關教材 單元 B：細胞膜"
+  },
+  {
+    "id": "bio-01-q72",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["b-membrane", "b-wall"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "把細胞比喻成一座城市。下列哪一組比喻「最不恰當」？",
+    "options": [
+      "細胞壁－檢查人和物品進出的警衛室",
+      "細胞核－保管藍圖、指揮全城的總司令部",
+      "細胞膜－決定誰能進出的城市大門",
+      "粒線體－供應能量的發電廠"
+    ],
+    "answer": 0,
+    "explanation": "「細胞壁－檢查人和物品進出的警衛室」最不恰當：控制物質進出的是細胞膜（城市大門、警衛室），細胞壁像堅固的城市外牆，負責支持和保護細胞。",
+    "source": "第一關教材 單元 B：細胞膜、細胞壁"
+  },
+  {
+    "id": "bio-01-q73",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["b-membrane"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "如果某個細胞的細胞膜破裂受損，最可能先出現下列哪一種情況？",
+    "options": [
+      "細胞立刻長出新的細胞壁",
+      "細胞改為進行光合作用",
+      "物質進出細胞失去控制",
+      "細胞的遺傳物質全部轉移到液胞"
+    ],
+    "answer": 2,
+    "explanation": "細胞膜能控制物質進出細胞；細胞膜破裂時，最先出現的是「物質進出細胞失去控制」。",
+    "source": "第一關教材 單元 B：細胞膜"
+  },
+  {
+    "id": "bio-01-q74",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["b-membrane", "c-both"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "下列哪一個構造，動物細胞和植物細胞都有，而且負責控制物質進出細胞？",
+    "options": ["細胞膜", "細胞壁", "葉綠體", "細胞核"],
+    "answer": 0,
+    "explanation": "「細胞膜」是動植物細胞都有的構造，負責控制物質進出細胞。細胞壁和葉綠體只有植物細胞有；細胞核兩者都有，但它是控制中心，不負責控制物質進出。",
+    "source": "第一關教材 單元 B：細胞膜；單元 C：共同構造"
+  },
+  {
+    "id": "bio-01-q75",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["b-cytoplasm", "b-chloroplast"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "在顯微鏡下觀察葉肉細胞，看到許多綠色的小顆粒分布在細胞膜以內、細胞核以外的區域。這些顆粒是什麼？位於細胞的哪一部分？",
+    "options": [
+      "粒線體；位於細胞核中",
+      "液胞；位於細胞壁外側",
+      "葉綠體；位於細胞質中",
+      "細胞核；位於細胞質中"
+    ],
+    "answer": 2,
+    "explanation": "葉肉細胞中綠色的顆粒是含葉綠素的葉綠體；細胞膜以內、細胞核以外的部分是細胞質，所以答案是「葉綠體；位於細胞質中」。",
+    "source": "第一關教材 單元 B：細胞質、葉綠體"
+  },
+  {
+    "id": "bio-01-q76",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["b-cytoplasm"],
+    "type": "true_false",
+    "difficulty": "hard",
+    "question": "細胞質是指細胞膜以內的所有部分，也包含細胞核。",
+    "options": ["對", "錯"],
+    "answer": 1,
+    "explanation": "錯誤。細胞質是細胞膜以內、「細胞核以外」的部分，不包含細胞核。",
+    "source": "第一關教材 單元 B：細胞質"
+  },
+  {
+    "id": "bio-01-q77",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["b-cytoplasm"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "關於細胞質，下列敘述何者「錯誤」？",
+    "options": [
+      "細胞質位於細胞膜以內、細胞核以外",
+      "細胞質是細胞的控制中心，負責儲存遺傳物質",
+      "細胞內多數代謝反應在細胞質中進行",
+      "粒線體、葉綠體等構造分布在細胞質中"
+    ],
+    "answer": 1,
+    "explanation": "「細胞質是細胞的控制中心，負責儲存遺傳物質」是錯的，這是細胞核的功能。其他三項都是細胞質正確的敘述。",
+    "source": "第一關教材 單元 B：細胞質"
+  },
+  {
+    "id": "bio-01-q78",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["b-cytoplasm"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "把細胞比喻成一座城市，細胞質最像城市的哪一部分？",
+    "options": [
+      "保管藍圖、負責指揮的總司令部",
+      "決定誰能進出的城市大門",
+      "維持城市形狀的堅固外牆",
+      "到處都有人在工作的街道和廣場"
+    ],
+    "answer": 3,
+    "explanation": "細胞內多數代謝反應在細胞質中進行，就像「到處都有人在工作的街道和廣場」。總司令部是細胞核，城市大門是細胞膜，外牆是細胞壁。",
+    "source": "第一關教材 單元 B：細胞質"
+  },
+  {
+    "id": "bio-01-q79",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-mitochondrion"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "比較人體的「骨骼肌細胞」、「胰臟腺體細胞」與「皮膚角質化表皮細胞」，關於細胞內粒線體分佈濃度的推論，下列何者最合理？",
+    "options": [
+      "骨骼肌細胞最高，因為收縮運動需消耗大量 ATP",
+      "角質化表皮細胞最高，因為需要抵禦外界物理防衛",
+      "三者粒線體數量完全相同，因為同屬人體的體細胞",
+      "胰臟腺體細胞最低，因為腺體細胞不需行呼吸作用"
+    ],
+    "answer": 0,
+    "explanation": "粒線體為細胞呼吸作用產生能量（ATP）的主控胞器。骨骼肌細胞收縮需要大量能量，因此其粒線體密度與數量顯著高於一般細胞。",
+    "source": "第一關教材 單元 B：粒線體"
+  },
+  {
+    "id": "bio-01-q80",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-mitochondrion", "b-chloroplast"],
+    "type": "true_false",
+    "difficulty": "hard",
+    "question": "植物細胞有葉綠體可以製造養分，所以植物細胞不需要粒線體。",
+    "options": ["對", "錯"],
+    "answer": 1,
+    "explanation": "錯誤。葉綠體製造養分，但要把養分分解、釋放能量，仍需要粒線體進行呼吸作用；植物細胞和動物細胞都有粒線體。",
+    "source": "第一關教材 單元 B：粒線體、葉綠體"
+  },
+  {
+    "id": "bio-01-q81",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-mitochondrion", "b-chloroplast"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "植物的根細胞通常沒有葉綠體。根細胞生活所需的能量，主要從哪裡來？",
+    "options": [
+      "根細胞自己進行光合作用",
+      "由粒線體進行呼吸作用分解養分",
+      "細胞壁吸收陽光轉換成能量",
+      "液胞直接把水分變成能量"
+    ],
+    "answer": 1,
+    "explanation": "根細胞沒有葉綠體，不能自己製造養分，但仍有粒線體；它的能量來自「由粒線體進行呼吸作用分解養分」，這些養分由葉片製造後送來。",
+    "source": "第一關教材 單元 B：粒線體、葉綠體"
+  },
+  {
+    "id": "bio-01-q82",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-mitochondrion", "b-chloroplast"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "關於粒線體和葉綠體，下列敘述何者正確？",
+    "options": [
+      "粒線體製造養分；葉綠體分解養分釋放能量",
+      "兩者都只存在於植物細胞中",
+      "動物細胞兩者都有",
+      "粒線體分解養分釋放能量；葉綠體利用光能製造養分"
+    ],
+    "answer": 3,
+    "explanation": "「粒線體分解養分釋放能量；葉綠體利用光能製造養分」。粒線體動植物細胞都有；葉綠體只存在於植物的部分細胞，動物細胞沒有。",
+    "source": "第一關教材 單元 B：粒線體、葉綠體"
+  },
+  {
+    "id": "bio-01-q83",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-mitochondrion", "c-animal"],
+    "type": "true_false",
+    "difficulty": "medium",
+    "question": "動物細胞沒有葉綠體，但仍然有粒線體。",
+    "options": ["對", "錯"],
+    "answer": 0,
+    "explanation": "正確。動物細胞沒有葉綠體，不能進行光合作用；但動物細胞有粒線體，可以進行呼吸作用、分解養分釋放能量。",
+    "source": "第一關教材 單元 B：粒線體；單元 C：動物細胞"
+  },
+  {
+    "id": "bio-01-q84",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-chloroplast"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "如果把一盆植物長期放在完全黑暗的地方，葉肉細胞中的葉綠體最可能受到什麼影響？",
+    "options": [
+      "缺少光能，無法進行光合作用製造養分",
+      "改為分解養分、釋放能量",
+      "轉變成粒線體繼續工作",
+      "完全不受影響，照常製造養分"
+    ],
+    "answer": 0,
+    "explanation": "葉綠體要利用光能製造養分；在完全黑暗的地方「缺少光能，無法進行光合作用製造養分」。分解養分、釋放能量是粒線體的工作，葉綠體不會變成粒線體。",
+    "source": "第一關教材 單元 B：葉綠體"
+  },
+  {
+    "id": "bio-01-q85",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-vacuole", "b-wall"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "將新鮮芹菜葉柄切條後浸泡於高濃度的蔗糖溶液中，一段時間後芹菜條明顯變得軟塌、缺乏挺度。下列關於此現象在細胞層級的解釋，何者最適當？",
+    "options": [
+      "蔗糖分子進入細胞壁，直接溶解了細胞壁的纖維素",
+      "細胞外溶液濃度高，導致液胞內水分滲透排出，膨壓下降而失去支撐力",
+      "高濃度溶液破壞了粒線體，使其無法繼續產生支撐細胞的能量",
+      "細胞膜破裂導致細胞質大量流失"
+    ],
+    "answer": 1,
+    "explanation": "當細胞外環境濃度高於細胞內時，液胞內水分會經由滲透作用向外排出，使液胞體積縮小、膨壓（Turgor Pressure）下降，無法緊貼並頂住細胞壁，植物便呈現萎軟。",
+    "source": "第一關教材 單元 B：液胞、細胞壁"
+  },
+  {
+    "id": "bio-01-q86",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-vacuole", "c-plant"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "在顯微鏡下比較洋蔥表皮細胞和口腔皮膜細胞的液胞，下列哪一項描述最合理？",
+    "options": [
+      "只有口腔皮膜細胞有液胞",
+      "兩種細胞的液胞大小和數量都一樣",
+      "洋蔥表皮細胞有大型的中央液胞；口腔皮膜細胞的液胞小而多，有時不明顯",
+      "口腔皮膜細胞有一個大型的中央液胞"
+    ],
+    "answer": 2,
+    "explanation": "成熟的植物細胞通常有一個大型中央液胞（大而少），動物細胞的液胞小而多、有時不明顯。所以答案是「洋蔥表皮細胞有大型的中央液胞；口腔皮膜細胞的液胞小而多，有時不明顯」。",
+    "source": "第一關教材 單元 B：液胞；單元 C：植物細胞"
+  },
+  {
+    "id": "bio-01-q87",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-vacuole"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "下列哪一項「不是」液胞的功能？",
+    "options": ["控制物質進出細胞", "儲存水分", "儲存物質", "協助維持細胞的膨壓"],
+    "answer": 0,
+    "explanation": "「控制物質進出細胞」是細胞膜的功能，不是液胞的。液胞能儲存水分與物質，並協助維持細胞的膨壓。",
+    "source": "第一關教材 單元 B：液胞"
+  },
+  {
+    "id": "bio-01-q88",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-vacuole"],
+    "type": "true_false",
+    "difficulty": "hard",
+    "question": "植物細胞的液胞失去水分時，膨壓會下降，植物可能出現枯萎下垂的現象。",
+    "options": ["對", "錯"],
+    "answer": 0,
+    "explanation": "正確。液胞儲存水分並協助維持膨壓；液胞的水分減少時膨壓下降，植物就會枯萎下垂。",
+    "source": "第一關教材 單元 B：液胞"
+  },
+  {
+    "id": "bio-01-q89",
+    "courseId": "bio-01",
+    "topic": "細胞器功能",
+    "knowledgeIds": ["b-vacuole"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "把植物細胞比喻成城市，液胞是城市的儲水倉庫。如果倉庫裡的水大量減少，這座「城市」最可能出現什麼變化？",
+    "options": [
+      "城市大門無法控制物質進出",
+      "總司令部失去保管的藍圖",
+      "細胞的膨壓下降，植物變得萎軟",
+      "發電廠改成製造養分"
+    ],
+    "answer": 2,
+    "explanation": "液胞儲存水分並協助維持膨壓；水大量減少時，「細胞的膨壓下降，植物變得萎軟」。城市大門是細胞膜、總司令部是細胞核、發電廠是粒線體，都不是液胞的功能。",
+    "source": "第一關教材 單元 B：液胞"
+  },
+  {
+    "id": "bio-01-q90",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["b-wall", "b-nucleus"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "某生在顯微鏡下觀察四種生物的細胞切片，發現其中一種細胞「具有細胞膜、細胞質與 DNA，但缺乏細胞核與粒線體，且外側包覆著細胞壁」。該細胞最可能屬於下列何種生物？",
+    "options": ["人體口腔皮膜細胞", "洋蔥鱗片葉表皮細胞", "大腸桿菌（原核生物）", "水蘊草葉肉細胞"],
+    "answer": 2,
+    "explanation": "原核生物（如細菌）無膜狀胞器（無細胞核與粒線體），但具有細胞壁、細胞膜、細胞質與遺傳物質（DNA）。",
+    "source": "第一關教材 單元 B：細胞壁、細胞核"
+  },
+  {
+    "id": "bio-01-q91",
+    "courseId": "bio-01",
+    "topic": "細胞構造",
+    "knowledgeIds": ["b-wall"],
+    "type": "true_false",
+    "difficulty": "hard",
+    "question": "細胞壁位於細胞膜的內側，負責支持和保護細胞。",
+    "options": ["對", "錯"],
+    "answer": 1,
+    "explanation": "錯誤。細胞壁能支持和保護細胞，但它位於細胞膜的「外側」，不是內側。",
+    "source": "第一關教材 單元 B：細胞壁"
   }
 ]
