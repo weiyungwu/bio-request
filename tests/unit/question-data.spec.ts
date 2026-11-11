@@ -84,6 +84,7 @@ describe('bio-01 question bank', () => {
       '二氧化碳',
       'RNA',
       '轉錄',
+      '真核',
     ]
     const used = terms.filter((t) => JSON.stringify(qs).includes(t))
     expect(used.filter((t) => !lesson.includes(t))).toEqual([])
@@ -195,11 +196,11 @@ describe('bio-01 question bank', () => {
       'bio-01-q90': ['b-wall', 'b-nucleus'],
       'bio-01-q91': ['b-wall'],
       // Batch 3, unit C (Human confirmed 2026-11-11): every stage-1 point at 8 or more.
-      'bio-01-q92': ['c-animal', 'c-plant'],
+      'bio-01-q92': ['c-plant', 'c-animal'],
       'bio-01-q93': ['c-animal'],
-      'bio-01-q94': ['c-animal', 'b-membrane'],
+      'bio-01-q94': ['c-animal'],
       'bio-01-q95': ['c-animal', 'b-chloroplast'],
-      'bio-01-q96': ['c-both'],
+      'bio-01-q96': ['c-both', 'b-nucleus'],
       'bio-01-q97': ['c-both'],
       'bio-01-q98': ['c-both', 'c-plant'],
       'bio-01-q99': ['c-both'],
@@ -287,9 +288,9 @@ describe('bio-01 question bank', () => {
       'bio-01-q89': 2,
       'bio-01-q90': 2,
       'bio-01-q91': 0,
-      'bio-01-q92': 3,
+      'bio-01-q92': 0,
       'bio-01-q93': 0,
-      'bio-01-q94': 1,
+      'bio-01-q94': 0,
       'bio-01-q95': 2,
       'bio-01-q96': 1,
       'bio-01-q97': 3,
