@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { getLessonData } from '@/data/lessons'
 import { getQuestionBank } from '@/data/questions'
 import type { Question } from '@/types/question'
+import { MASTERY_RULES } from '@/utils/mastery'
 
 // TASK-010 / spec.txt 5.4: stage 1 bank of at least 10 questions (5 drawn per quiz).
 describe('bio-01 question bank', () => {
@@ -211,17 +212,21 @@ describe('bio-01 question bank', () => {
     const points = getLessonData('bio-01')!.lessons.flatMap((l) => l.knowledgePoints)
     const thin = points.filter((p) => qs.filter((q) => q.knowledgeIds.includes(p.id)).length < 8)
     expect(thin.map((p) => p.id)).toEqual([])
+    // Raising the mastered rule's question count past 8 must bring this floor back up.
+    expect(8).toBeGreaterThan(MASTERY_RULES.minQuestions)
   })
 
-  // Batch 3's keys (q36–q99), as Human confirmed them on the drafts (2026-11-11). Their explanations
-  // paraphrase the correct option, so the check above can't catch a wrong key; changing a
-  // key here needs Human review again.
-  it('keeps the Human-confirmed keys of batch 3', () => {
+  // Keys from q36 on, as Human confirmed them on the drafts (batch 3, 2026-11-11). Many
+  // explanations paraphrase the correct option, so the check above can't catch a wrong key;
+  // changing a key needs Human review again. Open-ended: a new question fails here until
+  // its confirmed key is added.
+  it('keeps the Human-confirmed keys from q36 on', () => {
+    expect(qs.filter((q) => !/^bio-01-q\d+$/.test(q.id)).map((q) => q.id)).toEqual([])
     const keys = Object.fromEntries(
       qs
         .filter((q) => {
           const n = Number(q.id.replace('bio-01-q', ''))
-          return n >= 36 && n <= 99
+          return n >= 36
         })
         .map((q) => [q.id, q.answer]),
     )

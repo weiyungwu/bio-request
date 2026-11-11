@@ -40,8 +40,8 @@ describe('progress store: 錯題本 actions (TASK-014)', () => {
 
   it('ignores ids that are not in the 錯題本', () => {
     const p = reload()
-    p.recordReviewAnswer('bio-01-q99', true)
-    p.setMastered('bio-01-q99', true)
+    p.recordReviewAnswer('bio-01-not-wrong', true)
+    p.setMastered('bio-01-not-wrong', true)
     expect(p.wrongQuestions).toEqual({})
   })
 
