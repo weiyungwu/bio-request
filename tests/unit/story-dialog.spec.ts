@@ -26,6 +26,25 @@ describe('StoryDialog', () => {
   beforeEach(() => vi.useFakeTimers())
   afterEach(() => vi.useRealTimers())
 
+  // Human request (2026-11-12): skip straight to 探險者訓練 (story and mission card).
+  it('略過故事 completes the story at once', async () => {
+    const w = mount(StoryDialog, { props: { story } })
+    wait()
+    await next(w)
+    // Right after 下一段 (inside its cooldown) a skip still works.
+    await w.find('[data-testid="story-skip"]').trigger('click')
+    expect(w.emitted('complete')).toHaveLength(1)
+    await w.find('[data-testid="story-skip"]').trigger('click')
+    expect(w.emitted('complete')).toHaveLength(1)
+  })
+
+  // The double tap that opened the stage must not skip the whole story.
+  it('ignores 略過故事 during the opening cooldown', async () => {
+    const w = mount(StoryDialog, { props: { story } })
+    await w.find('[data-testid="story-skip"]').trigger('click')
+    expect(w.emitted('complete')).toBeUndefined()
+  })
+
   // TASK-005: 對話能依序顯示
   it('shows lines in order with the speaker name', async () => {
     const w = mount(StoryDialog, { props: { story } })

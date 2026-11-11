@@ -37,6 +37,14 @@ test.describe('Stage 1 story (TASK-005)', () => {
     expect(errors).toEqual([])
   })
 
+  // Human request (2026-11-12): 略過故事 goes straight to 探險者訓練.
+  test('略過故事 skips to the lesson', async ({ page }) => {
+    await openStory(page)
+    await page.clock.fastForward(PAST_COOLDOWN_MS)
+    await page.getByTestId('story-skip').click()
+    await expect(page.getByRole('heading', { name: '探險者訓練' })).toBeFocused()
+  })
+
   // TASK-005: 不會因快速點擊而跳過必要流程
   test('a burst of clicks advances at most one line', async ({ page }) => {
     const counter = await openStory(page)

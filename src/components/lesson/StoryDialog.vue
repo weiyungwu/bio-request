@@ -22,7 +22,14 @@ function startCooldown() {
 }
 // Initial cooldown too: a double tap on the map's stage card must not skip line 1.
 startCooldown()
-onBeforeUnmount(() => clearTimeout(timer))
+// 略過故事 waits out only this first cooldown (the same double tap must not skip the whole
+// story), not the per-line ones: a deliberate skip right after 下一段 should work.
+const settled = ref(false)
+const settleTimer = setTimeout(() => (settled.value = true), STORY_ADVANCE_COOLDOWN_MS)
+onBeforeUnmount(() => {
+  clearTimeout(timer)
+  clearTimeout(settleTimer)
+})
 
 const line = computed(() => props.story.lines[index.value]!)
 const speaker = computed(() => props.story.characters.find((c) => c.id === line.value.speaker))
@@ -39,6 +46,13 @@ function next() {
     index.value++
   }
   startCooldown()
+}
+
+/** Human request (2026-11-12): skip the story and the mission card, straight to 探險者訓練. */
+function skip() {
+  if (!settled.value || completed.value) return
+  completed.value = true
+  emit('complete')
 }
 
 function start() {
@@ -60,7 +74,12 @@ function start() {
         </div>
       </div>
       <div class="flex items-center justify-between gap-3">
-        <span class="text-sm text-muted">{{ index + 1 }} / {{ story.lines.length }}</span>
+        <span class="flex flex-wrap items-center gap-x-3">
+          <span class="text-sm text-muted">{{ index + 1 }} / {{ story.lines.length }}</span>
+          <BaseButton data-testid="story-skip" variant="ghost" @click="skip">
+            略過故事<span aria-hidden="true"> ⏭</span>
+          </BaseButton>
+        </span>
         <BaseButton data-testid="story-next" @click="next">
           {{ isLast ? '查看任務' : '下一段' }} →
         </BaseButton>
