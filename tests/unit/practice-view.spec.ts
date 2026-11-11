@@ -103,6 +103,15 @@ describe('PracticeView', () => {
     expect(w.find('[data-testid="practice-to-review"]').exists()).toBe(false)
   })
 
+  // Phase v1.1-2 S-03: a perfect practice still points to mistakes waiting from before.
+  it('links to the 錯題本 after a perfect practice while older mistakes wait', async () => {
+    const { w, quiz, progress } = await mountAt('/practice/bio-01', PracticeView)
+    progress.recordQuizResult('bio-01', 80, ['bio-01-q01'])
+    for (let i = 0; i < 5; i++) play(quiz, true)
+    await flushPromises()
+    expect(w.find('[data-testid="practice-to-review"]').text()).toContain('1 題待複習')
+  })
+
   it('再練一次 starts a new practice', async () => {
     const { w, quiz } = await mountAt('/practice/bio-01', PracticeView)
     for (let i = 0; i < 5; i++) play(quiz, false)

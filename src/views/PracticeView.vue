@@ -168,12 +168,13 @@ const link =
 
       <div class="flex flex-wrap gap-3">
         <BaseButton data-testid="practice-again" @click="start">↺ 再練一次</BaseButton>
+        <!-- Shown after a perfect practice too while older mistakes wait (Phase v1.1-2 S-03). -->
         <RouterLink
-          v-if="wrongCount > 0"
+          v-if="progress.toReviewCount > 0"
           to="/review"
           data-testid="practice-to-review"
           :class="link"
-          >到錯題本複習 →</RouterLink
+          >到錯題本複習（{{ progress.toReviewCount }} 題待複習）→</RouterLink
         >
         <RouterLink to="/mastery" :class="link">回知識掌握度</RouterLink>
       </div>

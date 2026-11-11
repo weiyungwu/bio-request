@@ -17,6 +17,7 @@
 
 第一關的故事對白與角色、教材（`lessons`）、細胞示意圖、配對遊戲文字已由 Human 決定視為已確認（`checked`），見 `docs/audit/v1.1-learning-foundation-audit.md`「Human 決定（2026-11-10）」第 2 點；之後新寫的內容仍要列在這裡。
 
+- 弱點練習（v1.1 Phase 2）是在拿不到「BIO QUEST 2D → 3D 整合重構 SPEC v1.1」的電腦上，依稽核文件與 Human 的決定（5 題、答錯進錯題本、EXP 共用每日上限）設計的。拿到規格書後，對照其中自適應推薦的段落，確認挑選弱點與抽題規則沒有偏離。
 - 精熟度門檻（3 次進入 practicing；mastered 需 5 次、近 5 次 ≥ 80%、2 天、5 道不同題目）照規格 §4.4 初始規則，規格註明正式上線前需經教學設計校準。mastered 需要每點至少 5 題（`MASTERY_RULES.minQuestions`）；稽核第 8 節第 6 步原本只補到每點 3 題；第三批補到每點 8 題後，每個知識點都能達到 mastered。（v1.1 第 4 步）
 - 課程資料依 MVP 規格 §2 拆檔（`src/data/lessons/<id>.json`），偏離 spec.txt §8.1 把 lessons 放在 course 物件內的寫法；兩份規格互相矛盾，請確認。（TASK-005 審查 I2）
 - 「任務完成提示」解讀為開場故事後的任務指令卡；若原意是完成教學／遊戲後的提示，需調整。（TASK-005 審查 S8）
@@ -95,6 +96,7 @@
 
 ## 不採用（附理由）
 
+- `PracticeView.vue` 的 `rows` 每次都重新讀取 LocalStorage（Gemini Phase v1.1-2 S-02）：`rows` 是 computed，只依賴 `done` 與 `targets`，一次練習只在結果出現時計算一次，不會重複解析；改成手動快照反而要自己處理更新時機。
 - ProgressBar 分段模式（5 題分 5 格）：測驗已有「第 n / 5 題 · 還剩 m 題」文字與連續進度條，分段不增加資訊。（Gemini Phase 0 #3，TASK-011 評估）
 
 - 標題與段落的全域預設 margin：與 Tailwind 的 margin 歸零及 `space-y-*` 版面間距衝突。（Gemini Phase 0 #6）

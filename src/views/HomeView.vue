@@ -150,28 +150,31 @@ function confirmReset() {
             </span>
           </li>
         </ul>
-        <RouterLink
-          to="/review"
-          data-testid="home-review-link"
-          class="mt-4 inline-flex min-h-11 items-center font-semibold text-explore hover:underline"
-          ><span aria-hidden="true">📖 </span>錯題本（{{
-            progress.toReviewCount
-          }}
-          題待複習）→</RouterLink
-        >
-        <RouterLink
-          to="/mastery"
-          data-testid="home-mastery-link"
-          class="inline-flex min-h-11 items-center font-semibold text-explore hover:underline"
-          ><span aria-hidden="true">🎯 </span>知識掌握度：看看哪些觀念需要加強 →</RouterLink
-        >
-        <RouterLink
-          v-if="practiceCourse"
-          :to="`/practice/${practiceCourse}`"
-          data-testid="home-practice-link"
-          class="inline-flex min-h-11 items-center font-semibold text-explore hover:underline"
-          ><span aria-hidden="true">✏️ </span>弱點練習：挑需要加強的觀念練 5 題 →</RouterLink
-        >
+        <!-- One link per line: as inline links they ran side by side on wide cards (Phase v1.1-2 S-01). -->
+        <div class="mt-4 flex flex-col items-start">
+          <RouterLink
+            to="/review"
+            data-testid="home-review-link"
+            class="inline-flex min-h-11 items-center font-semibold text-explore hover:underline"
+            ><span aria-hidden="true">📖 </span>錯題本（{{
+              progress.toReviewCount
+            }}
+            題待複習）→</RouterLink
+          >
+          <RouterLink
+            to="/mastery"
+            data-testid="home-mastery-link"
+            class="inline-flex min-h-11 items-center font-semibold text-explore hover:underline"
+            ><span aria-hidden="true">🎯 </span>知識掌握度：看看哪些觀念需要加強 →</RouterLink
+          >
+          <RouterLink
+            v-if="practiceCourse"
+            :to="`/practice/${practiceCourse}`"
+            data-testid="home-practice-link"
+            class="inline-flex min-h-11 items-center font-semibold text-explore hover:underline"
+            ><span aria-hidden="true">✏️ </span>弱點練習：挑需要加強的觀念練 5 題 →</RouterLink
+          >
+        </div>
       </BaseCard>
     </div>
 
