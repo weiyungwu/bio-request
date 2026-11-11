@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
 import BaseCard from '@/components/common/BaseCard.vue'
@@ -10,12 +10,22 @@ import courses from '@/data/courses.json'
 import type { Course } from '@/types/course'
 import { useProgressStore } from '@/stores/progress'
 import { BADGES } from '@/utils/achievements'
+import { isCourseOpen } from '@/utils/stages'
 
 const router = useRouter()
 const progress = useProgressStore()
 
 const storyTitleById = new Map((courses as Course[]).map((c) => [c.id, c.storyTitle]))
 const courseName = (id: string) => storyTitleById.get(id) ?? id
+
+// 弱點練習 for the stage last played, else the first open one.
+const firstOpen = [...(courses as Course[])]
+  .sort((a, b) => a.order - b.order)
+  .find((c) => isCourseOpen(c.id))?.id
+const practiceCourse = computed(() => {
+  const last = progress.latestRecords[0]?.courseId
+  return last && isCourseOpen(last) ? last : firstOpen
+})
 
 const dateFormat = new Intl.DateTimeFormat('zh-TW', { month: 'numeric', day: 'numeric' })
 
@@ -153,6 +163,13 @@ function confirmReset() {
           data-testid="home-mastery-link"
           class="inline-flex min-h-11 items-center font-semibold text-explore hover:underline"
           ><span aria-hidden="true">🎯 </span>知識掌握度：看看哪些觀念需要加強 →</RouterLink
+        >
+        <RouterLink
+          v-if="practiceCourse"
+          :to="`/practice/${practiceCourse}`"
+          data-testid="home-practice-link"
+          class="inline-flex min-h-11 items-center font-semibold text-explore hover:underline"
+          ><span aria-hidden="true">✏️ </span>弱點練習：針對需要加強的觀念練 5 題 →</RouterLink
         >
       </BaseCard>
     </div>

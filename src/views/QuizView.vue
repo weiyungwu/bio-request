@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import BaseButton from '@/components/common/BaseButton.vue'
 import BaseCard from '@/components/common/BaseCard.vue'
-import ProgressBar from '@/components/common/ProgressBar.vue'
-import QuizQuestion from '@/components/quiz/QuizQuestion.vue'
+import QuizPlayer from '@/components/quiz/QuizPlayer.vue'
 import courses from '@/data/courses.json'
 import { getQuestionBank } from '@/data/questions'
 import { useQuizStore } from '@/stores/quiz'
 import type { Course } from '@/types/course'
-import { QUIZ_SIZE, submitBlocker } from '@/utils/quiz'
+import { QUIZ_SIZE } from '@/utils/quiz'
 
 const route = useRoute()
 const router = useRouter()
@@ -20,7 +18,7 @@ const bank = computed(() => getQuestionBank(courseId.value))
 // spec 5.4 draws 5; with fewer valid questions the quiz can't be a fair 5-question paper.
 const canStart = computed(() => (bank.value?.questions.length ?? 0) >= QUIZ_SIZE)
 
-// Bumped per start so the question remounts (and takes focus) even when index stays 0.
+// Bumped per start; QuizPlayer remounts the question on it.
 const round = ref(0)
 
 function start() {
@@ -29,9 +27,6 @@ function start() {
   round.value++
 }
 watch(courseId, start, { immediate: true })
-
-const remaining = computed(() => quiz.questions.length - quiz.index - (quiz.isSubmitted ? 1 : 0))
-const submitHint = computed(() => submitBlocker(quiz.response))
 
 function next() {
   if (quiz.finished) return
@@ -70,47 +65,6 @@ function next() {
       </ul>
     </BaseCard>
 
-    <BaseCard
-      v-if="canStart && !quiz.finished && quiz.current"
-      as="section"
-      class="space-y-5"
-      aria-label="測驗題目"
-    >
-      <div class="space-y-2">
-        <p data-testid="quiz-progress" class="text-sm font-semibold text-muted">
-          第 {{ quiz.index + 1 }} / {{ quiz.questions.length }} 題 · 還剩 {{ remaining }} 題
-        </p>
-        <ProgressBar
-          :value="quiz.index + (quiz.isSubmitted ? 1 : 0)"
-          :max="quiz.questions.length"
-          label="作答進度"
-        />
-      </div>
-
-      <QuizQuestion
-        :key="`${round}-${quiz.index}`"
-        :question="quiz.current"
-        :response="quiz.response"
-        :submitted="quiz.isSubmitted"
-        @choose="quiz.choose"
-      />
-
-      <div v-if="!quiz.isSubmitted" class="flex flex-wrap items-center gap-3">
-        <BaseButton
-          data-testid="quiz-submit"
-          :disabled="submitHint !== ''"
-          aria-describedby="quiz-submit-hint"
-          @click="quiz.submit"
-        >
-          提交答案
-        </BaseButton>
-        <p id="quiz-submit-hint" data-testid="quiz-submit-hint" class="text-sm text-muted">
-          {{ submitHint }}
-        </p>
-      </div>
-      <BaseButton v-else data-testid="quiz-next" @click="next">
-        {{ quiz.index < quiz.questions.length - 1 ? '下一題 →' : '看成績 →' }}
-      </BaseButton>
-    </BaseCard>
+    <QuizPlayer v-if="canStart" :round="round" @next="next" />
   </main>
 </template>

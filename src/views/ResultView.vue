@@ -16,9 +16,10 @@ const progress = useProgressStore()
 const courseId = computed(() => String(route.params.courseId))
 const course = computed(() => (courses as Course[]).find((c) => c.id === courseId.value))
 
-// The attempt lives in memory; a reload or another stage's attempt means nothing to show.
+// The attempt lives in memory; a reload, another stage's attempt or a 弱點練習 (shown on its
+// own page) means nothing to show.
 const award = computed(() =>
-  quiz.finished && quiz.courseId === courseId.value ? quiz.award : null,
+  quiz.finished && quiz.kind === 'quiz' && quiz.courseId === courseId.value ? quiz.award : null,
 )
 const total = computed(() => quiz.questions.length)
 const newBadges = computed(() => BADGES.filter((b) => award.value?.newBadges.includes(b.id)))

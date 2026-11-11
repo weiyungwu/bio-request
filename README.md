@@ -184,6 +184,16 @@ Handover notes (current status, workflow, next task): [`docs/handoff.md`](docs/h
   (`src/utils/knowledgeReport.ts`) from this browser's player's events, read once per visit;
   viewing never creates a player id. States that mastery is separate from stage completion
   (v1.1 §4.1).
+- 弱點練習 (`/practice/:courseId`, v1.1 Phase 2; linked from home and 知識掌握度): 5 questions
+  on the stage's weak points (`practiceTargets`; with none, the least-answered points not yet
+  mastered), spread over them in turn, unanswered first, then last answered wrong
+  (`drawPractice`, `src/utils/practice.ts`). Runs in the quiz store's practice mode
+  (`startPractice`; shared `QuizPlayer` with the stage quiz): answers are logged with
+  `activityId: practice:<courseId>:<id>`, wrong ones go to the 錯題本, EXP is the quiz-score
+  reward within the daily cap shared with stage quizzes (`recordPracticeResult`, saved in
+  `practice[]`). It never counts as a stage attempt (no clear, best score, 最近學習紀錄 or
+  badge); `/result` ignores it. The result, on the same page, shows each point's level before
+  and after.
 - 「任務完成提示」(TASK-005) is read as the mission briefing card shown after the opening story
   (title + objectives + 接受任務). Pending Human confirmation (see `docs/known-issues.md`).
 - E2E: `CI=1 npm run test:e2e` builds first, then tests the production preview (a stale

@@ -7,23 +7,11 @@ import courses from '@/data/courses.json'
 import { getLessonData } from '@/data/lessons'
 import { getQuestionBank } from '@/data/questions'
 import type { Course } from '@/types/course'
-import type { MasteryLevel } from '@/types/mastery'
 import { courseReport } from '@/utils/knowledgeReport'
 import { parseEventStore, readEventStorage } from '@/utils/learningEventStorage'
 import { readPlayerId } from '@/utils/learningEvents'
+import { MASTERY_LEVEL, percent } from '@/utils/masteryLevels'
 import { isCourseOpen } from '@/utils/stages'
-
-// Text and icon, not colour alone (README: 狀態不可只靠顏色表示).
-const LEVEL: Record<
-  MasteryLevel,
-  { label: string; tone: 'neutral' | 'explore' | 'reward' | 'success' }
-> = {
-  not_started: { label: '○ 未開始', tone: 'neutral' },
-  learning: { label: '📖 學習中', tone: 'explore' },
-  practicing: { label: '✏️ 練習中', tone: 'reward' },
-  mastered: { label: '⭐ 已精熟', tone: 'success' },
-}
-const percent = (accuracy: number) => `${Math.round(accuracy * 100)}%`
 
 // Read once per visit: answers are only added on other pages.
 const events = parseEventStore(readEventStorage()).events
@@ -79,17 +67,33 @@ onMounted(() => heading.value?.focus())
             <span class="text-muted">：最近答對 {{ percent(p.mastery.recentAccuracy) }}</span>
           </li>
         </ol>
-        <RouterLink
-          to="/review"
-          class="inline-flex min-h-11 items-center font-semibold text-explore hover:underline"
-          ><span aria-hidden="true">📖 </span>到錯題本重新作答 →</RouterLink
-        >
+        <div class="flex flex-wrap gap-x-6">
+          <RouterLink
+            :to="`/practice/${r.course.id}`"
+            data-testid="mastery-practice"
+            class="inline-flex min-h-11 items-center font-semibold text-explore hover:underline"
+            ><span aria-hidden="true">🎯 </span>針對弱點練習 5 題 →</RouterLink
+          >
+          <RouterLink
+            to="/review"
+            class="inline-flex min-h-11 items-center font-semibold text-explore hover:underline"
+            ><span aria-hidden="true">📖 </span>到錯題本重新作答 →</RouterLink
+          >
+        </div>
       </BaseCard>
 
       <BaseCard as="section" class="space-y-4" :aria-labelledby="`mastery-${r.course.id}`">
         <h2 :id="`mastery-${r.course.id}`" class="text-xl">
           第 {{ r.course.order }} 關 {{ r.course.storyTitle }}
         </h2>
+        <!-- No weak points yet: practice still starts from the least-practised points. -->
+        <RouterLink
+          v-if="!r.weakest.length"
+          :to="`/practice/${r.course.id}`"
+          data-testid="mastery-practice"
+          class="inline-flex min-h-11 items-center font-semibold text-explore hover:underline"
+          ><span aria-hidden="true">🎯 </span>練習 5 題（自動挑選練得最少的知識點）→</RouterLink
+        >
         <section v-for="u in r.units" :key="u.id" class="space-y-2">
           <h3 class="text-base">{{ u.title }}</h3>
           <ul class="divide-y divide-border">
@@ -107,8 +111,8 @@ onMounted(() => heading.value?.focus())
                     percent(p.mastery.accuracy)
                   }}）
                 </span>
-                <BaseTag :tone="LEVEL[p.mastery.masteryLevel].tone">
-                  {{ LEVEL[p.mastery.masteryLevel].label }}
+                <BaseTag :tone="MASTERY_LEVEL[p.mastery.masteryLevel].tone">
+                  {{ MASTERY_LEVEL[p.mastery.masteryLevel].label }}
                 </BaseTag>
               </span>
               <p

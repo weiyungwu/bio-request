@@ -19,11 +19,21 @@ test('a quiz and a 錯題本 retry are saved as learning events, kept after relo
     'quiz_completed',
   ])
   expect(events.filter((e) => e.isCorrect === false)).toHaveLength(1)
-  // Saved progress is unchanged in shape: still version 1 with its own fields only.
+  // Saved progress stays version 1; events live under their own key. `practice` (弱點練習,
+  // v1.1 Phase 2) is the one added field, optional so older saves still load.
   const progress = await read(page, 'bio-quest:progress')
   expect(progress.version).toBe(1)
   expect(Object.keys(progress).sort()).toEqual(
-    ['badges', 'claimed', 'courseProgress', 'exp', 'records', 'version', 'wrongQuestions'].sort(),
+    [
+      'badges',
+      'claimed',
+      'courseProgress',
+      'exp',
+      'practice',
+      'records',
+      'version',
+      'wrongQuestions',
+    ].sort(),
   )
 
   await page.getByTestId('result-to-review').click()
