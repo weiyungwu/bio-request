@@ -130,7 +130,7 @@ describe('quiz engine (TASK-011)', () => {
     expect([...unitA].sort()).toEqual([0, 1, 2, 3])
   })
 
-  // Without the quota about 1 stage-1 quiz in 5 has under 2 cell questions; 50 starts catch it.
+  // Without the quota about 3 stage-1 quizzes in 5 have under 2 cell questions; 50 starts catch it.
   it('the quiz store applies the stage quota', () => {
     setActivePinia(createPinia())
     const s = useQuizStore()
@@ -154,6 +154,52 @@ describe('quiz engine (TASK-011)', () => {
     }
     // The cap limits hard questions, it doesn't remove them: 3 is still reached.
     expect(hardCounts.has(3)).toBe(true)
+  })
+
+  // The cap on its own: with enough other questions, never more than 3 hard.
+  const make = (n: number, difficulty: Question['difficulty'], topic = 't'): Question[] =>
+    Array.from({ length: n }, (_, i) => ({
+      ...single,
+      id: `${topic}-${difficulty}-${i}`,
+      topic,
+      difficulty,
+    }))
+  it('caps hard questions at 3 when others can fill the quiz', () => {
+    for (let n = 0; n < 200; n++) {
+      const qs = drawQuestions([...make(2, 'easy'), ...make(10, 'hard')], QUIZ_SIZE)
+      expect(qs.filter((q) => q.difficulty === 'hard')).toHaveLength(3)
+      expect(qs.filter((q) => q.difficulty === 'easy')).toHaveLength(2)
+    }
+  })
+
+  // Too few others: go over the cap only as far as needed to fill the quiz.
+  it('goes over the cap only as far as a full quiz needs', () => {
+    for (let n = 0; n < 200; n++) {
+      const qs = drawQuestions([...make(1, 'medium'), ...make(10, 'hard')], QUIZ_SIZE)
+      expect(qs.filter((q) => q.difficulty === 'medium')).toHaveLength(1)
+      expect(new Set(qs.map((q) => q.id)).size).toBe(QUIZ_SIZE)
+    }
+  })
+
+  // Units B and C will add hard cell questions: quota and cap must hold together.
+  it('keeps the quota and the cap when the quota topics are all hard', () => {
+    const pool = [...make(6, 'hard', 'x'), ...make(10, 'easy', 'y')]
+    for (let n = 0; n < 200; n++) {
+      const qs = drawQuestions(pool, QUIZ_SIZE, Math.random, { topics: ['x'], min: 2 })
+      expect(qs.filter((q) => q.topic === 'x').length).toBeGreaterThanOrEqual(2)
+      expect(qs.filter((q) => q.difficulty === 'hard').length).toBeLessThanOrEqual(3)
+      expect(new Set(qs.map((q) => q.id)).size).toBe(QUIZ_SIZE)
+    }
+  })
+
+  // The fallback must not leave its questions always at the end.
+  it('mixes the order of a capped draw', () => {
+    const lastIsMedium = new Set<boolean>()
+    for (let n = 0; n < 200; n++) {
+      const qs = drawQuestions([...make(1, 'medium'), ...make(10, 'hard')], QUIZ_SIZE)
+      lastIsMedium.add(qs[QUIZ_SIZE - 1]!.difficulty === 'medium')
+    }
+    expect(lastIsMedium).toEqual(new Set([true, false]))
   })
 
   it('a bank of only hard questions still draws a full quiz', () => {

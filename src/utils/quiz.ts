@@ -38,7 +38,10 @@ export const QUIZ_MAX_HARD = 3
  * Draws `count` distinct questions in random order (ids are unique in a bank). With a
  * quota, its `min` questions are drawn first from its topics (as many as the bank has),
  * the rest from everything left. At most `maxHard` are hard, unless the bank has too few
- * other questions to fill the quiz.
+ * other questions to fill the quiz. A draw that would go over the cap keeps its first
+ * `maxHard` hard ones and fills up with others, so exactly `maxHard` hard is a little more
+ * common than in a plain draw. The cap wins over a quota: keep `quota.min <= maxHard`, or
+ * a quota whose topics are all hard may come up short.
  */
 export function drawQuestions(
   pool: readonly Question[],
@@ -66,8 +69,8 @@ export function drawQuestions(
   pick(shuffled, count)
   // Too few non-hard questions: a full quiz matters more than the cap.
   for (const q of shuffled) if (picked.length < count && !picked.includes(q)) picked.push(q)
-  // Mixed again, so the required questions aren't always first.
-  return quota ? shuffle(picked, random) : picked
+  // Mixed again: quota picks and kept hard questions come first, fallback ones last.
+  return shuffle(picked, random)
 }
 
 export function emptyResponse(q: Question): QuizResponse {

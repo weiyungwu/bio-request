@@ -151,6 +151,52 @@ describe('bio-01 question bank', () => {
     expect(thin.map((p) => p.id)).toEqual([])
   })
 
+  // Batch 3's keys, as Human confirmed them on the draft (2026-11-11). Their explanations
+  // paraphrase the correct option, so the check above can't catch a wrong key; changing a
+  // key here needs Human review again.
+  it('keeps the Human-confirmed keys of batch 3', () => {
+    const keys = Object.fromEntries(
+      qs
+        .filter((q) => {
+          const n = Number(q.id.replace('bio-01-q', ''))
+          return n >= 36 && n <= 65
+        })
+        .map((q) => [q.id, q.answer]),
+    )
+    expect(keys).toEqual({
+      'bio-01-q36': 2,
+      'bio-01-q37': 1,
+      'bio-01-q38': 0,
+      'bio-01-q39': 3,
+      'bio-01-q40': 0,
+      'bio-01-q41': 3,
+      'bio-01-q42': 0,
+      'bio-01-q43': 1,
+      'bio-01-q44': 2,
+      'bio-01-q45': [1, 0, 2, 3],
+      'bio-01-q46': 1,
+      'bio-01-q47': 2,
+      'bio-01-q48': 0,
+      'bio-01-q49': 1,
+      'bio-01-q50': 3,
+      'bio-01-q51': 0,
+      'bio-01-q52': 0,
+      'bio-01-q53': 3,
+      'bio-01-q54': 0,
+      'bio-01-q55': 2,
+      'bio-01-q56': 1,
+      'bio-01-q57': 1,
+      'bio-01-q58': 2,
+      'bio-01-q59': 1,
+      'bio-01-q60': 0,
+      'bio-01-q61': 3,
+      'bio-01-q62': 0,
+      'bio-01-q63': 1,
+      'bio-01-q64': 3,
+      'bio-01-q65': 0,
+    })
+  })
+
   it('has no bank for a stage without questions', () => {
     expect(getQuestionBank('bio-02')).toBeUndefined()
   })
