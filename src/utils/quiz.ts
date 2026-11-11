@@ -22,10 +22,11 @@ export interface TopicQuota {
 /**
  * Per-stage quotas. Stage 1 (Human decision, 2026-11-11): unit A now has most of the bank,
  * so a plain random draw could leave out cells, the stage's main content; at least 2 of
- * the 5 come from units B and C.
+ * the 5 come from units B, C and D.
  */
 export const QUIZ_TOPIC_QUOTAS: Readonly<Record<string, TopicQuota>> = {
-  'bio-01': { topics: ['細胞構造', '細胞器功能', '動植物細胞差異'], min: 2 },
+  // 物質運輸 (unit D) joined with the textbook extension (Human decision 2026-11-11).
+  'bio-01': { topics: ['細胞構造', '細胞器功能', '動植物細胞差異', '物質運輸'], min: 2 },
 }
 
 /**

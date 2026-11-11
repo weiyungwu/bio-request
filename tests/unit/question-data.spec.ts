@@ -17,7 +17,7 @@ describe('bio-01 question bank', () => {
   // spec 5.4 題目涵蓋 the four areas taught in stage 1.
   it('covers every spec 5.4 topic', () => {
     expect(new Set(qs.map((q) => q.topic))).toEqual(
-      new Set(['生命的特徵', '細胞構造', '細胞器功能', '動植物細胞差異']),
+      new Set(['生命的特徵', '細胞構造', '細胞器功能', '動植物細胞差異', '物質運輸']),
     )
   })
 
@@ -106,6 +106,11 @@ describe('bio-01 question bank', () => {
       '核膜',
       '原生生物',
       '胞吞',
+      '胞吐',
+      '擴散',
+      '被動運輸',
+      '主動運輸',
+      '器官系統',
     ]
     const used = terms.filter((t) => JSON.stringify(qs).includes(t))
     expect(used.filter((t) => !lesson.includes(t))).toEqual([])
@@ -250,6 +255,38 @@ describe('bio-01 question bank', () => {
       'bio-01-q121': ['c-prokaryote', 'b-protein-line'],
       'bio-01-q122': ['c-prokaryote'],
       'bio-01-q123': ['c-prokaryote', 'b-mitochondrion'],
+      // Batch 4, part 2 (Human confirmed 2026-11-11): levels of organization and transport.
+      'bio-01-q124': ['a-levels'],
+      'bio-01-q125': ['a-levels'],
+      'bio-01-q126': ['a-levels'],
+      'bio-01-q127': ['a-levels'],
+      'bio-01-q128': ['a-levels'],
+      'bio-01-q129': ['a-levels'],
+      'bio-01-q130': ['a-levels'],
+      'bio-01-q131': ['a-levels'],
+      'bio-01-q132': ['d-passive'],
+      'bio-01-q133': ['d-passive'],
+      'bio-01-q134': ['d-passive'],
+      'bio-01-q135': ['d-passive'],
+      'bio-01-q136': ['d-passive'],
+      'bio-01-q137': ['d-passive', 'd-active'],
+      'bio-01-q138': ['d-passive'],
+      'bio-01-q139': ['d-passive', 'd-active'],
+      'bio-01-q140': ['d-active'],
+      'bio-01-q141': ['d-active'],
+      'bio-01-q142': ['d-active'],
+      'bio-01-q143': ['d-active'],
+      'bio-01-q144': ['d-active', 'd-bulk'],
+      'bio-01-q145': ['d-active', 'd-passive', 'd-bulk'],
+      'bio-01-q146': ['d-active'],
+      'bio-01-q147': ['d-active', 'b-mitochondrion'],
+      'bio-01-q148': ['d-bulk'],
+      'bio-01-q149': ['d-bulk'],
+      'bio-01-q150': ['d-bulk'],
+      'bio-01-q151': ['d-bulk'],
+      'bio-01-q152': ['d-bulk'],
+      'bio-01-q153': ['d-bulk'],
+      'bio-01-q154': ['d-bulk'],
     })
   })
 
@@ -258,10 +295,7 @@ describe('bio-01 question bank', () => {
   it('gives every knowledge point enough questions', () => {
     const points = getLessonData('bio-01')!.lessons.flatMap((l) => l.knowledgePoints)
     const thin = points.filter((p) => qs.filter((q) => q.knowledgeIds.includes(p.id)).length < 8)
-    // The textbook points (2026-11-11) wait for batch 4. Remove each one as its questions land;
-    // the stage goes live only once this list is empty.
-    const pending = ['a-levels', 'd-passive', 'd-active', 'd-bulk']
-    expect(thin.map((p) => p.id)).toEqual(pending)
+    expect(thin.map((p) => p.id)).toEqual([])
     // Raising the mastered rule's question count past 8 must bring this floor back up.
     expect(8).toBeGreaterThan(MASTERY_RULES.minQuestions)
   })
@@ -369,6 +403,37 @@ describe('bio-01 question bank', () => {
       'bio-01-q121': 2,
       'bio-01-q122': 0,
       'bio-01-q123': 1,
+      'bio-01-q124': [1, 3, 0, 2],
+      'bio-01-q125': 2,
+      'bio-01-q126': 3,
+      'bio-01-q127': 0,
+      'bio-01-q128': 1,
+      'bio-01-q129': 1,
+      'bio-01-q130': 0,
+      'bio-01-q131': 0,
+      'bio-01-q132': 1,
+      'bio-01-q133': 3,
+      'bio-01-q134': 3,
+      'bio-01-q135': 1,
+      'bio-01-q136': 0,
+      'bio-01-q137': 2,
+      'bio-01-q138': 0,
+      'bio-01-q139': 2,
+      'bio-01-q140': 1,
+      'bio-01-q141': 1,
+      'bio-01-q142': 3,
+      'bio-01-q143': 1,
+      'bio-01-q144': 0,
+      'bio-01-q145': [1, 0, 3, 2],
+      'bio-01-q146': 0,
+      'bio-01-q147': 2,
+      'bio-01-q148': 0,
+      'bio-01-q149': 1,
+      'bio-01-q150': 0,
+      'bio-01-q151': 3,
+      'bio-01-q152': 1,
+      'bio-01-q153': 0,
+      'bio-01-q154': 2,
     })
   })
 

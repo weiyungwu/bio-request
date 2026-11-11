@@ -117,6 +117,14 @@ describe('quiz engine (TASK-011)', () => {
   const quota = QUIZ_TOPIC_QUOTAS['bio-01']!
   const cellsIn = (qs: readonly Question[]) => qs.filter((q) => quota.topics.includes(q.topic))
 
+  // Stage 1 is life's characteristics (unit A) plus cells (units B-D). A new cell topic left out
+  // of the quota would make cell questions rarer without any test noticing.
+  it('every stage-1 topic but 生命的特徵 counts toward the cell quota', () => {
+    const topics = new Set(bank.map((q) => q.topic))
+    topics.delete('生命的特徵')
+    expect([...quota.topics].sort()).toEqual([...topics].sort())
+  })
+
   it('a stage 1 draw always has at least 2 cell questions, and is still random', () => {
     const unitA = new Set<number>()
     for (let n = 0; n < 20000; n++) {

@@ -1904,5 +1904,481 @@
     "answer": 1,
     "explanation": "因為「粒線體是膜狀胞器，細菌是原核生物，沒有膜狀胞器」。動物、植物、真菌等真核細胞才有粒線體；粒線體與能量供應有關，合成蛋白質的是核糖體。",
     "source": "第一關教材 單元 B：粒線體；單元 C：原核細胞與真核細胞"
+  },
+  {
+    "id": "bio-01-q124",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-levels"],
+    "type": "ordering",
+    "difficulty": "hard",
+    "question": "請將植物體的組成層次由小到大依序排列。",
+    "options": ["葉", "葉肉細胞", "植物體", "葉肉組織"],
+    "answer": [1, 3, 0, 2],
+    "explanation": "植物體的層次是：細胞 → 組織 → 器官 → 個體。葉肉細胞聚集成葉肉組織，葉由數種組織組成，是一個器官，許多器官組成完整的植物體：葉肉細胞 → 葉肉組織 → 葉 → 植物體。",
+    "source": "第一關教材 單元 A：生物體的組成層次"
+  },
+  {
+    "id": "bio-01-q125",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-levels"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "人體的組成層次有細胞、組織、器官、器官系統和個體。下列哪一個層次是植物體沒有的？",
+    "options": ["組織", "器官", "器官系統", "細胞"],
+    "answer": 2,
+    "explanation": "植物體沒有「器官系統」這個層次，它的層次是細胞 → 組織 → 器官 → 個體。",
+    "source": "第一關教材 單元 A：生物體的組成層次"
+  },
+  {
+    "id": "bio-01-q126",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-levels"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "草履蟲只由一個細胞構成。關於草履蟲的組成層次，下列敘述何者正確？",
+    "options": [
+      "它有組織，但沒有器官",
+      "它由好幾個器官組成消化系統",
+      "它沒有組織，所以不能算是生物",
+      "它的一個細胞就是一個個體"
+    ],
+    "answer": 3,
+    "explanation": "正確的是「它的一個細胞就是一個個體」。單細胞生物只有一個細胞，這個細胞就能完成生活所需的各種活動，沒有組織、器官等層次，但仍然是生物。",
+    "source": "第一關教材 單元 A：生物體的組成層次"
+  },
+  {
+    "id": "bio-01-q127",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-levels"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "胃屬於「器官」這個層次，而不是「組織」。最主要的原因是什麼？",
+    "options": [
+      "胃由肌肉組織、上皮組織等多種組織組成，能完成特定的功能",
+      "胃只由一種形態相同的細胞構成",
+      "胃是一群形態相似、功能相同的細胞",
+      "胃單獨就能完成全部的消化工作"
+    ],
+    "answer": 0,
+    "explanation": "最主要的原因是「胃由肌肉組織、上皮組織等多種組織組成，能完成特定的功能」。一群形態相似、功能相同的細胞是組織；消化工作要靠胃、小腸、肝臟等器官合作，構成消化系統。",
+    "source": "第一關教材 單元 A：生物體的組成層次"
+  },
+  {
+    "id": "bio-01-q128",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-levels"],
+    "type": "true_false",
+    "difficulty": "medium",
+    "question": "一個器官只由一種組織構成。",
+    "options": ["對", "錯"],
+    "answer": 1,
+    "explanation": "錯誤。一個器官通常由好幾種組織組成，例如胃有肌肉組織、上皮組織等。",
+    "source": "第一關教材 單元 A：生物體的組成層次"
+  },
+  {
+    "id": "bio-01-q129",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-levels"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "下列哪一項配對正確？",
+    "options": ["肌肉細胞：組織", "小腸：器官", "消化系統：器官", "胃：器官系統"],
+    "answer": 1,
+    "explanation": "正確的是「小腸：器官」。肌肉細胞是細胞，肌肉組織才是組織；消化系統是器官系統；胃是器官。",
+    "source": "第一關教材 單元 A：生物體的組成層次"
+  },
+  {
+    "id": "bio-01-q130",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-levels"],
+    "type": "true_false",
+    "difficulty": "medium",
+    "question": "一群形態相似、功能相同的細胞聚集在一起，稱為組織。",
+    "options": ["對", "錯"],
+    "answer": 0,
+    "explanation": "正確。形態相似、功能相同的細胞聚集成組織，例如肌肉細胞組成肌肉組織。",
+    "source": "第一關教材 單元 A：生物體的組成層次"
+  },
+  {
+    "id": "bio-01-q131",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-levels"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "下列哪一組由小到大的排列是正確的？",
+    "options": [
+      "肌肉細胞 → 肌肉組織 → 胃 → 消化系統",
+      "肌肉組織 → 肌肉細胞 → 胃 → 消化系統",
+      "肌肉細胞 → 胃 → 肌肉組織 → 消化系統",
+      "肌肉細胞 → 肌肉組織 → 消化系統 → 胃"
+    ],
+    "answer": 0,
+    "explanation": "正確的是「肌肉細胞 → 肌肉組織 → 胃 → 消化系統」，也就是細胞 → 組織 → 器官 → 器官系統。",
+    "source": "第一關教材 單元 A：生物體的組成層次"
+  },
+  {
+    "id": "bio-01-q132",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-passive"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "下列哪一項是被動運輸的特徵？",
+    "options": [
+      "物質由低濃度往高濃度移動，需要消耗 ATP",
+      "物質由高濃度往低濃度移動，不消耗細胞的能量",
+      "物質被細胞膜包成小囊送進細胞",
+      "只有植物細胞才會進行"
+    ],
+    "answer": 1,
+    "explanation": "被動運輸的特徵是「物質由高濃度往低濃度移動，不消耗細胞的能量」。由低濃度往高濃度、要消耗 ATP 的是主動運輸；被細胞膜包成小囊送進細胞的是胞吞作用。",
+    "source": "第一關教材 單元 D：被動運輸：擴散與滲透"
+  },
+  {
+    "id": "bio-01-q133",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-passive"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "在一杯清水中滴入一滴紅墨水，不攪拌，紅色會慢慢散開，最後整杯水顏色均勻。這個現象屬於什麼？",
+    "options": ["滲透", "主動運輸", "胞吞作用", "擴散"],
+    "answer": 3,
+    "explanation": "這是「擴散」：紅墨水的分子由濃度高的地方往濃度低的地方移動，直到分布均勻。滲透專指水通過細胞膜的移動；主動運輸和胞吞作用是細胞消耗能量進行的。",
+    "source": "第一關教材 單元 D：被動運輸：擴散與滲透"
+  },
+  {
+    "id": "bio-01-q134",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-passive"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "用一張只讓水通過、不讓糖通過的膜，把容器隔成兩側：甲側是清水，乙側是濃糖水，一開始兩側液面一樣高。一段時間後，哪一側的液面會升高？",
+    "options": [
+      "甲側，因為糖會從濃的一側移到稀的一側",
+      "兩側都不變，因為膜不讓糖通過",
+      "甲側，因為水會從濃糖水移到清水",
+      "乙側，因為水會從水多的一側移到水少的一側"
+    ],
+    "answer": 3,
+    "explanation": "答案是「乙側，因為水會從水多的一側移到水少的一側」。清水的水比較多，濃糖水的水比較少，水經由滲透作用移到乙側，乙側液面就升高；糖不能通過這張膜。",
+    "source": "第一關教材 單元 D：被動運輸：擴散與滲透"
+  },
+  {
+    "id": "bio-01-q135",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-passive"],
+    "type": "true_false",
+    "difficulty": "medium",
+    "question": "滲透是指糖、鹽等溶質通過細胞膜的移動。",
+    "options": ["對", "錯"],
+    "answer": 1,
+    "explanation": "錯誤。滲透專指「水」通過細胞膜的移動，由水比較多（溶質濃度低）的一側往水比較少（溶質濃度高）的一側移動。",
+    "source": "第一關教材 單元 D：被動運輸：擴散與滲透"
+  },
+  {
+    "id": "bio-01-q136",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-passive"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "肺泡中氧氣的濃度比周圍血液高，二氧化碳的濃度比血液低。這兩種氣體會如何移動？",
+    "options": [
+      "氧氣由肺泡擴散進入血液，二氧化碳由血液擴散進入肺泡",
+      "氧氣由血液擴散進入肺泡，二氧化碳由肺泡擴散進入血液",
+      "兩種氣體都要靠主動運輸，才能在肺泡和血液之間移動",
+      "兩種氣體都由肺泡進入血液"
+    ],
+    "answer": 0,
+    "explanation": "答案是「氧氣由肺泡擴散進入血液，二氧化碳由血液擴散進入肺泡」。擴散是由高濃度往低濃度移動：氧氣在肺泡比較濃，二氧化碳在血液比較濃，不需要消耗能量。",
+    "source": "第一關教材 單元 D：被動運輸：擴散與滲透"
+  },
+  {
+    "id": "bio-01-q137",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-passive", "d-active"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "葡萄糖由濃度高的細胞外，經由細胞膜上的蛋白質協助進入濃度低的細胞內，過程不消耗 ATP。這屬於哪一種運輸方式？",
+    "options": ["主動運輸", "胞吞作用", "被動運輸", "胞吐作用"],
+    "answer": 2,
+    "explanation": "這屬於「被動運輸」。雖然需要細胞膜上蛋白質的協助，但葡萄糖仍由高濃度往低濃度移動，也不消耗 ATP；主動運輸是由低濃度往高濃度，而且要消耗 ATP。",
+    "source": "第一關教材 單元 D：被動運輸：擴散與滲透、主動運輸"
+  },
+  {
+    "id": "bio-01-q138",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-passive"],
+    "type": "true_false",
+    "difficulty": "medium",
+    "question": "擴散和滲透都屬於被動運輸，都不需要消耗 ATP。",
+    "options": ["對", "錯"],
+    "answer": 0,
+    "explanation": "正確。擴散和滲透都是物質由高濃度往低濃度（滲透時是水由水多往水少）移動，屬於被動運輸，不消耗 ATP。",
+    "source": "第一關教材 單元 D：被動運輸：擴散與滲透"
+  },
+  {
+    "id": "bio-01-q139",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-passive", "d-active"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "用藥物抑制細胞的呼吸作用後，下列哪一種物質進出細胞的方式最不受影響？",
+    "options": [
+      "根毛細胞吸收濃度比細胞內低的礦物質",
+      "白血球把細菌吞進細胞",
+      "氧氣以擴散的方式進入細胞",
+      "胰臟細胞把消化酵素送出細胞"
+    ],
+    "answer": 2,
+    "explanation": "最不受影響的是「氧氣以擴散的方式進入細胞」。擴散是被動運輸，不消耗 ATP；根毛細胞吸收礦物質是主動運輸，白血球吞細菌是胞吞作用，分泌消化酵素是胞吐作用，都要消耗能量。",
+    "source": "第一關教材 單元 D：被動運輸：擴散與滲透、主動運輸"
+  },
+  {
+    "id": "bio-01-q140",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-active"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "下列哪一項是主動運輸的特徵？",
+    "options": [
+      "由高濃度往低濃度移動，不消耗能量",
+      "由低濃度往高濃度運送，要消耗 ATP，並靠細胞膜上的蛋白質",
+      "只運送水分子",
+      "物質被細胞膜包成小囊送進細胞"
+    ],
+    "answer": 1,
+    "explanation": "主動運輸的特徵是「由低濃度往高濃度運送，要消耗 ATP，並靠細胞膜上的蛋白質」。由高濃度往低濃度、不消耗能量的是被動運輸；只運送水的是滲透；包成小囊送進細胞的是胞吞作用。",
+    "source": "第一關教材 單元 D：主動運輸"
+  },
+  {
+    "id": "bio-01-q141",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-active"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "海帶細胞內碘的濃度遠比海水高，但海帶仍能持續從海水中吸收碘。海帶吸收碘的方式最可能是哪一種？",
+    "options": ["擴散", "主動運輸", "滲透", "胞吐作用"],
+    "answer": 1,
+    "explanation": "最可能是「主動運輸」。碘由濃度低的海水進入濃度高的細胞，是由低濃度往高濃度運送，必須消耗能量；擴散只能由高濃度往低濃度，滲透專指水的移動，胞吐作用是把物質送出細胞。",
+    "source": "第一關教材 單元 D：主動運輸"
+  },
+  {
+    "id": "bio-01-q142",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-active"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "某細胞內某種礦物質的濃度比細胞外高。加入抑制呼吸作用的藥物後，細胞就無法再吸收這種礦物質。下列推論何者最合理？",
+    "options": [
+      "細胞是用擴散吸收這種礦物質",
+      "細胞是用滲透吸收這種礦物質",
+      "這種礦物質是由細胞壁吸收的",
+      "細胞是用主動運輸吸收這種礦物質"
+    ],
+    "answer": 3,
+    "explanation": "最合理的是「細胞是用主動運輸吸收這種礦物質」。礦物質由低濃度往高濃度移動，而且抑制呼吸作用、ATP 不足時就無法吸收，表示這個過程要消耗能量。",
+    "source": "第一關教材 單元 D：主動運輸"
+  },
+  {
+    "id": "bio-01-q143",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-active"],
+    "type": "true_false",
+    "difficulty": "medium",
+    "question": "主動運輸是把物質由濃度高的地方送到濃度低的地方。",
+    "options": ["對", "錯"],
+    "answer": 1,
+    "explanation": "錯誤。主動運輸是消耗 ATP，把物質由濃度低的地方送到濃度高的地方；由高濃度往低濃度的是被動運輸。",
+    "source": "第一關教材 單元 D：主動運輸"
+  },
+  {
+    "id": "bio-01-q144",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-active", "d-bulk"],
+    "type": "true_false",
+    "difficulty": "hard",
+    "question": "主動運輸和胞吞作用都需要消耗能量。",
+    "options": ["對", "錯"],
+    "answer": 0,
+    "explanation": "正確。主動運輸要消耗 ATP 把物質由低濃度送到高濃度；胞吞作用時細胞膜向內凹陷包住物質，也要消耗能量。",
+    "source": "第一關教材 單元 D：主動運輸、胞吞與胞吐"
+  },
+  {
+    "id": "bio-01-q145",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-active", "d-passive", "d-bulk"],
+    "type": "matching",
+    "difficulty": "medium",
+    "question": "請將左邊的運輸方式與右邊的說明配對。",
+    "options": {
+      "left": ["擴散", "滲透", "主動運輸", "胞吞作用"],
+      "right": [
+        "水分子通過細胞膜，由水多的一側往水少的一側移動",
+        "物質由高濃度往低濃度移動",
+        "細胞膜包住大分子形成小囊，送進細胞",
+        "消耗 ATP，把物質由低濃度送到高濃度"
+      ]
+    },
+    "answer": [1, 0, 3, 2],
+    "explanation": "擴散是物質由高濃度往低濃度移動；滲透是水分子通過細胞膜，由水多的一側往水少的一側移動；主動運輸消耗 ATP，把物質由低濃度送到高濃度；胞吞作用是細胞膜包住大分子形成小囊，送進細胞。",
+    "source": "第一關教材 單元 D：主動運輸、被動運輸：擴散與滲透、胞吞與胞吐"
+  },
+  {
+    "id": "bio-01-q146",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-active"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "甲物質由細胞外（濃度低）進入細胞內（濃度高）；乙物質由細胞外（濃度高）進入細胞內（濃度低）。兩者都是小分子。下列推論何者最合理？",
+    "options": [
+      "甲物質的運輸需要消耗 ATP，乙物質不需要",
+      "乙物質的運輸需要消耗 ATP，甲物質不需要",
+      "兩者的運輸都不需要消耗 ATP",
+      "兩者都是滲透作用"
+    ],
+    "answer": 0,
+    "explanation": "最合理的是「甲物質的運輸需要消耗 ATP，乙物質不需要」。甲由低濃度往高濃度，是主動運輸；乙由高濃度往低濃度，是被動運輸。滲透專指水的移動。",
+    "source": "第一關教材 單元 D：主動運輸"
+  },
+  {
+    "id": "bio-01-q147",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-active", "b-mitochondrion"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "主動運輸需要的 ATP，主要由哪一個胞器的呼吸作用產生？",
+    "options": ["葉綠體", "高基氏體", "粒線體", "液胞"],
+    "answer": 2,
+    "explanation": "主要由「粒線體」產生。粒線體進行呼吸作用分解養分，釋放的能量有一部分儲存在 ATP 中；葉綠體負責光合作用。",
+    "source": "第一關教材 單元 B：粒線體；單元 D：主動運輸"
+  },
+  {
+    "id": "bio-01-q148",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-bulk"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "胞吞作用和胞吐作用運送的，通常是哪一類物質？",
+    "options": [
+      "無法直接穿過細胞膜的大分子或顆粒",
+      "只有水分子",
+      "氧氣、二氧化碳等小分子",
+      "只有葡萄糖"
+    ],
+    "answer": 0,
+    "explanation": "運送的通常是「無法直接穿過細胞膜的大分子或顆粒」。水、氧氣、二氧化碳等小分子可以直接通過細胞膜，靠的是被動運輸。",
+    "source": "第一關教材 單元 D：胞吞與胞吐"
+  },
+  {
+    "id": "bio-01-q149",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-bulk"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "某生說：「白血球進行胞吞作用時，細菌是穿過細胞膜的分子之間進入細胞的。」這句話錯在哪裡？",
+    "options": [
+      "白血球是用主動運輸把細菌吸進細胞",
+      "細菌是被細胞膜包成小囊送進細胞，不是穿過細胞膜",
+      "白血球是用胞吐作用把細菌吞進細胞",
+      "細菌是經由滲透作用進入細胞"
+    ],
+    "answer": 1,
+    "explanation": "錯在「細菌是被細胞膜包成小囊送進細胞，不是穿過細胞膜」。胞吞作用時，細胞膜向內凹陷，把細菌包起來形成小囊進入細胞。",
+    "source": "第一關教材 單元 D：胞吞與胞吐"
+  },
+  {
+    "id": "bio-01-q150",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-bulk"],
+    "type": "true_false",
+    "difficulty": "medium",
+    "question": "胞吐作用時，細胞內包著物質的小囊會和細胞膜融合，把物質送出細胞。",
+    "options": ["對", "錯"],
+    "answer": 0,
+    "explanation": "正確。胞吐作用是細胞內包著物質的小囊和細胞膜融合，把物質送到細胞外，例如胰臟細胞分泌消化酵素。",
+    "source": "第一關教材 單元 D：胞吞與胞吐"
+  },
+  {
+    "id": "bio-01-q151",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-bulk"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "下列哪一項屬於胞吐作用？",
+    "options": [
+      "白血球把細菌吞進細胞",
+      "氧氣由肺泡進入血液",
+      "根毛細胞吸收土壤中的礦物質",
+      "胰臟細胞把消化酵素送到細胞外"
+    ],
+    "answer": 3,
+    "explanation": "屬於胞吐作用的是「胰臟細胞把消化酵素送到細胞外」。白血球吞細菌是胞吞作用；氧氣進入血液是擴散；根毛細胞吸收礦物質是主動運輸。",
+    "source": "第一關教材 單元 D：胞吞與胞吐"
+  },
+  {
+    "id": "bio-01-q152",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-bulk"],
+    "type": "true_false",
+    "difficulty": "hard",
+    "question": "胞吞和胞吐時，物質沒有穿過細胞膜，所以不需要消耗能量。",
+    "options": ["對", "錯"],
+    "answer": 1,
+    "explanation": "錯誤。胞吞、胞吐時物質雖然是被細胞膜包著進出、沒有穿過細胞膜，但細胞膜要變形、融合，兩者都需要消耗能量。",
+    "source": "第一關教材 單元 D：胞吞與胞吐"
+  },
+  {
+    "id": "bio-01-q153",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-bulk"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "下列哪一種運輸方式進行時，細胞膜的形狀會改變（向內凹陷，或和小囊融合）？",
+    "options": ["胞吞作用和胞吐作用", "擴散", "滲透", "主動運輸"],
+    "answer": 0,
+    "explanation": "答案是「胞吞作用和胞吐作用」。胞吞時細胞膜向內凹陷包住物質，胞吐時小囊和細胞膜融合；擴散、滲透和主動運輸都是物質通過細胞膜，細胞膜不必變形。",
+    "source": "第一關教材 單元 D：胞吞與胞吐"
+  },
+  {
+    "id": "bio-01-q154",
+    "courseId": "bio-01",
+    "topic": "物質運輸",
+    "knowledgeIds": ["d-bulk"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "某種單細胞生物會用細胞膜把整個食物顆粒包起來，送進細胞內消化。這個過程屬於哪一種作用？",
+    "options": ["胞吐作用", "主動運輸", "胞吞作用", "滲透"],
+    "answer": 2,
+    "explanation": "這是「胞吞作用」：細胞膜向內凹陷，把食物顆粒包起來形成小囊送進細胞。胞吐作用是把物質送出細胞。",
+    "source": "第一關教材 單元 D：胞吞與胞吐"
   }
 ]
