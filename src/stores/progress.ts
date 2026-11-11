@@ -185,7 +185,7 @@ export const useProgressStore = defineStore('progress', () => {
     score: number,
     wrongIds: readonly string[] = [],
     now = new Date(),
-  ): { exp: number; capped: boolean } {
+  ): QuizExpAward {
     const { paid, capped } = cappedQuizExp(score, now)
     const at = now.toISOString()
     practice.value.push({ courseId, score, completedAt: at, exp: paid })
@@ -198,7 +198,9 @@ export const useProgressStore = defineStore('progress', () => {
       practice.value.shift()
     addWrong(courseId, wrongIds, at)
     exp.value += paid
-    return { exp: paid, capped }
+    // The quiz award shape, so the result page shows both alike; practice has no first clear
+    // and earns no badge.
+    return { quiz: paid, capped, firstClear: 0, total: paid, newBadges: [] }
   }
 
   /**

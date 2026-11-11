@@ -51,15 +51,33 @@ describe('practiceTargets', () => {
   it('with no weak points, takes the least-answered points not yet mastered', () => {
     const r = report([answer(only(firstPoint)[0]!.id, true)])
     expect(r.weakest).toEqual([])
-    const ids = practiceTargets(r).map((p) => p.id)
-    expect(ids).toHaveLength(3)
-    expect(ids).not.toContain(firstPoint)
+    const points = r.units.flatMap((u) => u.points)
+    // Every other point is unanswered, so the first three of them in lesson order.
+    expect(practiceTargets(r).map((p) => p.id)).toEqual(
+      points
+        .filter((p) => p.id !== firstPoint)
+        .slice(0, 3)
+        .map((p) => p.id),
+    )
+    // Answered points go last: with only one unanswered point left, it comes first.
+    for (const p of points) p.mastery.totalAttempts = p.id === 'd-active' ? 0 : 4
+    expect(practiceTargets(r)[0]!.id).toBe('d-active')
   })
 
   it('still offers practice when every point is mastered', () => {
     const r = report([])
-    for (const p of r.units.flatMap((u) => u.points)) p.mastery.masteryLevel = 'mastered'
-    expect(practiceTargets(r)).toHaveLength(3)
+    const points = r.units.flatMap((u) => u.points)
+    for (const p of points)
+      Object.assign(p.mastery, { masteryLevel: 'mastered', recentAccuracy: 1 })
+    // The least secure mastered points come first.
+    Object.assign(points[5]!.mastery, { recentAccuracy: 0.8 })
+    Object.assign(points[9]!.mastery, { recentAccuracy: 0.8 })
+    Object.assign(points[2]!.mastery, { recentAccuracy: 0.9 })
+    expect(practiceTargets(r).map((p) => p.id)).toEqual([
+      points[5]!.id,
+      points[9]!.id,
+      points[2]!.id,
+    ])
   })
 })
 
@@ -120,11 +138,23 @@ describe('recordPracticeResult', () => {
   // Human decision: EXP as a quiz score, within the daily cap shared with stage quizzes.
   it('pays quiz-score EXP within the daily cap it shares with stage quizzes', () => {
     const p = reload()
-    expect(p.recordPracticeResult('bio-01', 100, [], day(8))).toEqual({ exp: 40, capped: false })
+    expect(p.recordPracticeResult('bio-01', 100, [], day(8))).toMatchObject({
+      quiz: 40,
+      capped: false,
+    })
     p.recordQuizResult('bio-01', 100, [], day(9)) // 40 quiz + 30 first clear
-    expect(p.recordPracticeResult('bio-01', 100, [], day(10))).toEqual({ exp: 20, capped: true })
+    expect(p.recordPracticeResult('bio-01', 100, [], day(10))).toMatchObject({
+      quiz: 20,
+      capped: true,
+    })
     expect(p.recordQuizResult('bio-01', 100, [], day(11)).quiz).toBe(0)
-    expect(p.recordPracticeResult('bio-01', 50, [], day(12))).toEqual({ exp: 0, capped: false })
+    expect(p.recordPracticeResult('bio-01', 50, [], day(12))).toEqual({
+      quiz: 0,
+      capped: false,
+      firstClear: 0,
+      total: 0,
+      newBadges: [],
+    })
     expect(p.exp).toBe(130)
   })
 
@@ -168,6 +198,6 @@ describe('recordPracticeResult', () => {
     for (let k = 0; k < PRACTICE_HISTORY_LIMIT; k++)
       p.recordPracticeResult('bio-01', 0, [], day(12))
     expect(p.practice.length).toBeGreaterThan(PRACTICE_HISTORY_LIMIT)
-    expect(p.recordPracticeResult('bio-01', 100, [], day(13)).exp).toBe(0)
+    expect(p.recordPracticeResult('bio-01', 100, [], day(13)).quiz).toBe(0)
   })
 })

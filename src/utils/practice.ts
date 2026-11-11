@@ -47,7 +47,11 @@ function priorities(events: readonly LearningEvent[], playerId: string): Map<str
 /**
  * Up to PRACTICE_SIZE distinct questions spread over the target points in turn. Each point
  * takes its unanswered questions first, then those last answered wrong, then the rest
- * (random within each group). At most QUIZ_MAX_HARD are hard unless nothing else is left.
+ * (random within each group). At most QUIZ_MAX_HARD are hard unless nothing else is left;
+ * the cap wins over priority, so once it is reached an unanswered hard question waits while
+ * an easier one already answered right is picked. Mistakes come after new questions: the
+ * 錯題本 already brings them back. Fewer than PRACTICE_SIZE when the points have fewer
+ * questions; none with no targets, which the page must handle.
  */
 export function drawPractice(
   targets: readonly PointReport[],
