@@ -60,8 +60,9 @@ describe('bio-01 question bank', () => {
 
   // Human decision (2026-11-11): the stage follows the school textbook (新文京《生物學》
   // ch. 1), not the 國中 curriculum, so questions may go beyond 國中 terms (ATP was banned
-  // before) — but only once the lesson teaches them. Other untaught terms are caught by
-  // Human review, not here (review S4).
+  // before) — but only once the lesson teaches them. Only listed terms are checked: add
+  // each new term a batch relies on. Scenario names and distractors (傘藻, 內質網) may stay
+  // untaught; other terms are caught by Human review, not here (review S4).
   it('only uses extended terms the lesson teaches', () => {
     const lesson = JSON.stringify(getLessonData('bio-01')!.lessons)
     const terms = [
@@ -195,10 +196,14 @@ describe('bio-01 question bank', () => {
     })
   })
 
-  // Audit §8 step 6: every stage-1 knowledge point has at least 3 questions.
-  it('gives every knowledge point at least 3 questions', () => {
+  // Audit §8 step 6: every stage-1 point has at least 3 questions; batch 3 (Human decision
+  // 2026-11-11) takes units A and B to 8. Unit C rises to 8 with its batch.
+  it('gives every knowledge point enough questions', () => {
     const points = getLessonData('bio-01')!.lessons.flatMap((l) => l.knowledgePoints)
-    const thin = points.filter((p) => qs.filter((q) => q.knowledgeIds.includes(p.id)).length < 3)
+    const floor = (id: string) => (id.startsWith('c-') ? 3 : 8)
+    const thin = points.filter(
+      (p) => qs.filter((q) => q.knowledgeIds.includes(p.id)).length < floor(p.id),
+    )
     expect(thin.map((p) => p.id)).toEqual([])
   })
 

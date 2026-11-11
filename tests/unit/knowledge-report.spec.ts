@@ -50,10 +50,14 @@ describe('courseReport', () => {
   // Audit §6 point 7: with fewer than 5 different questions a point can't reach mastered,
   // so the page says why instead of leaving students stuck at 練習中.
   it('counts the questions per point and flags points with too few', () => {
+    // Real stage-1 points have enough questions once batch 3 is in; trim one to 3 on purpose,
+    // so the case doesn't depend on how far the batches have got.
+    const growth = questions.filter((q) => q.knowledgeIds.includes('a-growth'))
+    const trimmed = questions.filter((q) => !growth.slice(3).includes(q))
+    const few = courseReport(lesson, trimmed, [], { playerId: PLAYER, now })
+    expect(point(few, 'a-growth')).toMatchObject({ questionCount: 3, enoughQuestions: false })
     const r = report([])
-    expect(point(r, 'c-both')).toMatchObject({ questionCount: 4, enoughQuestions: false })
-    // Batch 3 gave unit A 8+ questions a point.
-    expect(point(r, 'a-growth')).toMatchObject({ questionCount: 9, enoughQuestions: true })
+    expect(point(r, 'a-growth').enoughQuestions).toBe(true)
     // Every stage-1 point has questions now; a later stage starts with points that have none.
     const without = questions.filter((q) => !q.knowledgeIds.includes('a-growth'))
     const empty = courseReport(lesson, without, [], { playerId: PLAYER, now })

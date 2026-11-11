@@ -125,24 +125,26 @@ describe('quiz engine (TASK-011)', () => {
       expect(new Set(qs.map((q) => q.id)).size).toBe(QUIZ_SIZE)
       unitA.add(QUIZ_SIZE - cellsIn(qs).length)
     }
-    // Unit A can fill anywhere from none to the 3 places left. Since batch 3 unit A is 48
-    // of 65, so all-cells is about 1 draw in 1250; 20000 draws make a miss vanishingly unlikely.
+    // Unit A can fill anywhere from none to the 3 places left; with the bank's mix every
+    // count is common enough (all-cells is the rarest) that 20000 draws see each one.
     expect([...unitA].sort()).toEqual([0, 1, 2, 3])
   })
 
-  // Without the quota about 3 stage-1 quizzes in 5 have under 2 cell questions; 50 starts catch it.
-  it('the quiz store applies the stage quota', () => {
+  // The path students take: start() draws with the stage quota and the hard cap. Without the
+  // quota many stage-1 quizzes would have under 2 cell questions; without the cap about 1 in 6
+  // would have 4 or 5 hard (batch 3 review). 50 starts catch either.
+  it('the quiz store applies the stage quota and the hard cap', () => {
     setActivePinia(createPinia())
     const s = useQuizStore()
     for (let n = 0; n < 50; n++) {
       s.start('bio-01', bank)
       expect(cellsIn(s.questions).length).toBeGreaterThanOrEqual(2)
+      expect(s.questions.filter((q) => q.difficulty === 'hard').length).toBeLessThanOrEqual(3)
     }
   })
 
-  // Human decision (2026-11-11): batch 3 made 25 of stage 1's 65 questions hard. Drawn
-  // without the topic quota (whose cell questions are not hard yet, so it alone keeps
-  // stage 1 under 4), about 1 quiz in 15 would have 4 or 5; 1000 draws catch that.
+  // Human decision (2026-11-11): batch 3 made most new questions hard. Without the cap
+  // about 1 plain draw in 6 would have 4 or 5 hard; 1000 draws catch that.
   it('a draw has at most 3 hard questions', () => {
     const hardCounts = new Set<number>()
     for (let n = 0; n < 1000; n++) {
