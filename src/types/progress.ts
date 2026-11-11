@@ -43,6 +43,20 @@ export interface WrongQuestion {
 export const isRetriedCorrect = (w: WrongQuestion) =>
   w.lastCorrectAt !== undefined && Date.parse(w.lastCorrectAt) > Date.parse(w.lastWrongAt)
 
+/**
+ * One finished 弱點練習 (v1.1 Phase 2). Kept apart from `records`, which mean stage quizzes:
+ * a practice must not count as a stage attempt, for 最近學習紀錄 or for badges.
+ */
+export interface PracticeRecord {
+  courseId: string
+  /** 0–100 */
+  score: number
+  /** ISO 8601 timestamp (UTC). */
+  completedAt: string
+  /** EXP actually paid, after the daily cap shared with stage quizzes. */
+  exp: number
+}
+
 /** Everything saved in LocalStorage (TASK-013, spec FR-08). */
 export interface SavedProgress {
   version: 1
@@ -58,4 +72,9 @@ export interface SavedProgress {
    * "game:bio-01:matching", "review:bio-01". Missing in older saves → [].
    */
   claimed: string[]
+  /**
+   * 弱點練習, newest last; trimmed to PRACTICE_HISTORY_LIMIT but never below today's entries.
+   * Missing in older saves → [].
+   */
+  practice: PracticeRecord[]
 }

@@ -31,6 +31,7 @@ const valid = {
   wrongQuestions: { 'bio-01-q03': wrong },
   badges: ['first-clear'],
   claimed: ['unit:bio-01:lesson-01'],
+  practice: [{ courseId: 'bio-01', score: 60, completedAt: at.toISOString(), exp: 10 }],
 }
 
 /** A fresh Pinia = what a page reload or a reopened browser sees. */
@@ -62,6 +63,7 @@ describe('parseProgress (TASK-013: JSON 資料格式錯誤時可安全初始化)
       courseProgress: { 'bio-01': cp, 'bio-02': { ...cp, courseId: 'bio-09' } },
       wrongQuestions: { 'bio-01-q03': wrong, 'bio-01-q04': { ...wrong, mastered: 'no' } },
       badges: ['first-clear', 'first-clear', 3],
+      practice: [...valid.practice, { ...valid.practice[0], exp: -1 }],
     })
     expect(parseProgress(text)).toEqual({ ...valid, exp: 0 })
   })

@@ -5,6 +5,7 @@ import {
   isRetriedCorrect,
   type CourseProgress,
   type LearningRecord,
+  type PracticeRecord,
   type SavedProgress,
   type WrongQuestion,
 } from '@/types/progress'
@@ -18,6 +19,7 @@ import {
 } from '@/utils/exp'
 import { levelFromExp } from '@/utils/level'
 import {
+  PRACTICE_HISTORY_LIMIT,
   STORAGE_KEY,
   clearStorage,
   emptyProgress,
@@ -40,6 +42,7 @@ export const useProgressStore = defineStore('progress', () => {
   const wrongQuestions = ref<Record<string, WrongQuestion>>(saved.wrongQuestions)
   const badges = ref<string[]>(saved.badges)
   const claimed = ref<string[]>(saved.claimed)
+  const practice = ref<PracticeRecord[]>(saved.practice)
 
   const snapshot = (): SavedProgress => ({
     version: 1,
@@ -49,6 +52,7 @@ export const useProgressStore = defineStore('progress', () => {
     wrongQuestions: wrongQuestions.value,
     badges: badges.value,
     claimed: claimed.value,
+    practice: practice.value,
   })
   // Every change is saved; a failed write (private mode, quota) keeps the session working.
   watch(snapshot, (data) => writeStorage(data), { deep: true })
@@ -60,6 +64,7 @@ export const useProgressStore = defineStore('progress', () => {
     wrongQuestions.value = data.wrongQuestions
     badges.value = data.badges
     claimed.value = data.claimed
+    practice.value = data.practice
   }
   // Another tab saved (or reset): adopt it, so this tab's next save can't write back stale
   // progress or undo a confirmed reset (TASK-013 review I1). The browser fires `storage`
@@ -114,12 +119,26 @@ export const useProgressStore = defineStore('progress', () => {
     return fresh
   }
 
-  /** Quiz-score EXP already paid on the local day of `now` (§3 每日上限). */
+  /** Quiz-score EXP already paid on the local day of `now` (§3 每日上限), 弱點練習 included. */
   function quizExpOn(now: Date): number {
     const day = localDay(now)
-    return records.value
+    return [...records.value, ...practice.value]
       .filter((r) => localDay(new Date(r.completedAt)) === day)
       .reduce((sum, r) => sum + (r.exp ?? 0), 0)
+  }
+
+  /** What a quiz score pays today: the remainder only once the cap is near (§3). */
+  function cappedQuizExp(score: number, now: Date) {
+    const full = quizScoreExp(score)
+    const paid = Math.min(full, Math.max(0, DAILY_QUIZ_EXP_CAP - quizExpOn(now)))
+    return { paid, capped: paid < full }
+  }
+
+  /** Puts questions answered wrong on the 錯題本, even ones marked 熟悉 (TASK-014). */
+  function addWrong(courseId: string, wrongIds: readonly string[], at: string) {
+    for (const questionId of wrongIds) {
+      wrongQuestions.value[questionId] = { questionId, courseId, lastWrongAt: at, mastered: false }
+    }
   }
 
   /**
@@ -135,9 +154,7 @@ export const useProgressStore = defineStore('progress', () => {
   ): QuizExpAward {
     const prev = courseProgress.value[courseId]
     const passed = isPassing(score)
-    const full = quizScoreExp(score)
-    // If the reward would pass today's cap, only the remainder is paid (§3).
-    const quiz = Math.min(full, Math.max(0, DAILY_QUIZ_EXP_CAP - quizExpOn(now)))
+    const { paid: quiz, capped } = cappedQuizExp(score, now)
     const firstClear = passed && !prev?.completed ? FIRST_CLEAR_EXP : 0
     const at = now.toISOString()
     courseProgress.value[courseId] = {
@@ -147,18 +164,41 @@ export const useProgressStore = defineStore('progress', () => {
       latestScore: score,
     }
     records.value.push({ courseId, score, passed, completedAt: at, exp: quiz })
-    // A new mistake puts the question back on the list even if it was marked 熟悉.
-    for (const questionId of wrongIds) {
-      wrongQuestions.value[questionId] = { questionId, courseId, lastWrongAt: at, mastered: false }
-    }
+    addWrong(courseId, wrongIds, at)
     exp.value += quiz + firstClear
     return {
       quiz,
-      capped: quiz < full,
+      capped,
       firstClear,
       total: quiz + firstClear,
       newBadges: awardBadges(),
     }
+  }
+
+  /**
+   * Records one finished 弱點練習 (v1.1 Phase 2, Human decisions 2026-11-11): EXP as a quiz
+   * score within the daily cap shared with stage quizzes, wrong answers on the 錯題本. Not a
+   * stage attempt: best score, cleared status, 最近學習紀錄 and badges are untouched.
+   */
+  function recordPracticeResult(
+    courseId: string,
+    score: number,
+    wrongIds: readonly string[] = [],
+    now = new Date(),
+  ): { exp: number; capped: boolean } {
+    const { paid, capped } = cappedQuizExp(score, now)
+    const at = now.toISOString()
+    practice.value.push({ courseId, score, completedAt: at, exp: paid })
+    // Trim old history, never today's: those entries are what keeps the daily cap.
+    const today = localDay(now)
+    while (
+      practice.value.length > PRACTICE_HISTORY_LIMIT &&
+      localDay(new Date(practice.value[0]!.completedAt)) !== today
+    )
+      practice.value.shift()
+    addWrong(courseId, wrongIds, at)
+    exp.value += paid
+    return { exp: paid, capped }
   }
 
   /**
@@ -214,11 +254,13 @@ export const useProgressStore = defineStore('progress', () => {
     wrongQuestions,
     badges,
     claimed,
+    practice,
     levelInfo,
     latestRecords,
     reviewable,
     toReviewCount,
     recordQuizResult,
+    recordPracticeResult,
     recordReviewAnswer,
     claim,
     setMastered,

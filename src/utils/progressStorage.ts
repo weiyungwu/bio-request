@@ -1,4 +1,10 @@
-import type { CourseProgress, LearningRecord, SavedProgress, WrongQuestion } from '@/types/progress'
+import type {
+  CourseProgress,
+  LearningRecord,
+  PracticeRecord,
+  SavedProgress,
+  WrongQuestion,
+} from '@/types/progress'
 
 /** LocalStorage key; the version lives inside the value. */
 export const STORAGE_KEY = 'bio-quest:progress'
@@ -11,7 +17,11 @@ export const emptyProgress = (): SavedProgress => ({
   wrongQuestions: {},
   badges: [],
   claimed: [],
+  practice: [],
 })
+
+/** Practice entries kept: enough for today's cap and a short history, never unbounded. */
+export const PRACTICE_HISTORY_LIMIT = 50
 
 type Raw = Record<string, unknown>
 const isObject = (v: unknown): v is Raw => typeof v === 'object' && v !== null && !Array.isArray(v)
@@ -27,6 +37,15 @@ const isRecord = (r: unknown): r is LearningRecord =>
   typeof r.passed === 'boolean' &&
   isDate(r.completedAt) &&
   (r.exp === undefined || (typeof r.exp === 'number' && Number.isFinite(r.exp) && r.exp >= 0))
+
+const isPractice = (r: unknown): r is PracticeRecord =>
+  isObject(r) &&
+  isText(r.courseId) &&
+  isScore(r.score) &&
+  isDate(r.completedAt) &&
+  typeof r.exp === 'number' &&
+  Number.isFinite(r.exp) &&
+  r.exp >= 0
 
 const isCourseProgress = (key: string, c: unknown): c is CourseProgress =>
   isObject(c) &&
@@ -78,6 +97,8 @@ export function parseProgress(text: string | null): SavedProgress {
     wrongQuestions: pickEntries(raw.wrongQuestions, isWrongQuestion),
     badges: Array.isArray(raw.badges) ? [...new Set(raw.badges.filter(isText))] : [],
     claimed: Array.isArray(raw.claimed) ? [...new Set(raw.claimed.filter(isText))] : [],
+    // Not trimmed here: the store trims on write, and never today's entries (daily cap).
+    practice: Array.isArray(raw.practice) ? raw.practice.filter(isPractice) : [],
   }
 }
 
