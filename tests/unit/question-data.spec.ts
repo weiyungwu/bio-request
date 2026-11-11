@@ -49,7 +49,8 @@ describe('bio-01 question bank', () => {
     )
     // These correct options are sentences; their explanations paraphrase them. Batch 3's
     // keys were checked by Human on the draft, which marked each correct option (q66, q70,
-    // q79, q85, q90 are Human's own wording) and are pinned below.
+    // q79, q85, q90 started as Human's own wording; q79 and q90 were then changed after the
+    // Phase v1.1 review, with Human approval) and are pinned below.
     const paraphrased = ['bio-01-q03', 'bio-01-q11']
     for (const n of [
       36, 37, 39, 40, 41, 44, 46, 47, 50, 51, 54, 58, 61, 62, 64, 65, 66, 70, 79, 85, 90,
@@ -57,6 +58,17 @@ describe('bio-01 question bank', () => {
       paraphrased.push(`bio-01-q${n}`)
     const named = sc.filter((q) => !paraphrased.includes(q.id))
     expect(named.filter((q) => !q.explanation.includes(q.options[q.answer]!))).toEqual([])
+  })
+
+  // Phase v1.1 review I-01: q61 had an option annotated （屬於感應而非適應）, which told the
+  // student it was wrong. An option must not carry its own verdict; that belongs in the explanation.
+  it('options do not say whether they are right', () => {
+    // Only a note in brackets: q39's option「……所以不屬於生長與發育」is a claim to judge, not a hint.
+    const verdict = /（[^）]*(屬於|而非)[^）]*）/
+    const hinted = qs
+      .filter((q) => q.type === 'single_choice')
+      .flatMap((q) => q.options.filter((o) => verdict.test(o)).map((o) => `${q.id}: ${o}`))
+    expect(hinted).toEqual([])
   })
 
   // Human decision (2026-11-11): the stage follows the school textbook (新文京《生物學》
