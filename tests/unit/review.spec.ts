@@ -101,9 +101,10 @@ describe('ReviewView (TASK-014)', () => {
   })
 
   // Fail loud: an entry whose question left the bank is counted, not silently dropped.
+  // A question removed from the bank (an id no question will take).
   it('counts wrong questions that are no longer in the bank', async () => {
     const p = reload()
-    p.recordQuizResult('bio-01', 60, ['bio-01-q01', 'bio-01-q99'], t1)
+    p.recordQuizResult('bio-01', 60, ['bio-01-q01', 'bio-01-removed'], t1)
     const w = await mountReview()
     expect(w.findAll('[data-testid="review-item"]')).toHaveLength(1)
     expect(w.find('[data-testid="review-missing"]').text()).toContain('另有 1 題')

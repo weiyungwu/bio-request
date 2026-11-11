@@ -193,21 +193,27 @@ describe('bio-01 question bank', () => {
       'bio-01-q89': ['b-vacuole', 'b-wall'],
       'bio-01-q90': ['b-wall', 'b-nucleus'],
       'bio-01-q91': ['b-wall'],
+      // Batch 3, unit C (Human confirmed 2026-11-11): every stage-1 point at 8 or more.
+      'bio-01-q92': ['c-animal', 'c-plant'],
+      'bio-01-q93': ['c-animal'],
+      'bio-01-q94': ['c-animal', 'b-membrane'],
+      'bio-01-q95': ['c-animal', 'b-chloroplast'],
+      'bio-01-q96': ['c-both'],
+      'bio-01-q97': ['c-both'],
+      'bio-01-q98': ['c-both', 'c-plant'],
+      'bio-01-q99': ['c-both'],
     })
   })
 
-  // Audit §8 step 6: every stage-1 point has at least 3 questions; batch 3 (Human decision
-  // 2026-11-11) takes units A and B to 8. Unit C rises to 8 with its batch.
+  // Audit §8 step 6, batch 3 (Human decision 2026-11-11): every stage-1 point has at least
+  // 8 questions, so each can reach mastered (5 different questions) with room to spare.
   it('gives every knowledge point enough questions', () => {
     const points = getLessonData('bio-01')!.lessons.flatMap((l) => l.knowledgePoints)
-    const floor = (id: string) => (id.startsWith('c-') ? 3 : 8)
-    const thin = points.filter(
-      (p) => qs.filter((q) => q.knowledgeIds.includes(p.id)).length < floor(p.id),
-    )
+    const thin = points.filter((p) => qs.filter((q) => q.knowledgeIds.includes(p.id)).length < 8)
     expect(thin.map((p) => p.id)).toEqual([])
   })
 
-  // Batch 3's keys (units A and B), as Human confirmed them on the drafts (2026-11-11). Their explanations
+  // Batch 3's keys (q36–q99), as Human confirmed them on the drafts (2026-11-11). Their explanations
   // paraphrase the correct option, so the check above can't catch a wrong key; changing a
   // key here needs Human review again.
   it('keeps the Human-confirmed keys of batch 3', () => {
@@ -215,7 +221,7 @@ describe('bio-01 question bank', () => {
       qs
         .filter((q) => {
           const n = Number(q.id.replace('bio-01-q', ''))
-          return n >= 36 && n <= 91
+          return n >= 36 && n <= 99
         })
         .map((q) => [q.id, q.answer]),
     )
@@ -276,6 +282,14 @@ describe('bio-01 question bank', () => {
       'bio-01-q89': 2,
       'bio-01-q90': 2,
       'bio-01-q91': 0,
+      'bio-01-q92': 3,
+      'bio-01-q93': 0,
+      'bio-01-q94': 1,
+      'bio-01-q95': 2,
+      'bio-01-q96': 1,
+      'bio-01-q97': 3,
+      'bio-01-q98': 0,
+      'bio-01-q99': 0,
     })
   })
 
