@@ -53,6 +53,16 @@ describe('bio-01 lessons', () => {
     expect(terms(3)).toEqual(['被動運輸：擴散與滲透', '主動運輸', '胞吞與胞吐'])
   })
 
+  // KnowledgeCard shows the images, or else the icon; a point with neither has an empty picture
+  // slot. The textbook points (2026-11-11) have only icons.
+  it('every knowledge point has images or an icon', () => {
+    const bare = lessons
+      .flatMap((l) => l.knowledgePoints)
+      .filter((k) => !k.images?.length && !k.icon?.trim())
+      .map((k) => k.id)
+    expect(bare).toEqual([])
+  })
+
   // FR-03 required fields: a blank field shows an empty box to students.
   it('every knowledge point has all FR-03 text fields filled', () => {
     const blank = lessons

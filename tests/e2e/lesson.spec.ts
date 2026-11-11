@@ -9,7 +9,9 @@ async function expectImageLoaded(page: Page) {
 }
 
 test.describe('Stage 1 lesson (TASK-006)', () => {
-  test('story -> 23 knowledge points with images -> summary -> cell explorer', async ({ page }) => {
+  test('story -> 23 knowledge points (diagrams load) -> summary -> cell explorer', async ({
+    page,
+  }) => {
     const errors: string[] = []
     page.on('console', (m) => m.type() === 'error' && errors.push(m.text()))
     await playStory(page)
