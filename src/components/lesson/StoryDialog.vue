@@ -73,16 +73,22 @@ function start() {
           <p class="text-lg">{{ line.text }}</p>
         </div>
       </div>
-      <div class="flex items-center justify-between gap-3">
-        <span class="flex flex-wrap items-center gap-x-3">
-          <span class="text-sm text-muted">{{ index + 1 }} / {{ story.lines.length }}</span>
-          <BaseButton data-testid="story-skip" variant="ghost" @click="skip">
+      <!-- 下一段 first: the first Tab must not land on 略過故事 (review I1); wraps on narrow phones. -->
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <span class="text-sm text-muted">{{ index + 1 }} / {{ story.lines.length }}</span>
+        <span class="flex flex-wrap items-center justify-end gap-2">
+          <BaseButton data-testid="story-next" class="whitespace-nowrap" @click="next">
+            {{ isLast ? '查看任務' : '下一段' }} →
+          </BaseButton>
+          <BaseButton
+            data-testid="story-skip"
+            variant="ghost"
+            class="whitespace-nowrap"
+            @click="skip"
+          >
             略過故事<span aria-hidden="true"> ⏭</span>
           </BaseButton>
         </span>
-        <BaseButton data-testid="story-next" @click="next">
-          {{ isLast ? '查看任務' : '下一段' }} →
-        </BaseButton>
       </div>
     </BaseCard>
 

@@ -41,8 +41,13 @@ test.describe('Stage 1 story (TASK-005)', () => {
   test('略過故事 skips to the lesson', async ({ page }) => {
     await openStory(page)
     await page.clock.fastForward(PAST_COOLDOWN_MS)
+    // Keyboard: 下一段 comes first, so Tab + Enter can't skip by accident.
+    await page.getByTestId('story-dialog').focus()
+    await page.keyboard.press('Tab')
+    await expect(page.getByTestId('story-next')).toBeFocused()
     await page.getByTestId('story-skip').click()
     await expect(page.getByRole('heading', { name: '探險者訓練' })).toBeFocused()
+    await expect(page.getByTestId('mission-card')).toHaveCount(0)
   })
 
   // TASK-005: 不會因快速點擊而跳過必要流程
