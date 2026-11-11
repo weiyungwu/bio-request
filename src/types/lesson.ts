@@ -90,11 +90,25 @@ export interface ClassificationConfig {
   items: ClassificationItem[]
 }
 
+/**
+ * Part of a long lesson (上篇／下篇) that students may start from. Human decision (2026-11-11):
+ * stage 1 grew to 23 points, so students choose where to start; reading progress is not saved.
+ */
+export interface LessonPart {
+  /** Short name, e.g. "上篇". */
+  name: string
+  title: string
+  /** Lesson (unit) ids in reading order. Together, the parts cover every unit once, in order. */
+  lessonIds: string[]
+}
+
 /** Per-course lesson file: src/data/lessons/<courseId>.json. */
 export interface LessonData {
   courseId: string
   story: Story
   lessons: Lesson[]
+  /** Optional; without parts the lesson is read in one go. */
+  parts?: LessonPart[]
   explorer: ExplorerConfig
   matching: MatchingConfig
   classification: ClassificationConfig

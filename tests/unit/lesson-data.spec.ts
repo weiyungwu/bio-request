@@ -46,6 +46,15 @@ describe('bio-01 lessons', () => {
     ])
   })
 
+  // 上篇／下篇 (Human decision 2026-11-11): the parts cover every unit once, in order, and
+  // 下篇 starts at unit C, after the structures it builds on.
+  it('splits the lesson into 上篇 (units A, B) and 下篇 (units C, D)', () => {
+    const parts = getLessonData('bio-01')!.parts!
+    expect(parts.map((p) => p.name)).toEqual(['上篇', '下篇'])
+    expect(parts.flatMap((p) => p.lessonIds)).toEqual(lessons.map((l) => l.id))
+    expect(parts[1]!.lessonIds[0]).toBe('lesson-03')
+  })
+
   // Units C and D compare and use unit B's structures, so they must come after it; the lesson's
   // second half (下篇) starts at unit C.
   it('units C and D teach cell types, then transport (1-3, 1-4)', () => {

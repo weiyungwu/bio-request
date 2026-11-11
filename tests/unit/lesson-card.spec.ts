@@ -23,6 +23,16 @@ const lessons: Lesson[] = [
   { id: 'B', title: '單元二', knowledgePoints: [kp('b1', '丙', '重點丙')] },
 ]
 
+// 上篇 = units 一 and 二, 下篇 = unit 三.
+const threeUnits: Lesson[] = [
+  ...lessons,
+  { id: 'C', title: '單元三', knowledgePoints: [kp('c1', '丁', '重點丁')] },
+]
+const parts = [
+  { name: '上篇', title: '前兩單元', lessonIds: ['A', 'B'] },
+  { name: '下篇', title: '第三單元', lessonIds: ['C'] },
+]
+
 const btn = (w: ReturnType<typeof mount>, id: string) => w.find(`[data-testid="${id}"]`)
 const term = (w: ReturnType<typeof mount>) => w.find('[data-testid="term-zh"]').text()
 
@@ -122,5 +132,47 @@ describe('LessonCard', () => {
     const terms = w.findAll('[data-testid="summary-term"]')
     expect(terms.map((t) => t.text())).toEqual(['甲', '乙', '丙'])
     expect(terms.every((t) => t.classes().includes('whitespace-nowrap'))).toBe(true)
+  })
+
+  // Human decision (2026-11-11): stage 1 is long, so a rest screen ends 上篇 and names how to
+  // come back for 下篇. The unit reward is still paid when 上篇's last unit is finished.
+  it('shows a rest screen between parts, then continues with the next part', async () => {
+    const w = mount(LessonCard, { props: { lessons: threeUnits, parts } })
+    for (let i = 0; i < 3; i++) await btn(w, 'lesson-next').trigger('click')
+    const rest = w.find('[data-testid="lesson-rest"]')
+    expect(rest.text()).toContain('上篇完成')
+    expect(rest.text()).toContain('直接看下篇')
+    expect(w.find('[data-testid="term-zh"]').exists()).toBe(false)
+    expect(w.emitted('unit-complete')).toEqual([['A'], ['B']])
+    // Progress counts the 3 points read, not the next part's first point.
+    expect(w.find('[role="progressbar"]').attributes('aria-valuenow')).toBe('3')
+    expect(btn(w, 'lesson-continue').text()).toContain('繼續看下篇')
+    await btn(w, 'lesson-continue').trigger('click')
+    expect(term(w)).toBe('丁')
+    expect(w.find('[data-testid="lesson-position"]').text()).toContain('4 / 4')
+  })
+
+  it('goes back from the rest screen to the last point of the part', async () => {
+    const w = mount(LessonCard, { props: { lessons: threeUnits, parts } })
+    for (let i = 0; i < 3; i++) await btn(w, 'lesson-next').trigger('click')
+    await btn(w, 'lesson-prev').trigger('click')
+    expect(term(w)).toBe('丙')
+    await btn(w, 'lesson-next').trigger('click')
+    expect(w.find('[data-testid="lesson-rest"]').exists()).toBe(true)
+  })
+
+  it('starts at a later part, with 上一個 disabled there', async () => {
+    const w = mount(LessonCard, { props: { lessons: threeUnits, parts, startPart: 1 } })
+    expect(term(w)).toBe('丁')
+    expect(w.find('[data-testid="lesson-position"]').text()).toContain('4 / 4')
+    expect(btn(w, 'lesson-prev').attributes('disabled')).toBeDefined()
+    await btn(w, 'lesson-next').trigger('click')
+    expect(w.find('[data-testid="lesson-summary"]').exists()).toBe(true)
+  })
+
+  it('has no rest screen without parts', async () => {
+    const w = mount(LessonCard, { props: { lessons: threeUnits } })
+    for (let i = 0; i < 3; i++) await btn(w, 'lesson-next').trigger('click')
+    expect(term(w)).toBe('丁')
   })
 })

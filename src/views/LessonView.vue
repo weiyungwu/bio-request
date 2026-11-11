@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
+import BaseButton from '@/components/common/BaseButton.vue'
+import BaseCard from '@/components/common/BaseCard.vue'
 import ClassificationGame from '@/components/game/ClassificationGame.vue'
 import MatchingGame from '@/components/game/MatchingGame.vue'
 import CellExplorer from '@/components/lesson/CellExplorer.vue'
@@ -18,8 +20,18 @@ const course = computed(() => (courses as Course[]).find((c) => c.id === courseI
 const lesson = computed(() => getLessonData(courseId.value))
 const points = computed(() => lesson.value?.lessons.flatMap((l) => l.knowledgePoints) ?? [])
 
-// story -> lesson -> explore (cell diagram) -> game (matching TASK-008 -> classification TASK-009)
-const phase = ref<'story' | 'lesson' | 'explore' | 'game'>('story')
+// [choose ->] story -> lesson -> explore (cell diagram) -> game (matching TASK-008 -> classification
+// TASK-009). A lesson in parts (上篇／下篇) first asks where to start; a later part skips the story.
+type Phase = 'choose' | 'story' | 'lesson' | 'explore' | 'game'
+const firstPhase = (): Phase => (lesson.value?.parts?.length ? 'choose' : 'story')
+const phase = ref<Phase>(firstPhase())
+const startPart = ref(0)
+const unitLetter = (lessonId: string) =>
+  String.fromCharCode(65 + (lesson.value?.lessons.findIndex((l) => l.id === lessonId) ?? 0))
+const pointCount = (lessonIds: string[]) =>
+  lesson.value?.lessons
+    .filter((l) => lessonIds.includes(l.id))
+    .reduce((n, l) => n + l.knowledgePoints.length, 0) ?? 0
 const game = ref<'matching' | 'classification'>('matching')
 const lessonHeading = ref<HTMLElement | null>(null)
 const exploreHeading = ref<HTMLElement | null>(null)
@@ -27,11 +39,17 @@ const gameHeading = ref<HTMLElement | null>(null)
 
 // The view is reused when only :courseId changes; restart the flow.
 watch(courseId, () => {
-  phase.value = 'story'
+  phase.value = firstPhase()
+  startPart.value = 0
   game.value = 'matching'
   reward.value = ''
 })
 
+function choosePart(part: number) {
+  startPart.value = part
+  if (part === 0) phase.value = 'story'
+  else enterLesson()
+}
 function enterLesson() {
   phase.value = 'lesson'
   nextTick(() => lessonHeading.value?.focus())
@@ -84,8 +102,37 @@ function rewardGame(id: string, name: string) {
       {{ reward }}
     </p>
 
+    <section
+      v-if="phase === 'choose' && lesson?.parts"
+      data-testid="part-choice"
+      aria-labelledby="choose-heading"
+      class="space-y-4"
+    >
+      <h2 id="choose-heading">選擇從哪裡開始</h2>
+      <p class="text-muted">這一關分成 {{ lesson.parts.length }} 篇，可以分次讀完。</p>
+      <BaseCard
+        v-for="(part, i) in lesson.parts"
+        :key="part.name"
+        as="section"
+        class="space-y-3"
+        :aria-label="part.name"
+      >
+        <h3>{{ part.name }}：{{ part.title }}</h3>
+        <p class="text-sm text-muted">
+          單元 {{ part.lessonIds.map(unitLetter).join('、') }}・{{ pointCount(part.lessonIds) }}
+          個知識點
+        </p>
+        <BaseButton
+          :data-testid="`part-start-${i}`"
+          :variant="i === 0 ? 'primary' : 'ghost'"
+          @click="choosePart(i)"
+        >
+          {{ i === 0 ? `從${part.name}開始（含故事）` : `直接看${part.name}` }} →
+        </BaseButton>
+      </BaseCard>
+    </section>
     <StoryDialog
-      v-if="phase === 'story' && lesson"
+      v-else-if="phase === 'story' && lesson"
       :key="courseId"
       :story="lesson.story"
       @complete="enterLesson"
@@ -101,6 +148,8 @@ function rewardGame(id: string, name: string) {
         v-if="lesson"
         :key="courseId"
         :lessons="lesson.lessons"
+        :parts="lesson.parts"
+        :start-part="startPart"
         @complete="enterExplore"
         @unit-complete="rewardUnit"
       />

@@ -5,7 +5,7 @@ import { STORY_ADVANCE_COOLDOWN_MS } from '../../src/components/lesson/storyDial
 const PAST_COOLDOWN = STORY_ADVANCE_COOLDOWN_MS + 50
 
 /**
- * Opens stage 1 with a fake clock and plays through the story into the lesson.
+ * Opens stage 1 with a fake clock, chooses 上篇 and plays through the story into the lesson.
  * With `open: false` it plays from the lesson page already shown; the caller must have
  * installed the clock before loading the app.
  */
@@ -14,6 +14,7 @@ export async function playStory(page: Page, { open = true } = {}) {
     await page.clock.install()
     await page.goto('/lesson/bio-01')
   }
+  await page.getByTestId('part-start-0').click()
   const counter = page.getByText(/^\d+ \/ 6$/)
   await expect(counter).toHaveText('1 / 6')
   for (let n = 2; n <= 6; n++) {
@@ -29,10 +30,14 @@ export async function playStory(page: Page, { open = true } = {}) {
   await expect(page.getByTestId('lesson-position')).toBeVisible()
 }
 
-/** From the lesson's first point, reads all 23 points and the summary. */
+/** From the lesson's first point, reads all 23 points (past the 上篇 rest screen) and the summary. */
 export async function finishLesson(page: Page) {
   for (let n = 2; n <= 23; n++) {
     await page.getByTestId('lesson-next').click()
+    if (n === 17) {
+      await expect(page.getByTestId('lesson-rest')).toContainText('上篇完成')
+      await page.getByTestId('lesson-continue').click()
+    }
     await expect(page.getByTestId('lesson-position')).toContainText(`${n} / 23`)
   }
   await page.getByTestId('lesson-next').click()

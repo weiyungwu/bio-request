@@ -7,6 +7,7 @@ async function openStory(page: Page) {
   // Fake clock: lets the test jump past the per-line cooldown deterministically.
   await page.clock.install()
   await page.goto('/lesson/bio-01')
+  await page.getByTestId('part-start-0').click()
   const counter = page.getByText(/^\d+ \/ 6$/)
   await expect(counter).toHaveText('1 / 6')
   return counter

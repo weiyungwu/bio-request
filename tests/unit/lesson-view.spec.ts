@@ -20,6 +20,11 @@ async function mountLesson(attach = false) {
   })
 }
 
+// Stage 1 is in two parts (上篇／下篇, Human decision 2026-11-11): the page first asks where to start.
+async function startPart(wrapper: Awaited<ReturnType<typeof mountLesson>>, part: number) {
+  await wrapper.find(`[data-testid="part-start-${part}"]`).trigger('click')
+}
+
 describe('LessonView', () => {
   it('shows the entered stage name from course data', async () => {
     expect((await mountLesson()).find('h1').text()).toBe('測試用關卡名')
@@ -30,9 +35,20 @@ describe('LessonView', () => {
     expect((await mountLesson()).find('a[href="/map"]').exists()).toBe(true)
   })
 
-  // TASK-005: the story comes first; finishing it enters the lesson.
-  it('starts with the story and enters the lesson when the story completes', async () => {
+  it('asks which part to start from, naming each part and its size', async () => {
     const wrapper = await mountLesson()
+    const choice = wrapper.find('[data-testid="part-choice"]').text()
+    expect(choice).toContain('上篇：生命的特徵與細胞構造')
+    expect(choice).toContain('單元 A、B・16')
+    expect(choice).toContain('下篇：細胞的種類與物質運輸')
+    expect(choice).toContain('單元 C、D・7')
+    expect(wrapper.find('[data-testid="story-dialog"]').exists()).toBe(false)
+  })
+
+  // TASK-005: the story comes first; finishing it enters the lesson.
+  it('starts 上篇 with the story and enters the lesson when the story completes', async () => {
+    const wrapper = await mountLesson()
+    await startPart(wrapper, 0)
     expect(wrapper.find('[data-testid="story-dialog"]').exists()).toBe(true)
     expect(wrapper.find('[data-testid="lesson-content"]').exists()).toBe(false)
     wrapper.findComponent({ name: 'StoryDialog' }).vm.$emit('complete')
@@ -43,6 +59,7 @@ describe('LessonView', () => {
 
   it('moves focus to the lesson heading after the story', async () => {
     const wrapper = await mountLesson(true)
+    await startPart(wrapper, 0)
     wrapper.findComponent({ name: 'StoryDialog' }).vm.$emit('complete')
     await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
@@ -53,6 +70,7 @@ describe('LessonView', () => {
   // TASK-006 fills the lesson step; finishing it moves on to the games step.
   it('shows the lesson cards after the story, then the next step after the lesson', async () => {
     const wrapper = await mountLesson()
+    await startPart(wrapper, 0)
     wrapper.findComponent({ name: 'StoryDialog' }).vm.$emit('complete')
     await wrapper.vm.$nextTick()
     expect(wrapper.findComponent({ name: 'LessonCard' }).exists()).toBe(true)
@@ -63,5 +81,17 @@ describe('LessonView', () => {
     wrapper.findComponent({ name: 'CellExplorer' }).vm.$emit('complete')
     await wrapper.vm.$nextTick()
     expect(wrapper.find('[data-testid="game-content"]').exists()).toBe(true)
+  })
+
+  // A student coming back for 下篇 skips the story and cannot step back into 上篇.
+  it('starts 下篇 at unit C without the story', async () => {
+    const wrapper = await mountLesson(true)
+    await startPart(wrapper, 1)
+    expect(wrapper.find('[data-testid="story-dialog"]').exists()).toBe(false)
+    const position = wrapper.find('[data-testid="lesson-position"]').text()
+    expect(position).toContain('單元 C：細胞的種類・17 / 23')
+    expect(wrapper.find('[data-testid="lesson-prev"]').attributes('disabled')).toBeDefined()
+    expect(document.activeElement?.id).toBe('lesson-heading')
+    wrapper.unmount()
   })
 })

@@ -33,4 +33,20 @@ test.describe('Stage 1 lesson (TASK-006)', () => {
     await expect(page.getByRole('heading', { name: '細胞城市探險' })).toBeFocused()
     expect(errors).toEqual([])
   })
+
+  // Human decision (2026-11-11): stage 1 is in two parts; a returning student goes straight to 下篇.
+  test('下篇 starts at unit C without the story; the choice fits a phone screen', async ({
+    page,
+  }) => {
+    await page.goto('/lesson/bio-01')
+    await expect(page.getByTestId('part-choice')).toContainText('下篇：細胞的種類與物質運輸')
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    )
+    expect(overflow).toBeLessThanOrEqual(0)
+    await page.getByTestId('part-start-1').click()
+    await expect(page.getByTestId('story-dialog')).toHaveCount(0)
+    await expect(page.getByTestId('lesson-position')).toContainText('單元 C：細胞的種類・17 / 23')
+    await expect(page.getByTestId('lesson-prev')).toBeDisabled()
+  })
 })

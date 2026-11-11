@@ -409,6 +409,18 @@
       ]
     }
   ],
+  "parts": [
+    {
+      "name": "上篇",
+      "title": "生命的特徵與細胞構造",
+      "lessonIds": ["lesson-01", "lesson-02"]
+    },
+    {
+      "name": "下篇",
+      "title": "細胞的種類與物質運輸",
+      "lessonIds": ["lesson-03", "lesson-04"]
+    }
+  ],
   "explorer": {
     "targets": ["b-nucleus", "b-mitochondrion", "b-membrane"]
   },
