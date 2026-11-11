@@ -49,9 +49,7 @@ describe('bio-01 question bank', () => {
     // These correct options are sentences; their explanations paraphrase them. Batch 3's
     // keys were checked by Human on the draft, which marked each correct option.
     const paraphrased = ['bio-01-q03', 'bio-01-q11']
-    for (const n of [
-      36, 37, 39, 40, 41, 42, 44, 46, 47, 50, 51, 53, 54, 55, 58, 59, 61, 62, 64, 65,
-    ])
+    for (const n of [36, 37, 39, 40, 41, 44, 46, 47, 50, 51, 54, 58, 61, 62, 64, 65])
       paraphrased.push(`bio-01-q${n}`)
     const named = sc.filter((q) => !paraphrased.includes(q.id))
     expect(named.filter((q) => !q.explanation.includes(q.options[q.answer]!))).toEqual([])
