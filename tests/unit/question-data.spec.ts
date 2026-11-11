@@ -55,10 +55,31 @@ describe('bio-01 question bank', () => {
     expect(named.filter((q) => !q.explanation.includes(q.options[q.answer]!))).toEqual([])
   })
 
-  // Human removed ATP from stage 1 (not in 國中 108 curriculum); the quiz must not test it.
-  // Other untaught terms are caught by Human review, not here (review S4).
-  it('does not test ATP', () => {
-    expect(JSON.stringify(qs)).not.toContain('ATP')
+  // Human decision (2026-11-11): the stage follows the school textbook (新文京《生物學》
+  // ch. 1), not the 國中 curriculum, so questions may go beyond 國中 terms (ATP was banned
+  // before) — but only once the lesson teaches them. Other untaught terms are caught by
+  // Human review, not here (review S4).
+  it('only uses extended terms the lesson teaches', () => {
+    const lesson = JSON.stringify(getLessonData('bio-01')!.lessons)
+    const terms = [
+      'ATP',
+      '脂質',
+      '選擇性通透',
+      '滲透',
+      '纖維素',
+      '裸胞',
+      '原核生物',
+      '膜狀胞器',
+      '感覺神經',
+      '運動神經',
+      '脊髓',
+      '胺基酸',
+      '蛋白質',
+      '葡萄糖',
+      '二氧化碳',
+    ]
+    const used = terms.filter((t) => JSON.stringify(qs).includes(t))
+    expect(used.filter((t) => !lesson.includes(t))).toEqual([])
   })
 
   // Review S2: an ordering question written in answer order answers itself if not shuffled.
@@ -167,7 +188,7 @@ describe('bio-01 question bank', () => {
       'bio-01-q38': 0,
       'bio-01-q39': 3,
       'bio-01-q40': 0,
-      'bio-01-q41': 3,
+      'bio-01-q41': 2,
       'bio-01-q42': 0,
       'bio-01-q43': 1,
       'bio-01-q44': 2,
@@ -176,7 +197,7 @@ describe('bio-01 question bank', () => {
       'bio-01-q47': 2,
       'bio-01-q48': 0,
       'bio-01-q49': 1,
-      'bio-01-q50': 3,
+      'bio-01-q50': 1,
       'bio-01-q51': 0,
       'bio-01-q52': 0,
       'bio-01-q53': 3,

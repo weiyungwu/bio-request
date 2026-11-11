@@ -86,8 +86,6 @@ describe('bio-01 lessons', () => {
 
   // Review items adopted by Human (B3, B5, B7).
   it('keeps adopted curriculum wording', () => {
-    const text = JSON.stringify(lessons)
-    expect(text).not.toContain('ATP') // not in 國中 108 curriculum
     expect(point('c-plant').example).toContain('沒有葉綠體') // onion epidermis
     expect(point('b-wall').examTip).toContain('真菌、細菌也有細胞壁')
   })
