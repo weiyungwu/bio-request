@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
+import { STORY_ADVANCE_COOLDOWN_MS } from '../../src/components/lesson/storyDialog'
 import { finishLesson, playStory } from './helpers'
 
 async function expectImageLoaded(page: Page) {
@@ -35,9 +36,8 @@ test.describe('Stage 1 lesson (TASK-006)', () => {
   })
 
   // Human decision (2026-11-11): stage 1 is in two parts; a returning student goes straight to 下篇.
-  test('下篇 starts at unit C without the story; the choice fits a phone screen', async ({
-    page,
-  }) => {
+  test('下篇 starts at unit C without the story and leads on to the explorer', async ({ page }) => {
+    await page.clock.install()
     await page.goto('/lesson/bio-01')
     await expect(page.getByTestId('part-choice')).toContainText('下篇：細胞的種類與物質運輸')
     const overflow = await page.evaluate(
@@ -48,5 +48,14 @@ test.describe('Stage 1 lesson (TASK-006)', () => {
     await expect(page.getByTestId('story-dialog')).toHaveCount(0)
     await expect(page.getByTestId('lesson-position')).toContainText('單元 C：細胞的種類・17 / 23')
     await expect(page.getByTestId('lesson-prev')).toBeDisabled()
+    for (let n = 18; n <= 23; n++) {
+      await page.getByTestId('lesson-next').click()
+      await expect(page.getByTestId('lesson-position')).toContainText(`${n} / 23`)
+    }
+    await page.getByTestId('lesson-next').click()
+    await expect(page.getByTestId('lesson-summary')).toBeVisible()
+    await page.clock.fastForward(STORY_ADVANCE_COOLDOWN_MS + 50)
+    await page.getByTestId('lesson-done').click()
+    await expect(page.getByRole('heading', { name: '細胞城市探險' })).toBeFocused()
   })
 })

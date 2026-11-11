@@ -49,7 +49,8 @@ function start() {
 </script>
 
 <template>
-  <section data-testid="story-dialog" aria-label="故事對話" class="space-y-4">
+  <!-- tabindex: LessonView moves focus here after the part choice (the clicked button is gone). -->
+  <section data-testid="story-dialog" aria-label="故事對話" tabindex="-1" class="space-y-4">
     <BaseCard v-if="!showMission" as="div" highlight="explore" class="space-y-4">
       <div data-testid="story-line" aria-live="polite" aria-atomic="true" class="flex gap-4">
         <span aria-hidden="true" class="text-5xl leading-none">{{ speaker?.avatar }}</span>

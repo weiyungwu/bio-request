@@ -168,11 +168,20 @@ describe('LessonCard', () => {
     expect(btn(w, 'lesson-prev').attributes('disabled')).toBeDefined()
     await btn(w, 'lesson-next').trigger('click')
     expect(w.find('[data-testid="lesson-summary"]').exists()).toBe(true)
+    // Only the unit actually read pays its reward; 上篇's units are not claimed.
+    expect(w.emitted('unit-complete')).toEqual([['C']])
   })
 
   it('has no rest screen without parts', async () => {
     const w = mount(LessonCard, { props: { lessons: threeUnits } })
     for (let i = 0; i < 3; i++) await btn(w, 'lesson-next').trigger('click')
     expect(term(w)).toBe('丁')
+  })
+
+  // Review S: a part naming a missing unit must not leave the card before point 1.
+  it('starts at the first point when the chosen part names a missing unit', () => {
+    const broken = [parts[0]!, { name: '下篇', title: 'x', lessonIds: ['missing'] }]
+    const w = mount(LessonCard, { props: { lessons: threeUnits, parts: broken, startPart: 1 } })
+    expect(term(w)).toBe('甲')
   })
 })

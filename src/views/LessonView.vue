@@ -33,6 +33,7 @@ const pointCount = (lessonIds: string[]) =>
     .filter((l) => lessonIds.includes(l.id))
     .reduce((n, l) => n + l.knowledgePoints.length, 0) ?? 0
 const game = ref<'matching' | 'classification'>('matching')
+const storyDialog = ref<{ $el: HTMLElement } | null>(null)
 const lessonHeading = ref<HTMLElement | null>(null)
 const exploreHeading = ref<HTMLElement | null>(null)
 const gameHeading = ref<HTMLElement | null>(null)
@@ -47,8 +48,10 @@ watch(courseId, () => {
 
 function choosePart(part: number) {
   startPart.value = part
-  if (part === 0) phase.value = 'story'
-  else enterLesson()
+  if (part > 0) return enterLesson()
+  phase.value = 'story'
+  // The chosen button is gone; keep keyboard and screen-reader focus in the page.
+  nextTick(() => storyDialog.value?.$el.focus())
 }
 function enterLesson() {
   phase.value = 'lesson'
@@ -127,12 +130,14 @@ function rewardGame(id: string, name: string) {
           :variant="i === 0 ? 'primary' : 'ghost'"
           @click="choosePart(i)"
         >
-          {{ i === 0 ? `從${part.name}開始（含故事）` : `直接看${part.name}` }} →
+          {{ i === 0 ? `第一次來？從${part.name}開始（含故事）` : `直接看${part.name}` }} →
         </BaseButton>
+        <p v-if="i > 0" class="text-sm text-muted">已經讀完前面的同學，再選這個。</p>
       </BaseCard>
     </section>
     <StoryDialog
       v-else-if="phase === 'story' && lesson"
+      ref="storyDialog"
       :key="courseId"
       :story="lesson.story"
       @complete="enterLesson"

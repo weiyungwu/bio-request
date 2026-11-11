@@ -34,7 +34,9 @@ const points = computed(() =>
 const partStarts = computed(() =>
   props.parts.map((part) => points.value.findIndex((p) => p.lesson.id === part.lessonIds[0])),
 )
-const start = partStarts.value[props.startPart] ?? 0
+// Read once: LessonView mounts the card after the part is chosen and remounts it per course.
+// A part whose first unit is missing (-1) falls back to the start.
+const start = Math.max(0, partStarts.value[props.startPart] ?? 0)
 const index = ref(start)
 // While set, the rest screen after part `resting - 1` shows; `index` is already on part `resting`.
 const resting = ref<number | null>(null)
@@ -92,7 +94,10 @@ function finish() {
   <BaseCard as="section" class="space-y-5" aria-label="知識教學">
     <div class="space-y-2">
       <p data-testid="lesson-position" aria-live="polite" class="text-sm font-semibold text-muted">
-        <template v-if="resting !== null">{{ parts[resting - 1]!.name }}完成</template>
+        <!-- The whole message, since focus stays on the forward button. -->
+        <template v-if="resting !== null"
+          >{{ parts[resting - 1]!.name }}完成，可以先休息一下</template
+        >
         <template v-else-if="current">
           {{ unitLabel(current.unitIndex) }}：{{ current.lesson.title }}・{{ index + 1 }} /
           {{ points.length }}：{{ current.point.term.zh }}
@@ -115,6 +120,7 @@ function finish() {
           parts[resting]!.title
         }}」接著讀。
       </p>
+      <p class="text-sm text-muted">要休息的話，按頁面上方的「← 回關卡地圖」。</p>
     </div>
 
     <KnowledgeCard v-else-if="current" :key="current.point.id" :point="current.point" />

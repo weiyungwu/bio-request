@@ -94,4 +94,26 @@ describe('LessonView', () => {
     expect(document.activeElement?.id).toBe('lesson-heading')
     wrapper.unmount()
   })
+
+  // Review I: the clicked 上篇 button disappears; focus must not fall to <body>.
+  it('moves focus to the story after choosing 上篇', async () => {
+    const wrapper = await mountLesson(true)
+    await startPart(wrapper, 0)
+    await wrapper.vm.$nextTick()
+    expect(document.activeElement?.getAttribute('data-testid')).toBe('story-dialog')
+    wrapper.unmount()
+  })
+
+  // The choice is per visit: leaving for another stage and coming back asks again.
+  it('asks again after switching stages', async () => {
+    const router = createAppRouter(createMemoryHistory())
+    await router.push('/lesson/bio-01')
+    const wrapper = mount(LessonView, { global: { plugins: [router, createPinia()] } })
+    await startPart(wrapper, 1)
+    expect(wrapper.find('[data-testid="part-choice"]').exists()).toBe(false)
+    await router.push('/lesson/bio-02')
+    await router.push('/lesson/bio-01')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('[data-testid="part-choice"]').exists()).toBe(true)
+  })
 })
