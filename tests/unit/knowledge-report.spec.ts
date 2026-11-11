@@ -52,7 +52,8 @@ describe('courseReport', () => {
   it('counts the questions per point and flags points with too few', () => {
     const r = report([])
     expect(point(r, 'b-cytoplasm')).toMatchObject({ questionCount: 3, enoughQuestions: false })
-    expect(point(r, 'a-growth')).toMatchObject({ questionCount: 3, enoughQuestions: false })
+    // Batch 3 gave unit A 8+ questions a point.
+    expect(point(r, 'a-growth')).toMatchObject({ questionCount: 9, enoughQuestions: true })
     // Every stage-1 point has questions now; a later stage starts with points that have none.
     const without = questions.filter((q) => !q.knowledgeIds.includes('a-growth'))
     const empty = courseReport(lesson, without, [], { playerId: PLAYER, now })

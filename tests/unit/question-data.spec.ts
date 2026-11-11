@@ -46,8 +46,14 @@ describe('bio-01 question bank', () => {
     const sc = qs.filter(
       (q): q is Extract<Question, { type: 'single_choice' }> => q.type === 'single_choice',
     )
-    // q03's and q11's correct options are sentences; their explanations paraphrase them.
-    const named = sc.filter((q) => !['bio-01-q03', 'bio-01-q11'].includes(q.id))
+    // These correct options are sentences; their explanations paraphrase them. Batch 3's
+    // keys were checked by Human on the draft, which marked each correct option.
+    const paraphrased = ['bio-01-q03', 'bio-01-q11']
+    for (const n of [
+      36, 37, 39, 40, 41, 42, 44, 46, 47, 50, 51, 53, 54, 55, 58, 59, 61, 62, 64, 65,
+    ])
+      paraphrased.push(`bio-01-q${n}`)
+    const named = sc.filter((q) => !paraphrased.includes(q.id))
     expect(named.filter((q) => !q.explanation.includes(q.options[q.answer]!))).toEqual([])
   })
 
@@ -104,6 +110,37 @@ describe('bio-01 question bank', () => {
       'bio-01-q33': ['b-wall'],
       'bio-01-q34': ['c-animal', 'b-wall'],
       'bio-01-q35': ['c-both'],
+      // Batch 3, unit A (Human confirmed 2026-11-11): harder questions, every unit A point up to 8.
+      'bio-01-q36': ['a-growth'],
+      'bio-01-q37': ['a-growth'],
+      'bio-01-q38': ['a-growth'],
+      'bio-01-q39': ['a-growth'],
+      'bio-01-q40': ['a-growth'],
+      'bio-01-q41': ['a-metabolism'],
+      'bio-01-q42': ['a-metabolism'],
+      'bio-01-q43': ['a-metabolism'],
+      'bio-01-q44': ['a-metabolism'],
+      'bio-01-q45': ['a-metabolism'],
+      'bio-01-q46': ['a-response'],
+      'bio-01-q47': ['a-response'],
+      'bio-01-q48': ['a-response'],
+      'bio-01-q49': ['a-response'],
+      'bio-01-q50': ['a-response'],
+      'bio-01-q51': ['a-reproduction'],
+      'bio-01-q52': ['a-reproduction'],
+      'bio-01-q53': ['a-reproduction'],
+      'bio-01-q54': ['a-reproduction', 'a-growth'],
+      'bio-01-q55': ['a-reproduction'],
+      'bio-01-q56': ['a-heredity', 'b-nucleus'],
+      'bio-01-q57': ['a-heredity'],
+      'bio-01-q58': ['a-heredity'],
+      'bio-01-q59': ['a-heredity'],
+      'bio-01-q60': ['a-heredity'],
+      'bio-01-q61': ['a-adaptation'],
+      'bio-01-q62': ['a-adaptation', 'a-response'],
+      'bio-01-q63': ['a-adaptation'],
+      'bio-01-q64': ['a-adaptation'],
+      'bio-01-q65': ['a-adaptation'],
     })
   })
 

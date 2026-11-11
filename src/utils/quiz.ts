@@ -29,24 +29,45 @@ export const QUIZ_TOPIC_QUOTAS: Readonly<Record<string, TopicQuota>> = {
 }
 
 /**
+ * Most `hard` questions in one quiz, every stage. Human decision (2026-11-11): batch 3
+ * made most new questions hard, so a plain draw could hand a student a quiz of 5 hard ones.
+ */
+export const QUIZ_MAX_HARD = 3
+
+/**
  * Draws `count` distinct questions in random order (ids are unique in a bank). With a
  * quota, its `min` questions are drawn first from its topics (as many as the bank has),
- * the rest from everything left.
+ * the rest from everything left. At most `maxHard` are hard, unless the bank has too few
+ * other questions to fill the quiz.
  */
 export function drawQuestions(
   pool: readonly Question[],
   count: number,
   random: () => number = Math.random,
   quota?: TopicQuota,
+  maxHard: number = QUIZ_MAX_HARD,
 ): Question[] {
   const shuffled = shuffle(pool, random)
-  if (!quota) return shuffled.slice(0, count)
-  const required = shuffled
-    .filter((q) => quota.topics.includes(q.topic))
-    .slice(0, Math.min(quota.min, count))
-  const rest = shuffled.filter((q) => !required.includes(q)).slice(0, count - required.length)
+  const picked: Question[] = []
+  let hard = 0
+  const pick = (from: readonly Question[], until: number) => {
+    for (const q of from) {
+      if (picked.length >= until) return
+      if (picked.includes(q) || (q.difficulty === 'hard' && hard >= maxHard)) continue
+      if (q.difficulty === 'hard') hard++
+      picked.push(q)
+    }
+  }
+  if (quota)
+    pick(
+      shuffled.filter((q) => quota.topics.includes(q.topic)),
+      Math.min(quota.min, count),
+    )
+  pick(shuffled, count)
+  // Too few non-hard questions: a full quiz matters more than the cap.
+  for (const q of shuffled) if (picked.length < count && !picked.includes(q)) picked.push(q)
   // Mixed again, so the required questions aren't always first.
-  return shuffle([...required, ...rest], random)
+  return quota ? shuffle(picked, random) : picked
 }
 
 export function emptyResponse(q: Question): QuizResponse {

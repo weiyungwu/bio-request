@@ -497,5 +497,495 @@
     "answer": 0,
     "explanation": "「細胞膜、細胞質、細胞核」是典型的植物細胞和動物細胞共有的構造；細胞壁和葉綠體只有植物細胞有。液胞兩者都有，但第四組含有細胞壁和葉綠體，所以不對。",
     "source": "第一關教材 單元 C：共同構造"
+  },
+  {
+    "id": "bio-01-q36",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-growth"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "下列哪一項變化，同時包含了「生長」和「發育」？",
+    "options": [
+      "氣球充氣後體積變大",
+      "海綿吸水後重量增加",
+      "小樹苗逐漸長高，並開始開花",
+      "冰塊在冷凍庫中越結越大"
+    ],
+    "answer": 2,
+    "explanation": "小樹苗長高是體積增加（生長），開始開花代表構造和功能趨於成熟（發育）。氣球、海綿、冰塊不是生物，體積或重量變大也不屬於生命現象。",
+    "source": "第一關教材 單元 A：生長與發育"
+  },
+  {
+    "id": "bio-01-q37",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-growth"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "某種昆蟲由幼蟲變為成蟲的期間，體重沒有明顯增加，卻長出了翅膀，構造也和幼蟲時明顯不同。依教材的定義，這段時期最主要表現的是哪一項？",
+    "options": [
+      "生長：體積或重量增加",
+      "發育：構造和功能逐漸改變、趨於成熟",
+      "代謝作用停止",
+      "遺傳物質改變"
+    ],
+    "answer": 1,
+    "explanation": "體重沒有明顯增加，所以重點不是「生長」；長出翅膀、構造明顯改變，是構造和功能趨於成熟的「發育」。",
+    "source": "第一關教材 單元 A：生長與發育"
+  },
+  {
+    "id": "bio-01-q38",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-growth"],
+    "type": "true_false",
+    "difficulty": "hard",
+    "question": "種子發芽並生長為幼苗，株高增加且構造與功能趨於成熟，這個過程同時包含了生長和發育。",
+    "options": ["對", "錯"],
+    "answer": 0,
+    "explanation": "正確。植株體積與重量增加屬於「生長」；器官構造生長伸展並發展出完整功能（趨於成熟），屬於「發育」。",
+    "source": "第一關教材 單元 A：生長與發育"
+  },
+  {
+    "id": "bio-01-q39",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-growth"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "關於生長與發育，下列敘述何者正確？",
+    "options": [
+      "發育只發生在動物身上，植物只有生長",
+      "只要重量增加，就一定同時完成發育",
+      "蝌蚪的尾巴消失使身體某部分變小，所以不屬於生長與發育",
+      "生物體的構造和功能逐漸改變、趨於成熟，稱為發育"
+    ],
+    "answer": 3,
+    "explanation": "發育的定義是構造和功能逐漸改變、趨於成熟。植物也會發育（例如開花）；重量增加只是生長；蝌蚪尾巴消失正是發育成青蛙的一部分。",
+    "source": "第一關教材 單元 A：生長與發育"
+  },
+  {
+    "id": "bio-01-q40",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-growth"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "蝌蚪變成青蛙的過程中，尾巴消失了。這個例子最能說明下列哪一個觀念？",
+    "options": [
+      "發育可能包含某些構造消失，重點是整體的構造和功能趨於成熟",
+      "生長與發育一定讓每一個構造都變大",
+      "尾巴消失代表蝌蚪在退化，與發育無關",
+      "只有體積增加才算是生物的特徵"
+    ],
+    "answer": 0,
+    "explanation": "發育看的是構造和功能逐漸改變、趨於成熟，不是每個部位都變大。蝌蚪的尾巴消失、長出四肢，都是發育成青蛙的過程。",
+    "source": "第一關教材 單元 A：生長與發育"
+  },
+  {
+    "id": "bio-01-q41",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-metabolism"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "下列哪一項屬於代謝作用中的「合成作用」，而且需要吸收能量？",
+    "options": [
+      "細胞進行呼吸作用分解葡萄糖",
+      "消化作用把澱粉分解成小分子",
+      "冰塊融化成水",
+      "植物行光合作用製造養分"
+    ],
+    "answer": 3,
+    "explanation": "合成作用是把小分子變成大分子，需要吸收能量，例如光合作用製造養分。呼吸作用與消化作用都是把大分子分解；冰塊融化是物理變化，不是化學反應。",
+    "source": "第一關教材 單元 A：代謝作用"
+  },
+  {
+    "id": "bio-01-q42",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-metabolism"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "吃下一碗飯後，身體要經過下列哪一段過程，才能取得生命活動所需的能量？",
+    "options": [
+      "澱粉經消化作用分解成小分子養分，養分進入細胞後經呼吸作用分解，才釋放能量",
+      "澱粉在消化作用的過程中就直接釋放出所需的能量",
+      "身體利用光合作用把飯變成能量",
+      "飯在胃中被磨碎後，就成為細胞可以直接使用的能量"
+    ],
+    "answer": 0,
+    "explanation": "消化作用只把食物分解成小分子養分，本身不直接產生生命活動所需的能量；養分進入細胞後，經呼吸作用分解才釋放能量。動物不能行光合作用。",
+    "source": "第一關教材 單元 A：代謝作用"
+  },
+  {
+    "id": "bio-01-q43",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-metabolism"],
+    "type": "true_false",
+    "difficulty": "hard",
+    "question": "合成作用是把小分子組合成大分子，這個過程會釋放能量。",
+    "options": ["對", "錯"],
+    "answer": 1,
+    "explanation": "錯誤。合成作用（小分子變大分子）需要「吸收」能量；分解作用（大分子變小分子）才會釋放能量。",
+    "source": "第一關教材 單元 A：代謝作用"
+  },
+  {
+    "id": "bio-01-q44",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-metabolism"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "關於代謝作用，下列敘述何者「錯誤」？",
+    "options": [
+      "代謝作用是生物體內所有化學反應的統稱",
+      "代謝作用包含合成作用與分解作用",
+      "只有動物有代謝作用，植物沒有",
+      "呼吸作用屬於分解作用"
+    ],
+    "answer": 2,
+    "explanation": "植物也有代謝作用，例如光合作用（合成）和呼吸作用（分解）。其他三項都是正確的敘述。",
+    "source": "第一關教材 單元 A：代謝作用"
+  },
+  {
+    "id": "bio-01-q45",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-metabolism"],
+    "type": "ordering",
+    "difficulty": "hard",
+    "question": "植物製造的養分，最後成為動物細胞的能量來源。請將這個過程依序排列。",
+    "options": [
+      "動物吃下植物",
+      "植物行光合作用合成養分",
+      "消化作用把食物分解成小分子養分",
+      "養分進入細胞，經呼吸作用分解並釋放能量"
+    ],
+    "answer": [1, 0, 2, 3],
+    "explanation": "植物先以光合作用合成養分；動物吃下植物後，經消化作用分解成小分子養分；養分進入細胞後，經呼吸作用分解才釋放能量。",
+    "source": "第一關教材 單元 A：代謝作用"
+  },
+  {
+    "id": "bio-01-q46",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-response"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "下列哪一個例子屬於「感應」，而不是「適應」？",
+    "options": [
+      "仙人掌的葉特化成刺",
+      "含羞草的葉子被碰觸後閉合",
+      "北極熊有厚厚的脂肪層和毛皮",
+      "魚有鰭，適合在水中游泳"
+    ],
+    "answer": 1,
+    "explanation": "感應是感受到刺激後產生相對應的反應：含羞草被碰觸（刺激）後葉子閉合（反應）。其他三項是生物具有適合環境的構造，屬於適應。",
+    "source": "第一關教材 單元 A：感應與反應"
+  },
+  {
+    "id": "bio-01-q47",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-response"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "駕駛看到紅燈，立刻踩下煞車。在這個過程中，「眼睛」和「腿部肌肉」分別屬於哪一個角色？",
+    "options": ["動器、受器", "控制中心、受器", "受器、動器", "刺激、反應"],
+    "answer": 2,
+    "explanation": "眼睛接收紅燈的訊息，是受器；腿部肌肉收縮踩下煞車，是動器。紅燈是刺激，踩煞車是反應。",
+    "source": "第一關教材 單元 A：感應與反應"
+  },
+  {
+    "id": "bio-01-q48",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-response"],
+    "type": "true_false",
+    "difficulty": "hard",
+    "question": "植物雖然沒有神經，仍然能感受刺激並產生反應。",
+    "options": ["對", "錯"],
+    "answer": 0,
+    "explanation": "正確。植物也有感應，例如含羞草的葉子被碰觸後閉合、窗邊盆栽的莖朝光源彎曲生長。",
+    "source": "第一關教材 單元 A：感應與反應"
+  },
+  {
+    "id": "bio-01-q49",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-response"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "鬧鐘響了，小華伸手按掉鬧鐘。在這個例子中，「刺激」是什麼？",
+    "options": ["小華的耳朵", "鬧鐘的聲音", "按掉鬧鐘的動作", "小華的手部肌肉"],
+    "answer": 1,
+    "explanation": "刺激是環境中的變化，這裡是鬧鐘的聲音。耳朵是受器，手部肌肉是動器，按掉鬧鐘是反應。",
+    "source": "第一關教材 單元 A：感應與反應"
+  },
+  {
+    "id": "bio-01-q50",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-response"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "在動物的感應過程中，如果「動器」受傷而無法運作，最可能出現什麼情況？",
+    "options": [
+      "完全無法感受到刺激",
+      "不需要控制中心也能反應",
+      "改由受器直接做出反應",
+      "仍能感受到刺激，但無法做出相對應的反應"
+    ],
+    "answer": 3,
+    "explanation": "訊息路徑是刺激 → 受器 → 控制中心 → 動器 → 反應。受器和控制中心正常，所以仍感受得到刺激；動器（肌肉或腺體）無法運作，就做不出反應。",
+    "source": "第一關教材 單元 A：感應與反應"
+  },
+  {
+    "id": "bio-01-q51",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-reproduction"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "如果某種生物的所有個體都失去繁殖能力，最直接的後果是什麼？",
+    "options": [
+      "這個物種將無法延續，最後消失",
+      "每一個個體都會立刻死亡",
+      "個體將無法生長",
+      "個體會失去感應能力"
+    ],
+    "answer": 0,
+    "explanation": "繁殖讓生物產生新的個體，使物種延續。失去繁殖能力不會讓個體立刻死亡，但沒有下一代，物種最後會消失。",
+    "source": "第一關教材 單元 A：繁殖"
+  },
+  {
+    "id": "bio-01-q52",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-reproduction"],
+    "type": "true_false",
+    "difficulty": "hard",
+    "question": "繁殖的作用是讓物種延續，而不是維持個體自己的生命；一隻生物即使不繁殖，仍然可以存活。",
+    "options": ["對", "錯"],
+    "answer": 0,
+    "explanation": "正確。繁殖產生新個體，讓「物種」延續；它不是個體存活所必需的，不繁殖的個體仍可以存活。",
+    "source": "第一關教材 單元 A：繁殖"
+  },
+  {
+    "id": "bio-01-q53",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-reproduction"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "「母雞的受精蛋孵出小雞」和「馬鈴薯的塊莖長出新植株」，這兩個例子的共同點是什麼？",
+    "options": [
+      "都屬於適應",
+      "都是個體體積變大的生長現象",
+      "都是親代模仿子代的結果",
+      "都產生了新的個體，使物種得以延續"
+    ],
+    "answer": 3,
+    "explanation": "兩個例子都產生了新的個體，屬於繁殖，作用是讓物種延續。",
+    "source": "第一關教材 單元 A：繁殖"
+  },
+  {
+    "id": "bio-01-q54",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-reproduction", "a-growth"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "一株馬鈴薯長大並長出更多葉子（甲）；把它的塊莖切下種到別處，長出了另一株馬鈴薯（乙）。甲、乙分別主要說明生物的哪一項特徵？",
+    "options": [
+      "甲：生長與發育；乙：繁殖",
+      "甲：繁殖；乙：生長與發育",
+      "甲、乙都是繁殖",
+      "甲、乙都是生長與發育"
+    ],
+    "answer": 0,
+    "explanation": "甲是同一株植物變大、長出新的葉，屬於生長與發育；乙產生了「另一個」新個體，屬於繁殖。判斷關鍵是有沒有產生新的個體。",
+    "source": "第一關教材 單元 A：繁殖、生長與發育"
+  },
+  {
+    "id": "bio-01-q55",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-reproduction"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "「繁殖」被列為生命的特徵之一，主要理由是什麼？",
+    "options": [
+      "繁殖能讓個體長得更大",
+      "繁殖能讓個體感受環境的刺激",
+      "透過繁殖產生新個體，使物種得以延續",
+      "繁殖是生物體內所有化學反應的統稱"
+    ],
+    "answer": 2,
+    "explanation": "繁殖讓生物產生新的個體，使物種延續。讓個體變大是生長；感受刺激是感應；體內化學反應的統稱是代謝作用。",
+    "source": "第一關教材 單元 A：繁殖"
+  },
+  {
+    "id": "bio-01-q56",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-heredity", "b-nucleus"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "把甲品種動物細胞的細胞核，移入已除去細胞核的乙品種細胞中，再讓這個細胞發育成個體。這個個體的遺傳特徵，主要會像哪一個品種？",
+    "options": ["乙品種", "甲品種", "甲、乙各一半", "兩者都不像"],
+    "answer": 1,
+    "explanation": "遺傳物質主要存在於細胞核中。這個細胞的細胞核來自甲品種，所以發育出的個體，遺傳特徵主要會像甲品種。",
+    "source": "第一關教材 單元 A：遺傳；單元 B：細胞核"
+  },
+  {
+    "id": "bio-01-q57",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-heredity"],
+    "type": "true_false",
+    "difficulty": "hard",
+    "question": "一隻狗因為意外失去尾巴，牠以後生下的小狗也會沒有尾巴。",
+    "options": ["對", "錯"],
+    "answer": 1,
+    "explanation": "錯誤。子代的特徵來自親代傳下的遺傳物質。意外失去尾巴只改變了這隻狗的身體，並沒有改變牠的遺傳物質，所以小狗仍會有尾巴。",
+    "source": "第一關教材 單元 A：遺傳"
+  },
+  {
+    "id": "bio-01-q58",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-heredity"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "下列哪一個特徵，最可能是由遺傳造成的？",
+    "options": [
+      "小明經過練習後游泳變快",
+      "小華因為常曬太陽而皮膚變黑",
+      "小美和媽媽一樣有酒窩",
+      "小強因為受傷而在手上留下疤痕"
+    ],
+    "answer": 2,
+    "explanation": "酒窩是親代經由遺傳物質傳給子代的特徵。練習、日曬、受傷造成的改變，來自環境和生活經驗，不是遺傳。",
+    "source": "第一關教材 單元 A：遺傳"
+  },
+  {
+    "id": "bio-01-q59",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-heredity"],
+    "type": "single_choice",
+    "difficulty": "medium",
+    "question": "小貓的毛色常常和父母相似。下列哪一項說明最正確？",
+    "options": [
+      "小貓看到父母後，學著長出相同的毛色",
+      "親代的遺傳物質傳給子代，使子代出現相似的特徵",
+      "小貓吃了和父母一樣的食物",
+      "毛色相似是小貓適應環境的反應"
+    ],
+    "answer": 1,
+    "explanation": "子代和親代相似，是因為親代的特徵經由遺傳物質傳給子代，不是模仿或吃了相同的食物。",
+    "source": "第一關教材 單元 A：遺傳"
+  },
+  {
+    "id": "bio-01-q60",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-heredity"],
+    "type": "true_false",
+    "difficulty": "medium",
+    "question": "子代的特徵常和親代相似，但不一定和親代完全相同。",
+    "options": ["對", "錯"],
+    "answer": 0,
+    "explanation": "正確。親代的特徵經由遺傳物質傳給子代，所以子代「常常」和親代相似，例如小貓的毛色，但不一定每個特徵都和親代一模一樣。",
+    "source": "第一關教材 單元 A：遺傳"
+  },
+  {
+    "id": "bio-01-q61",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-adaptation"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "下列哪一個例子屬於「行為」上的適應？",
+    "options": [
+      "仙人掌的葉特化成刺",
+      "北極熊有厚厚的脂肪層和毛皮",
+      "手指碰到燙的東西立刻縮回",
+      "某些沙漠動物白天躲在洞穴裡，晚上才出來活動"
+    ],
+    "answer": 3,
+    "explanation": "白天躲避高溫、晚上才活動，是適合沙漠環境的「行為」。仙人掌的刺和北極熊的脂肪層是「構造」上的適應；縮手是感應與反應。",
+    "source": "第一關教材 單元 A：適應"
+  },
+  {
+    "id": "bio-01-q62",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-adaptation", "a-response"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "「感應」和「適應」都和環境有關。下列哪一項最能說明兩者的差別？",
+    "options": [
+      "感應是對刺激產生相對應的反應；適應是生物具有適合在環境中生存的構造、功能或行為",
+      "感應只有植物有，適應只有動物有",
+      "感應是生物長期具有的構造，適應是被碰觸時的立即反應",
+      "兩者意思相同，只是名稱不同"
+    ],
+    "answer": 0,
+    "explanation": "感應是感受刺激後做出反應（例如含羞草葉子閉合）；適應是生物具有適合環境的構造、功能或行為（例如仙人掌的刺）。動植物都有感應，也都有適應。",
+    "source": "第一關教材 單元 A：適應、感應與反應"
+  },
+  {
+    "id": "bio-01-q63",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-adaptation"],
+    "type": "true_false",
+    "difficulty": "hard",
+    "question": "適應的特徵只對生物的生存有幫助，和繁殖沒有關係。",
+    "options": ["對", "錯"],
+    "answer": 1,
+    "explanation": "錯誤。適應的特徵有助於生物在特定環境中生存「與繁殖」。",
+    "source": "第一關教材 單元 A：適應"
+  },
+  {
+    "id": "bio-01-q64",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-adaptation"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "北極熊有厚厚的脂肪層和毛皮。如果把北極熊移到炎熱的地區，下列推論何者最合理？",
+    "options": [
+      "這些特徵在任何環境都一樣有利",
+      "北極熊會立刻失去毛皮來適應炎熱",
+      "北極熊的遺傳物質會馬上改變，以適應炎熱",
+      "這些特徵適合寒冷的環境，在炎熱的地區反而可能不利於生存"
+    ],
+    "answer": 3,
+    "explanation": "適應是「適合在其生活環境中」生存的特徵。厚脂肪層和毛皮能在寒冷的北極保暖，到了炎熱的地區反而可能讓北極熊太熱、不利於生存。",
+    "source": "第一關教材 單元 A：適應"
+  },
+  {
+    "id": "bio-01-q65",
+    "courseId": "bio-01",
+    "topic": "生命的特徵",
+    "knowledgeIds": ["a-adaptation"],
+    "type": "single_choice",
+    "difficulty": "hard",
+    "question": "下列哪一組例子都屬於「適應」？",
+    "options": [
+      "仙人掌的葉特化成刺；北極熊有厚厚的脂肪層",
+      "仙人掌的葉特化成刺；含羞草的葉子被碰觸後閉合",
+      "北極熊有厚厚的毛皮；蝌蚪變成青蛙",
+      "北極熊有厚厚的毛皮；小貓的毛色和父母相似"
+    ],
+    "answer": 0,
+    "explanation": "仙人掌的刺能減少水分散失，北極熊的脂肪層能保暖，都是適合環境的構造。含羞草閉合是感應、蝌蚪變青蛙是生長與發育、毛色像父母是遺傳。",
+    "source": "第一關教材 單元 A：適應"
   }
 ]

@@ -119,14 +119,14 @@ describe('quiz engine (TASK-011)', () => {
 
   it('a stage 1 draw always has at least 2 cell questions, and is still random', () => {
     const unitA = new Set<number>()
-    for (let n = 0; n < 1000; n++) {
+    for (let n = 0; n < 20000; n++) {
       const qs = drawQuestions(bank, QUIZ_SIZE, Math.random, quota)
       expect(cellsIn(qs).length).toBeGreaterThanOrEqual(2)
       expect(new Set(qs.map((q) => q.id)).size).toBe(QUIZ_SIZE)
       unitA.add(QUIZ_SIZE - cellsIn(qs).length)
     }
-    // Unit A can fill anywhere from none to the 3 places left (all-cells is about 8% of
-    // draws, so 1000 draws make a miss vanishingly unlikely).
+    // Unit A can fill anywhere from none to the 3 places left. Since batch 3 unit A is 48
+    // of 65, so all-cells is about 1 draw in 1250; 20000 draws make a miss vanishingly unlikely.
     expect([...unitA].sort()).toEqual([0, 1, 2, 3])
   })
 
@@ -138,6 +138,28 @@ describe('quiz engine (TASK-011)', () => {
       s.start('bio-01', bank)
       expect(cellsIn(s.questions).length).toBeGreaterThanOrEqual(2)
     }
+  })
+
+  // Human decision (2026-11-11): batch 3 made 25 of stage 1's 65 questions hard. Drawn
+  // without the topic quota (whose cell questions are not hard yet, so it alone keeps
+  // stage 1 under 4), about 1 quiz in 15 would have 4 or 5; 1000 draws catch that.
+  it('a draw has at most 3 hard questions', () => {
+    const hardCounts = new Set<number>()
+    for (let n = 0; n < 1000; n++) {
+      const qs = drawQuestions(bank, QUIZ_SIZE)
+      const hard = qs.filter((q) => q.difficulty === 'hard').length
+      expect(hard).toBeLessThanOrEqual(3)
+      expect(new Set(qs.map((q) => q.id)).size).toBe(QUIZ_SIZE)
+      hardCounts.add(hard)
+    }
+    // The cap limits hard questions, it doesn't remove them: 3 is still reached.
+    expect(hardCounts.has(3)).toBe(true)
+  })
+
+  it('a bank of only hard questions still draws a full quiz', () => {
+    const allHard = bank.filter((q) => q.difficulty === 'hard')
+    const qs = drawQuestions(allHard, QUIZ_SIZE, Math.random, quota)
+    expect(new Set(qs.map((q) => q.id)).size).toBe(QUIZ_SIZE)
   })
 
   it('a quota the bank cannot meet still draws a full quiz', () => {
