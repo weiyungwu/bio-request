@@ -1,7 +1,7 @@
 # 交接筆記
 
 換電腦或開新 session 時先讀這份，再讀 [`known-issues.md`](known-issues.md) 和 `git log --oneline -15`。
-最後更新：2026-11-10（規格 4.2 主流程 E2E 完成後）。
+最後更新：2026-11-11（第一關分上下篇、課本擴充上線後）。
 
 ## 目前進度
 
@@ -87,8 +87,7 @@ npm run build && CI=1 npx playwright test --retries=0  # 連跑兩次，確認�
 
 ## 等 Human 處理
 
-- 確認配對遊戲文字（`bio-01.json` 的 `matching`：功能敘述與錯誤提示）。
-- 其餘見 `known-issues.md`「待 Human 確認」。
+- 見 `known-issues.md`「待 Human 確認」（精熟度門檻校準、兩項規格解讀）。
 
 ## 不在這個 repo 裡的檔案
 
