@@ -45,7 +45,7 @@ const row = (w: Awaited<ReturnType<typeof mountView>>['w'], id: string) =>
 describe('MasteryView (v1.1 step 5)', () => {
   it('lists every stage-1 knowledge point as 未開始 before any answer', async () => {
     const { w } = await mountView()
-    expect(w.findAll('[data-testid="mastery-point"]')).toHaveLength(16)
+    expect(w.findAll('[data-testid="mastery-point"]')).toHaveLength(23)
     expect(row(w, 'b-nucleus').text()).toContain('未開始')
     expect(w.find('[data-testid="mastery-weak"]').exists()).toBe(false)
     expect(w.find('[data-testid="mastery-empty"]').text()).toContain('完成關卡測驗')

@@ -8,20 +8,49 @@ describe('bio-01 lessons', () => {
   const lessons = getLessonData('bio-01')!.lessons
   const terms = (i: number) => lessons[i]!.knowledgePoints.map((k) => k.term.zh)
 
-  it('has units A, B, C with spec titles', () => {
+  // Human decision (2026-11-11): stage 1 follows the textbook's cell sections (1-1, 1-3, 1-4).
+  // Unit C was 植物細胞與動物細胞; it now also compares prokaryotic and eukaryotic cells.
+  it('has units A, B, C, D with the confirmed titles', () => {
     expect(lessons.map((l) => l.title)).toEqual([
       '生命的特徵',
       '細胞基本構造',
-      '植物細胞與動物細胞',
+      '細胞的種類',
+      '細胞膜與物質運輸',
     ])
   })
 
-  it('unit A covers the six characteristics of life in spec order', () => {
-    expect(terms(0)).toEqual(['生長與發育', '代謝作用', '感應與反應', '繁殖', '遺傳', '適應'])
+  // New points go after the spec ones, so existing points keep their place and ids.
+  it('unit A covers the six characteristics of life in spec order, then the levels (1-1)', () => {
+    expect(terms(0)).toEqual([
+      '生長與發育',
+      '代謝作用',
+      '感應與反應',
+      '繁殖',
+      '遺傳',
+      '適應',
+      '生物體的組成層次',
+    ])
   })
 
-  it('unit B covers the seven structures in spec order', () => {
-    expect(terms(1)).toEqual(['細胞核', '細胞膜', '細胞質', '粒線體', '葉綠體', '液胞', '細胞壁'])
+  it('unit B covers the seven structures in spec order, then the other organelles (1-3)', () => {
+    expect(terms(1)).toEqual([
+      '細胞核',
+      '細胞膜',
+      '細胞質',
+      '粒線體',
+      '葉綠體',
+      '液胞',
+      '細胞壁',
+      '核糖體、內質網與高基氏體',
+      '溶體',
+    ])
+  })
+
+  // Units C and D compare and use unit B's structures, so they must come after it; the lesson's
+  // second half (下篇) starts at unit C.
+  it('units C and D teach cell types, then transport (1-3, 1-4)', () => {
+    expect(terms(2)).toEqual(['植物細胞', '動物細胞', '共同構造', '原核細胞與真核細胞'])
+    expect(terms(3)).toEqual(['被動運輸：擴散與滲透', '主動運輸', '胞吞與胞吐'])
   })
 
   // FR-03 required fields: a blank field shows an empty box to students.
@@ -127,9 +156,11 @@ describe('bio-01 lessons', () => {
   describe('classification game', () => {
     const items = getLessonData('bio-01')!.classification.items
 
-    it('covers every unit B structure once', () => {
-      const unitB = lessons[1]!.knowledgePoints.map((k) => k.id)
-      expect(items.map((it) => it.pointId).sort()).toEqual([...unitB].sort())
+    // The seven spec structures. The textbook organelles added later stay out: textbooks
+    // differ on whether plant cells have 溶體, so its bucket would be disputed.
+    it('covers each of the seven spec structures once', () => {
+      const seven = lessons[1]!.knowledgePoints.slice(0, 7).map((k) => k.id)
+      expect(items.map((it) => it.pointId).sort()).toEqual([...seven].sort())
     })
 
     // Biology guard (spec 5.2 unit C): only 細胞壁 and 葉綠體 are plant-only; the rest are shared.

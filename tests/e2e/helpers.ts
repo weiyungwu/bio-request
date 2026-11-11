@@ -29,11 +29,11 @@ export async function playStory(page: Page, { open = true } = {}) {
   await expect(page.getByTestId('lesson-position')).toBeVisible()
 }
 
-/** From the lesson's first point, reads all 16 points and the summary. */
+/** From the lesson's first point, reads all 23 points and the summary. */
 export async function finishLesson(page: Page) {
-  for (let n = 2; n <= 16; n++) {
+  for (let n = 2; n <= 23; n++) {
     await page.getByTestId('lesson-next').click()
-    await expect(page.getByTestId('lesson-position')).toContainText(`${n} / 16`)
+    await expect(page.getByTestId('lesson-position')).toContainText(`${n} / 23`)
   }
   await page.getByTestId('lesson-next').click()
   await expect(page.getByTestId('lesson-summary')).toBeVisible()
