@@ -11,6 +11,7 @@ test.describe('弱點練習', () => {
     await page.getByTestId('home-practice-link').click()
     await expect(page).toHaveURL(/\/practice\/bio-01$/)
     await expect(page.getByTestId('practice-targets')).toContainText('這次練習')
+    await expect(page.getByTestId('practice-reason')).toHaveCount(3)
     for (let n = 1; n <= 5; n++) {
       await answer(page, n === 1)
       await page.getByTestId('quiz-next').click()
@@ -29,15 +30,19 @@ test.describe('弱點練習', () => {
   })
 
   test('知識掌握度 offers practice on the weak points', async ({ page }) => {
-    // All wrong: every point answered is now weak.
-    await page.goto('/practice/bio-01')
-    for (let n = 1; n <= 5; n++) {
-      await answer(page, true)
-      await page.getByTestId('quiz-next').click()
+    // All wrong, twice: one practice gives a point too few answers to call it weak (§20 5.5);
+    // the second practice returns to the same points, so they reach 3 answers.
+    for (let round = 0; round < 2; round++) {
+      await page.goto('/practice/bio-01')
+      for (let n = 1; n <= 5; n++) {
+        await answer(page, true)
+        await page.getByTestId('quiz-next').click()
+      }
     }
     await page.goto('/mastery')
     const weak = page.getByTestId('mastery-weak')
     await expect(weak).toBeVisible()
+    await expect(weak).toContainText('答錯')
     await weak.getByTestId('mastery-practice').click()
     await expect(page).toHaveURL(/\/practice\/bio-01$/)
     await expect(page.getByTestId('quiz-submit')).toBeVisible()

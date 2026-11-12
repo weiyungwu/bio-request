@@ -34,34 +34,52 @@ function answer(questionId: string, correct: boolean, playerId = PLAYER): Learni
 }
 const report = (events: LearningEvent[]): CourseReport =>
   courseReport(lesson, questions, events, { playerId: PLAYER, now })
-const firstPoint = lesson.lessons[0]!.knowledgePoints[0]!.id
 const about = (id: string) => questions.filter((q) => q.knowledgeIds.includes(id))
 const only = (id: string) =>
   questions.filter((q) => q.knowledgeIds.length === 1 && q.knowledgeIds[0] === id)
 
 describe('practiceTargets', () => {
   it('practises the weak points the report names', () => {
-    const [a, b] = only('a-response')
-    const r = report([answer(a!.id, false), answer(b!.id, false)])
+    const [a, b, c] = only('a-response')
+    const r = report([answer(a!.id, false), answer(b!.id, false), answer(c!.id, false)])
     expect(practiceTargets(r).map((p) => p.id)).toEqual(r.weakest.map((p) => p.id))
     expect(practiceTargets(r)[0]!.id).toBe('a-response')
   })
 
-  // A first-time student has no weak points yet: start from the least-answered points.
-  it('with no weak points, takes the least-answered points not yet mastered', () => {
-    const r = report([answer(only(firstPoint)[0]!.id, true)])
-    expect(r.weakest).toEqual([])
-    const points = r.units.flatMap((u) => u.points)
-    // Every other point is unanswered, so the first three of them in lesson order.
+  // A first-time student has no weak points yet: start in lesson order.
+  it('with no answers yet, takes the first points in lesson order', () => {
+    const r = report([])
     expect(practiceTargets(r).map((p) => p.id)).toEqual(
-      points
-        .filter((p) => p.id !== firstPoint)
+      r.units
+        .flatMap((u) => u.points)
         .slice(0, 3)
         .map((p) => p.id),
     )
-    // Answered points go last: with only one unanswered point left, it comes first.
-    for (const p of points) p.mastery.totalAttempts = p.id === 'd-active' ? 0 : 4
-    expect(practiceTargets(r)[0]!.id).toBe('d-active')
+  })
+
+  // §20 5.4: 已學習但尚未達到 Mastery before 尚未開始. After one quiz nothing is weak yet
+  // (fewer than 3 answers a point), but the points just answered wrong come first, so the
+  // practice confirms them instead of moving on to points never seen.
+  it('with no weak points, takes answered points not yet mastered, lowest accuracy first', () => {
+    const last = lesson.lessons.flatMap((l) => l.knowledgePoints).reverse()[0]!.id
+    const r = report([
+      answer(only(last)[0]!.id, false),
+      answer(only('a-response')[0]!.id, true),
+      answer(only('a-metabolism')[0]!.id, false),
+      answer(only('a-metabolism')[1]!.id, true),
+    ])
+    expect(r.weakest).toEqual([])
+    // 0% (last), 50%, 100%: every answered point before the unanswered ones.
+    expect(practiceTargets(r).map((p) => p.id)).toEqual([last, 'a-metabolism', 'a-response'])
+    // With one answered point, the rest come from the unanswered in lesson order.
+    const one = report([answer(only(last)[0]!.id, false)])
+    expect(practiceTargets(one).map((p) => p.id)).toEqual([
+      last,
+      ...one.units
+        .flatMap((u) => u.points)
+        .slice(0, 2)
+        .map((p) => p.id),
+    ])
   })
 
   it('still offers practice when every point is mastered', () => {

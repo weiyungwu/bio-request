@@ -52,15 +52,20 @@ describe('MasteryView (v1.1 step 5)', () => {
   })
 
   // §4.7: the report names specific weak knowledge, and points to where to practise.
-  it('names the weakest points with their accuracy and links to the 錯題本', async () => {
-    seed([answer('bio-01-q01', false), answer('bio-01-q01', false), answer('bio-01-q04', true)])
+  it('names the weakest points with their reason and links to the 錯題本', async () => {
+    seed([
+      answer('bio-01-q01', false),
+      answer('bio-01-q01', false),
+      answer('bio-01-q01', false),
+      answer('bio-01-q04', true),
+    ])
     const { w } = await mountView()
     const weak = w.find('[data-testid="mastery-weak"]')
-    expect(weak.text()).toContain('感應與反應')
+    expect(weak.text()).toContain('感應與反應：最近 3 次答錯 3 次')
     expect(weak.text()).not.toContain('細胞質') // 1/1 right is not weak
     expect(weak.find('a[href="/review"]').exists()).toBe(true)
-    expect(row(w, 'a-response').text()).toContain('答對 0 / 2 次（0%）')
-    expect(row(w, 'a-response').text()).toContain('學習中')
+    expect(row(w, 'a-response').text()).toContain('答對 0 / 3 次（0%）')
+    expect(row(w, 'a-response').text()).toContain('練習中')
     expect(w.find('[data-testid="mastery-empty"]').exists()).toBe(false)
   })
 

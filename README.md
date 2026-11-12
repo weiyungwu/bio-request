@@ -176,17 +176,19 @@ Handover notes (current status, workflow, next task): [`docs/handoff.md`](docs/h
   crowd out progress saves in the site's ~5 MB storage. Events sort by time, then session,
   then id; within one page load times only go up (same-millisecond events get 1 ms apart).
 - 知識掌握度 (`/mastery`, v1.1 step 5; linked from home): per open stage, 需要加強 lists the
-  answered, not yet mastered points whose latest 5 answers are under 80% right (lowest first,
+  not yet mastered points answered at least 3 times (`practicingFrom`; one slip is not a
+  weakness) whose latest 5 answers are under 80% right (lowest first,
   at most `WEAK_LIMIT` 3; `recentAccuracy`, the window mastery uses, so old mistakes don't keep
-  a point "weak") with a link to the 錯題本, then every knowledge point by unit with its level
+  a point "weak"), each with its reason, and a link to the 錯題本, then every knowledge point by unit with its level
   (`src/utils/mastery.ts`), answer count and lifetime accuracy, and a note when the bank has
   fewer than `minQuestions` questions for it. Built by `courseReport()`
   (`src/utils/knowledgeReport.ts`) from this browser's player's events, read once per visit;
   viewing never creates a player id. States that mastery is separate from stage completion
   (v1.1 §4.1).
 - 弱點練習 (`/practice/:courseId`, v1.1 Phase 2; linked from home and 知識掌握度): 5 questions
-  on the stage's weak points (`practiceTargets`; with none, the least-answered points not yet
-  mastered), spread over them in turn, unanswered first, then last answered wrong
+  on the stage's weak points (`practiceTargets`; a point is weak only after 3 answers; with
+  none, the points not yet mastered, answered ones first, lowest recent accuracy first),
+  each shown with its reason (`pointReason`, also on 知識掌握度; SPEC v1.1 §20 5.4), spread over them in turn, unanswered first, then last answered wrong
   (`drawPractice`, `src/utils/practice.ts`). Runs in the quiz store's practice mode
   (`startPractice`; shared `QuizPlayer` with the stage quiz): answers are logged with
   `activityId: practice:<courseId>:<id>`, wrong ones go to the 錯題本, EXP is the quiz-score

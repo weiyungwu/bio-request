@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { getLessonData } from '@/data/lessons'
 import { getQuestionBank } from '@/data/questions'
 import type { LearningEvent } from '@/types/learningEvent'
-import { courseReport } from '@/utils/knowledgeReport'
+import { courseReport, pointReason } from '@/utils/knowledgeReport'
 import { MASTERY_RULES } from '@/utils/mastery'
 
 // v1.1 §4.7 acceptance: 學習報表能指出具體弱點 Knowledge.
@@ -64,25 +64,34 @@ describe('courseReport', () => {
     expect(point(empty, 'a-growth')).toMatchObject({ questionCount: 0, enoughQuestions: false })
   })
 
-  it('picks the answered points under 80%, lowest first, at most 3', () => {
+  it('picks the points under 80% answered at least 3 times, lowest first, at most 3', () => {
     const events = [
-      // q01 → a-response 0/2; q02 → a-metabolism 1/2; q06 → b-mitochondrion 2/3;
-      // q04 → b-cytoplasm 1/1 (100%, not weak); q09 → c-plant, c-animal 0/1.
-      answer('bio-01-q01', false),
-      answer('bio-01-q01', false),
-      answer('bio-01-q02', true),
-      answer('bio-01-q02', false),
-      answer('bio-01-q06', true),
-      answer('bio-01-q06', true),
-      answer('bio-01-q06', false),
-      answer('bio-01-q04', true),
+      // q01 → a-response 0/3; q02 → a-metabolism 1/3; q06 → b-mitochondrion 2/3;
+      // q04 → b-cytoplasm 3/3 (100%, not weak); q09 → c-plant, c-animal 0/1 (too few).
+      ...[false, false, false].map((c) => answer('bio-01-q01', c)),
+      ...[true, false, false].map((c) => answer('bio-01-q02', c)),
+      ...[true, true, false].map((c) => answer('bio-01-q06', c)),
+      ...[true, true, true].map((c) => answer('bio-01-q04', c)),
       answer('bio-01-q09', false),
     ]
     const r = report(events)
-    // 0% ties (a-response, c-plant, c-animal): lesson order breaks them.
-    expect(r.weakest.map((p) => p.id)).toEqual(['a-response', 'c-plant', 'c-animal'])
-    expect(point(r, 'a-metabolism').mastery.accuracy).toBe(0.5)
-    expect(r.weakest.every((p) => p.mastery.accuracy < 0.8)).toBe(true)
+    expect(r.weakest.map((p) => p.id)).toEqual(['a-response', 'a-metabolism', 'b-mitochondrion'])
+    expect(r.weakest.every((p) => p.mastery.recentAccuracy < 0.8)).toBe(true)
+  })
+
+  // SPEC v1.1 §20 5.5: 不得將單次偶發錯誤直接視為能力不足. One quiz gives a point one or two
+  // answers; calling it 需要加強 from that would label a slip as a weakness.
+  it('does not call a point weak on fewer than 3 answers, however wrong', () => {
+    const r = report([
+      answer('bio-01-q01', false),
+      answer('bio-01-q01', false),
+      answer('bio-01-q09', false),
+    ])
+    expect(point(r, 'a-response').mastery.recentAccuracy).toBe(0)
+    expect(r.weakest).toEqual([])
+    // The third wrong answer is a pattern, not a slip.
+    const again = report(Array.from({ length: 3 }, () => answer('bio-01-q01', false)))
+    expect(again.weakest.map((p) => p.id)).toEqual(['a-response'])
   })
 
   // Review I1: weak means weak now (the latest answers), as mastery is judged. A student who
@@ -116,5 +125,41 @@ describe('courseReport', () => {
   it('never calls an unanswered point weak', () => {
     const r = report([answer('bio-01-q04', true)])
     expect(r.weakest).toEqual([])
+  })
+})
+
+// SPEC v1.1 §20 5.4: 推薦結果必須顯示原因, with the counts behind it, never only
+// "系統推薦你練習".
+describe('pointReason', () => {
+  const reasonOf = (events: LearningEvent[], id: string) =>
+    pointReason(point(report(events), id).mastery)
+
+  it('says a point has not been answered yet', () => {
+    expect(reasonOf([], 'a-response')).toBe('還沒作答過')
+  })
+
+  it('says too few answers to tell, with the count', () => {
+    expect(reasonOf([answer('bio-01-q01', false)], 'a-response')).toBe(
+      '只答過 1 次（答對 0 次），多練幾題才看得出程度',
+    )
+  })
+
+  it('counts the mistakes among the latest answers for a weak point', () => {
+    // 7 answers, the latest 5 have 3 wrong: older answers don't count.
+    const events = [true, true, true, false, true, false, false].map((c) => answer('bio-01-q01', c))
+    expect(reasonOf(events, 'a-response')).toBe('最近 5 次答錯 3 次')
+  })
+
+  it('says a point answered well is not yet mastered', () => {
+    // All right but on one day: not mastered yet (needs 2 days).
+    const events = [true, true, true, true].map((c) => answer('bio-01-q01', c))
+    expect(reasonOf(events, 'a-response')).toBe('最近 4 次答對 4 次，還沒達到精熟')
+  })
+
+  it('says a mastered point is mastered', () => {
+    const r = report([])
+    const m = point(r, 'a-response').mastery
+    Object.assign(m, { totalAttempts: 9, recentAccuracy: 0.8, masteryLevel: 'mastered' })
+    expect(pointReason(m)).toBe('已精熟，最近 5 次答對 4 次')
   })
 })

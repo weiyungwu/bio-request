@@ -7,7 +7,7 @@ import courses from '@/data/courses.json'
 import { getLessonData } from '@/data/lessons'
 import { getQuestionBank } from '@/data/questions'
 import type { Course } from '@/types/course'
-import { courseReport } from '@/utils/knowledgeReport'
+import { courseReport, pointReason } from '@/utils/knowledgeReport'
 import { parseEventStore, readEventStorage } from '@/utils/learningEventStorage'
 import { readPlayerId } from '@/utils/learningEvents'
 import { MASTERY_LEVEL, percent } from '@/utils/masteryLevels'
@@ -64,7 +64,7 @@ onMounted(() => heading.value?.focus())
         <ol class="space-y-1">
           <li v-for="p in r.weakest" :key="p.id">
             <span class="font-semibold">{{ p.term }}</span>
-            <span class="text-muted">：最近答對 {{ percent(p.mastery.recentAccuracy) }}</span>
+            <span class="text-muted">：{{ pointReason(p.mastery) }}</span>
           </li>
         </ol>
         <div class="flex flex-wrap gap-x-6">
@@ -86,13 +86,13 @@ onMounted(() => heading.value?.focus())
         <h2 :id="`mastery-${r.course.id}`" class="text-xl">
           第 {{ r.course.order }} 關 {{ r.course.storyTitle }}
         </h2>
-        <!-- No weak points yet: practice still starts from the least-practised points. -->
+        <!-- No weak points yet: practice still starts from the points not yet mastered. -->
         <RouterLink
           v-if="!r.weakest.length"
           :to="`/practice/${r.course.id}`"
           data-testid="mastery-practice"
           class="inline-flex min-h-11 items-center font-semibold text-explore hover:underline"
-          ><span aria-hidden="true">🎯 </span>練習 5 題（自動挑選練得最少的知識點）→</RouterLink
+          ><span aria-hidden="true">🎯 </span>練習 5 題（自動挑選還沒精熟的知識點）→</RouterLink
         >
         <section v-for="u in r.units" :key="u.id" class="space-y-2">
           <h3 class="text-base">{{ u.title }}</h3>

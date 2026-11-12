@@ -13,7 +13,7 @@ import { useQuizStore } from '@/stores/quiz'
 import type { Course } from '@/types/course'
 import type { MasteryLevel } from '@/types/mastery'
 import { DAILY_QUIZ_EXP_CAP } from '@/utils/exp'
-import { courseReport } from '@/utils/knowledgeReport'
+import { courseReport, pointReason } from '@/utils/knowledgeReport'
 import { parseEventStore, readEventStorage } from '@/utils/learningEventStorage'
 import { readPlayerId } from '@/utils/learningEvents'
 import { MASTERY_LEVEL, percent } from '@/utils/masteryLevels'
@@ -30,6 +30,8 @@ interface Target {
   id: string
   term: string
   before: MasteryLevel
+  /** Why it was picked (§20 5.4), as it stood before this practice. */
+  reason: string
 }
 
 /** The course's mastery report from the answers saved so far (read fresh each time). */
@@ -53,7 +55,12 @@ function start() {
   const points = r ? practiceTargets(r) : []
   const drawn = r ? drawPractice(points, r.bank.questions, r.events, r.options.playerId) : []
   empty.value = drawn.length === 0
-  targets.value = points.map((p) => ({ id: p.id, term: p.term, before: p.mastery.masteryLevel }))
+  targets.value = points.map((p) => ({
+    id: p.id,
+    term: p.term,
+    before: p.mastery.masteryLevel,
+    reason: pointReason(p.mastery),
+  }))
   if (empty.value) return quiz.reset()
   quiz.startPractice(courseId.value, drawn)
   round.value++
@@ -100,9 +107,15 @@ const link =
     </BaseCard>
 
     <template v-else-if="!done">
-      <p id="practice-targets" data-testid="practice-targets" class="text-muted">
-        這次練習：{{ targets.map((t) => t.term).join('、') }}
-      </p>
+      <div id="practice-targets" data-testid="practice-targets" class="text-muted">
+        <p>這次練習的知識點和原因：</p>
+        <ul class="list-disc pl-6">
+          <li v-for="t in targets" :key="t.id" data-testid="practice-reason">
+            <span class="font-semibold text-text">{{ t.term }}</span
+            >：{{ t.reason }}
+          </li>
+        </ul>
+      </div>
       <QuizPlayer :round="round" described-by="practice-targets" @next="next" />
     </template>
 

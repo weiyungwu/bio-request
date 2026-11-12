@@ -87,6 +87,10 @@ describe('PracticeView', () => {
     expect(quiz.questions).toHaveLength(5)
     const targets = w.find('[data-testid="practice-targets"]').text()
     expect(targets).toContain('這次練習')
+    // §20 5.4: each point says why it was picked; nothing answered yet here.
+    const reasons = w.findAll('[data-testid="practice-reason"]')
+    expect(reasons).toHaveLength(3)
+    for (const r of reasons) expect(r.text()).toContain('還沒作答過')
     for (let i = 0; i < 5; i++) play(quiz, true)
     await flushPromises()
     expect(w.find('[data-testid="practice-score"]').text()).toBe('100 分')
