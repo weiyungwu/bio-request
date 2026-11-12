@@ -13,26 +13,30 @@ export const PRACTICE_SIZE = QUIZ_SIZE
 export const PRACTICE_POINTS = 3
 
 /**
- * The points to practise: the report's weak points; with none, the points not yet mastered,
- * answered ones first (§20 5.4: 已學習但尚未達到 Mastery; an unanswered point is 尚未開始, for
- * which the lesson comes first), lowest recent accuracy first, then the fewest answers, so a
- * point answered wrong too few times to be called weak is practised before the rest; when all
- * are mastered, the lowest recent accuracy, so practice is always possible.
+ * The points to practise (up to PRACTICE_POINTS): the report's weak points, then the other
+ * points not yet mastered, answered ones first (§20 5.4: 已學習但尚未達到 Mastery; an
+ * unanswered point is 尚未開始, for which the lesson comes first), lowest recent accuracy
+ * first, then the fewest answers, so a point answered wrong too few times to be called weak
+ * comes before unanswered ones; when all are mastered, the lowest recent accuracy, so
+ * practice is always possible.
  */
 export function practiceTargets(report: CourseReport): PointReport[] {
-  if (report.weakest.length > 0) return report.weakest.slice(0, PRACTICE_POINTS)
+  const weak = report.weakest.slice(0, PRACTICE_POINTS)
   const points = report.units.flatMap((u) => u.points).filter((p) => p.questionCount > 0)
-  const open = points.filter((p) => p.mastery.masteryLevel !== 'mastered')
+  const open = points.filter((p) => p.mastery.masteryLevel !== 'mastered' && !weak.includes(p))
   const unanswered = (p: PointReport) => (p.mastery.totalAttempts === 0 ? 1 : 0)
   // Stable sorts: ties keep lesson order.
   const ranked =
-    open.length > 0
-      ? [...open].sort(
-          (a, b) =>
-            unanswered(a) - unanswered(b) ||
-            a.mastery.recentAccuracy - b.mastery.recentAccuracy ||
-            a.mastery.totalAttempts - b.mastery.totalAttempts,
-        )
+    weak.length + open.length > 0
+      ? [
+          ...weak,
+          ...[...open].sort(
+            (a, b) =>
+              unanswered(a) - unanswered(b) ||
+              a.mastery.recentAccuracy - b.mastery.recentAccuracy ||
+              a.mastery.totalAttempts - b.mastery.totalAttempts,
+          ),
+        ]
       : [...points].sort((a, b) => a.mastery.recentAccuracy - b.mastery.recentAccuracy)
   return ranked.slice(0, PRACTICE_POINTS)
 }

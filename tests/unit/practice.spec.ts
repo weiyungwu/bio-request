@@ -42,8 +42,26 @@ describe('practiceTargets', () => {
   it('practises the weak points the report names', () => {
     const [a, b, c] = only('a-response')
     const r = report([answer(a!.id, false), answer(b!.id, false), answer(c!.id, false)])
-    expect(practiceTargets(r).map((p) => p.id)).toEqual(r.weakest.map((p) => p.id))
+    expect(r.weakest.map((p) => p.id)).toEqual(['a-response'])
     expect(practiceTargets(r)[0]!.id).toBe('a-response')
+  })
+
+  // Review I2: one weak point must not shut out points just answered wrong but not yet
+  // weak (2 answers): the practice fills up with them before unanswered points.
+  it('fills up after the weak points with answered points not yet weak', () => {
+    const [a, b, c] = only('a-response')
+    const [m1, m2] = only('a-metabolism')
+    const [n1] = only('b-nucleus')
+    const r = report([
+      answer(a!.id, false),
+      answer(b!.id, false),
+      answer(c!.id, false),
+      answer(m1!.id, false),
+      answer(m2!.id, false),
+      answer(n1!.id, true),
+    ])
+    expect(r.weakest.map((p) => p.id)).toEqual(['a-response'])
+    expect(practiceTargets(r).map((p) => p.id)).toEqual(['a-response', 'a-metabolism', 'b-nucleus'])
   })
 
   // A first-time student has no weak points yet: start in lesson order.

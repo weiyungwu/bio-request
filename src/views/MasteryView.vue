@@ -92,7 +92,7 @@ onMounted(() => heading.value?.focus())
           :to="`/practice/${r.course.id}`"
           data-testid="mastery-practice"
           class="inline-flex min-h-11 items-center font-semibold text-explore hover:underline"
-          ><span aria-hidden="true">🎯 </span>練習 5 題（自動挑選還沒精熟的知識點）→</RouterLink
+          ><span aria-hidden="true">🎯 </span>練習 5 題（依作答紀錄自動挑選知識點）→</RouterLink
         >
         <section v-for="u in r.units" :key="u.id" class="space-y-2">
           <h3 class="text-base">{{ u.title }}</h3>

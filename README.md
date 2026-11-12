@@ -186,10 +186,11 @@ Handover notes (current status, workflow, next task): [`docs/handoff.md`](docs/h
   viewing never creates a player id. States that mastery is separate from stage completion
   (v1.1 §4.1).
 - 弱點練習 (`/practice/:courseId`, v1.1 Phase 2; linked from home and 知識掌握度): 5 questions
-  on the stage's weak points (`practiceTargets`; a point is weak only after 3 answers; with
-  none, the points not yet mastered, answered ones first, lowest recent accuracy first),
-  each shown with its reason (`pointReason`, also on 知識掌握度; SPEC v1.1 §20 5.4), spread over them in turn, unanswered first, then last answered wrong
-  (`drawPractice`, `src/utils/practice.ts`). Runs in the quiz store's practice mode
+  on up to 3 points (`practiceTargets`): the weak points (a point is weak only after 3
+  answers), then other points not yet mastered, answered ones first, lowest recent accuracy
+  first. Questions are spread over the points in turn, unanswered first, then last answered
+  wrong (`drawPractice`, `src/utils/practice.ts`). Each point shows why it was picked
+  (`pointReason`, also on 知識掌握度; SPEC v1.1 §20 5.4). Runs in the quiz store's practice mode
   (`startPractice`; shared `QuizPlayer` with the stage quiz): answers are logged with
   `activityId: practice:<courseId>:<id>`, wrong ones go to the 錯題本, EXP is the quiz-score
   reward within the daily cap shared with stage quizzes (`recordPracticeResult`, saved in

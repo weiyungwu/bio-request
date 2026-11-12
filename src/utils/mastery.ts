@@ -93,6 +93,7 @@ export function knowledgeMastery(
 ): KnowledgeMastery {
   const answers = answersAbout(events, knowledgeId, playerId)
   const correct = answers.filter((e) => e.isCorrect)
+  const recent = recentOf(answers, rules)
   const result: KnowledgeMastery = {
     playerId,
     knowledgeId,
@@ -100,7 +101,9 @@ export function knowledgeMastery(
     correctAttempts: correct.length,
     wrongAttempts: answers.length - correct.length,
     accuracy: shareRight(answers),
-    recentAccuracy: shareRight(recentOf(answers, rules)),
+    recentAccuracy: shareRight(recent),
+    recentAttempts: recent.length,
+    recentCorrect: recent.filter((e) => e.isCorrect).length,
     masteryLevel: levelOf(answers, rules),
     updatedAt: now.toISOString(),
   }

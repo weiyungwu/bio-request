@@ -78,14 +78,13 @@ export function pointReason(
   mastery: KnowledgeMastery,
   rules: MasteryRules = MASTERY_RULES,
 ): string {
-  const total = mastery.totalAttempts
+  const { totalAttempts: total, recentAttempts: recent, recentCorrect: right } = mastery
   if (total === 0) return '還沒作答過'
-  const recent = Math.min(total, rules.recentWindow)
-  // recentAccuracy is right / recent, so this is exact.
-  const right = Math.round(mastery.recentAccuracy * recent)
   if (total < rules.practicingFrom)
     return `只答過 ${total} 次（答對 ${right} 次），多練幾題才看得出程度`
-  if (mastery.masteryLevel === 'mastered') return `已精熟，最近 ${recent} 次答對 ${right} 次`
+  // Picked only when every point is mastered: the least secure ones, to keep them fresh.
+  if (mastery.masteryLevel === 'mastered')
+    return `已精熟，最近 ${recent} 次答對 ${right} 次，複習一下保持熟練`
   if (mastery.recentAccuracy < rules.recentAccuracy)
     return `最近 ${recent} 次答錯 ${recent - right} 次`
   return `最近 ${recent} 次答對 ${right} 次，還沒達到精熟`

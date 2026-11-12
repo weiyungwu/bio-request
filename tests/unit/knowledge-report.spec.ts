@@ -30,6 +30,8 @@ function answer(questionId: string, correct: boolean, day = 10): LearningEvent {
 }
 const report = (events: LearningEvent[]) =>
   courseReport(lesson, questions, events, { playerId: PLAYER, now })
+const only = (id: string) =>
+  questions.filter((q) => q.knowledgeIds.length === 1 && q.knowledgeIds[0] === id)
 const point = (r: ReturnType<typeof report>, id: string) =>
   r.units.flatMap((u) => u.points).find((p) => p.id === id)!
 
@@ -157,9 +159,17 @@ describe('pointReason', () => {
   })
 
   it('says a mastered point is mastered', () => {
-    const r = report([])
-    const m = point(r, 'a-response').mastery
-    Object.assign(m, { totalAttempts: 9, recentAccuracy: 0.8, masteryLevel: 'mastered' })
-    expect(pointReason(m)).toBe('已精熟，最近 5 次答對 4 次')
+    // 5 different a-response questions over 2 days, the latest 5 with 4 right: mastered.
+    const qs = only('a-response').map((q) => q.id)
+    const events = [
+      answer(qs[0]!, true, 10),
+      answer(qs[1]!, true, 10),
+      answer(qs[2]!, true, 11),
+      answer(qs[3]!, false, 11),
+      answer(qs[4]!, true, 11),
+      answer(qs[5]!, true, 11),
+    ]
+    expect(point(report(events), 'a-response').mastery.masteryLevel).toBe('mastered')
+    expect(reasonOf(events, 'a-response')).toBe('已精熟，最近 5 次答對 4 次，複習一下保持熟練')
   })
 })
