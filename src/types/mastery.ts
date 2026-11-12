@@ -18,6 +18,9 @@ export interface KnowledgeMastery {
    * of them were right: the counts a reason quotes (SPEC v1.1 §20 5.4). Not in §4.4 either. */
   recentAttempts: number
   recentCorrect: number
+  /** Answers wrong in a row up to the latest (0 when the latest is right). §20 5.2: 同一
+   * Knowledge 連續答錯 → 推薦對應教材與提示. */
+  wrongStreak: number
   masteryLevel: MasteryLevel
   lastAttemptAt?: string
   lastCorrectAt?: string

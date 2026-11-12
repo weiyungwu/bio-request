@@ -85,6 +85,13 @@ function levelOf(answers: readonly LearningEvent[], rules: MasteryRules): Master
   return mastered ? 'mastered' : 'practicing'
 }
 
+/** Wrong answers in a row at the end (answers oldest first). */
+function wrongStreakOf(answers: readonly LearningEvent[]): number {
+  let n = 0
+  for (let i = answers.length - 1; i >= 0 && !answers[i]!.isCorrect; i--) n++
+  return n
+}
+
 /** One knowledge point's mastery for one player, from that player's answer events. */
 export function knowledgeMastery(
   events: readonly LearningEvent[],
@@ -104,6 +111,7 @@ export function knowledgeMastery(
     recentAccuracy: shareRight(recent),
     recentAttempts: recent.length,
     recentCorrect: recent.filter((e) => e.isCorrect).length,
+    wrongStreak: wrongStreakOf(answers),
     masteryLevel: levelOf(answers, rules),
     updatedAt: now.toISOString(),
   }

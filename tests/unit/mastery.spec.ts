@@ -50,6 +50,7 @@ describe('knowledgeMastery', () => {
       recentAccuracy: 0,
       recentAttempts: 0,
       recentCorrect: 0,
+      wrongStreak: 0,
       masteryLevel: 'not_started',
       updatedAt: now.toISOString(),
     })

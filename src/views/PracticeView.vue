@@ -4,6 +4,7 @@ import { RouterLink, useRoute } from 'vue-router'
 import BaseButton from '@/components/common/BaseButton.vue'
 import BaseCard from '@/components/common/BaseCard.vue'
 import BaseTag from '@/components/common/BaseTag.vue'
+import KnowledgeCard from '@/components/lesson/KnowledgeCard.vue'
 import QuizPlayer from '@/components/quiz/QuizPlayer.vue'
 import courses from '@/data/courses.json'
 import { getLessonData } from '@/data/lessons'
@@ -11,9 +12,10 @@ import { getQuestionBank } from '@/data/questions'
 import { useProgressStore } from '@/stores/progress'
 import { useQuizStore } from '@/stores/quiz'
 import type { Course } from '@/types/course'
+import type { KnowledgePoint } from '@/types/lesson'
 import type { MasteryLevel } from '@/types/mastery'
 import { DAILY_QUIZ_EXP_CAP } from '@/utils/exp'
-import { courseReport, pointReason } from '@/utils/knowledgeReport'
+import { courseReport, needsLesson, pointReason } from '@/utils/knowledgeReport'
 import { parseEventStore, readEventStorage } from '@/utils/learningEventStorage'
 import { readPlayerId } from '@/utils/learningEvents'
 import { MASTERY_LEVEL, percent } from '@/utils/masteryLevels'
@@ -32,6 +34,8 @@ interface Target {
   before: MasteryLevel
   /** Why it was picked (§20 5.4), as it stood before this practice. */
   reason: string
+  /** Its lesson card, when it should be read before practising (§20 5.2). */
+  card?: KnowledgePoint
 }
 
 /** The course's mastery report from the answers saved so far (read fresh each time). */
@@ -42,13 +46,22 @@ function report() {
   const events = parseEventStore(readEventStorage()).events
   // No id yet means no answers yet; looking must not create one.
   const options = { playerId: readPlayerId() ?? '', now: new Date() }
-  return { bank, events, options, ...courseReport(lesson, bank.questions, events, options) }
+  return {
+    bank,
+    events,
+    options,
+    cards: lesson.lessons.flatMap((l) => l.knowledgePoints),
+    ...courseReport(lesson, bank.questions, events, options),
+  }
 }
 
 const targets = ref<Target[]>([])
 // Bumped per start; QuizPlayer remounts the question on it.
 const round = ref(0)
 const empty = ref(false)
+// §20 5.2: points answered badly get their lesson card first. Shown before the questions,
+// not beside them, so the practice still measures what the student remembers.
+const reading = ref(false)
 
 function start() {
   const r = report()
@@ -60,7 +73,9 @@ function start() {
     term: p.term,
     before: p.mastery.masteryLevel,
     reason: pointReason(p.mastery),
+    card: needsLesson(p.mastery) ? r?.cards.find((k) => k.id === p.id) : undefined,
   }))
+  reading.value = targets.value.some((t) => t.card)
   if (empty.value) return quiz.reset()
   quiz.startPractice(courseId.value, drawn)
   round.value++
@@ -81,6 +96,12 @@ const rows = computed(() => {
   })
 })
 const wrongCount = computed(() => quiz.results.filter((r) => !r.correct).length)
+
+const cards = computed(() => targets.value.flatMap((t) => (t.card ? [t.card] : [])))
+// QuizPlayer mounts the first question, which takes focus.
+function startQuestions() {
+  reading.value = false
+}
 
 const resultHeading = ref<HTMLElement | null>(null)
 function next() {
@@ -116,7 +137,21 @@ const link =
           </li>
         </ul>
       </div>
-      <QuizPlayer :round="round" described-by="practice-targets" @next="next" />
+      <section
+        v-if="reading"
+        data-testid="practice-lesson"
+        class="space-y-4"
+        aria-labelledby="practice-lesson-title"
+      >
+        <h2 id="practice-lesson-title" class="text-lg">開始練習前，先看一下教材</h2>
+        <BaseCard v-for="c in cards" :key="c.id" data-testid="practice-card">
+          <KnowledgeCard :point="c" />
+        </BaseCard>
+        <BaseButton data-testid="practice-start" @click="startQuestions"
+          >看完了，開始練習</BaseButton
+        >
+      </section>
+      <QuizPlayer v-else :round="round" described-by="practice-targets" @next="next" />
     </template>
 
     <template v-else-if="quiz.award">

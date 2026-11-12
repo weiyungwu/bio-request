@@ -71,8 +71,35 @@ export function courseReport(
 }
 
 /**
+ * When to send a student back to the lesson before practising (§20 5.2: 正確率低於 50% → 回到
+ * 教材並重新學習; 同一 Knowledge 連續答錯 → 推薦對應教材與提示). Initial settings; the spec
+ * asks for them to be configurable. Human-approved 2026-11-12.
+ */
+export const RELEARN_RULES = Object.freeze({
+  /** Recent accuracy under this, once there are `practicingFrom` answers… */
+  accuracyBelow: 0.5,
+  /** …or this many wrong in a row (a repeated mistake, not a single slip, §5.5). */
+  wrongStreak: 2,
+})
+
+/** Whether the point's lesson card should come before practising it. */
+export function needsLesson(
+  mastery: KnowledgeMastery,
+  rules: MasteryRules = MASTERY_RULES,
+  relearn = RELEARN_RULES,
+): boolean {
+  if (mastery.masteryLevel === 'mastered') return false
+  return (
+    mastery.wrongStreak >= relearn.wrongStreak ||
+    (mastery.totalAttempts >= rules.practicingFrom &&
+      mastery.recentAccuracy < relearn.accuracyBelow)
+  )
+}
+
+/**
  * Why a point is suggested, from its answers (§20 5.4: 推薦結果必須顯示原因, never just
- * "系統推薦你練習"). Counts are over the same latest answers mastery is judged on.
+ * "系統推薦你練習"). Counts are over the same latest answers mastery is judged on. `rules`
+ * must be the rules the mastery was worked out with.
  */
 export function pointReason(
   mastery: KnowledgeMastery,
@@ -80,12 +107,15 @@ export function pointReason(
 ): string {
   const { totalAttempts: total, recentAttempts: recent, recentCorrect: right } = mastery
   if (total === 0) return '還沒作答過'
-  if (total < rules.practicingFrom)
-    return `只答過 ${total} 次（答對 ${right} 次），多練幾題才看得出程度`
   // Picked only when every point is mastered: the least secure ones, to keep them fresh.
   if (mastery.masteryLevel === 'mastered')
     return `已精熟，最近 ${recent} 次答對 ${right} 次，複習一下保持熟練`
-  if (mastery.recentAccuracy < rules.recentAccuracy)
-    return `最近 ${recent} 次答錯 ${recent - right} 次`
+  const lesson = needsLesson(mastery, rules) ? '，建議先看教材複習' : ''
+  if (total >= rules.practicingFrom && mastery.recentAccuracy < rules.recentAccuracy)
+    return `最近 ${recent} 次答錯 ${recent - right} 次${lesson}`
+  // Too few answers to judge accuracy, but the same mistake twice in a row is not a slip.
+  if (lesson) return `連續答錯 ${mastery.wrongStreak} 次${lesson}`
+  if (total < rules.practicingFrom)
+    return `只答過 ${total} 次（答對 ${right} 次），多練幾題才看得出程度`
   return `最近 ${recent} 次答對 ${right} 次，還沒達到精熟`
 }

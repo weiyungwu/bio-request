@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { getLessonData } from '@/data/lessons'
 import { getQuestionBank } from '@/data/questions'
 import type { LearningEvent } from '@/types/learningEvent'
-import { courseReport, pointReason } from '@/utils/knowledgeReport'
+import { RELEARN_RULES, courseReport, needsLesson, pointReason } from '@/utils/knowledgeReport'
 import { MASTERY_RULES } from '@/utils/mastery'
 
 // v1.1 §4.7 acceptance: 學習報表能指出具體弱點 Knowledge.
@@ -147,9 +147,11 @@ describe('pointReason', () => {
   })
 
   it('counts the mistakes among the latest answers for a weak point', () => {
-    // 7 answers, the latest 5 have 3 wrong: older answers don't count.
-    const events = [true, true, true, false, true, false, false].map((c) => answer('bio-01-q01', c))
-    expect(reasonOf(events, 'a-response')).toBe('最近 5 次答錯 3 次')
+    // 7 answers, 4 wrong, but the latest 5 have 2 wrong: older answers don't count.
+    const events = [false, false, true, false, true, false, true].map((c) =>
+      answer('bio-01-q01', c),
+    )
+    expect(reasonOf(events, 'a-response')).toBe('最近 5 次答錯 2 次')
   })
 
   it('says a point answered well is not yet mastered', () => {
@@ -171,5 +173,45 @@ describe('pointReason', () => {
     ]
     expect(point(report(events), 'a-response').mastery.masteryLevel).toBe('mastered')
     expect(reasonOf(events, 'a-response')).toBe('已精熟，最近 5 次答對 4 次，複習一下保持熟練')
+  })
+
+  // §20 5.2: 正確率低於 50% → 回到教材; 同一 Knowledge 連續答錯 → 推薦對應教材與提示.
+  it('sends a point under 50% back to the lesson, with the counts', () => {
+    // Latest 5: 2 right, 3 wrong (40%), but the latest answer is right: accuracy, not streak.
+    const events = [true, true, false, true, false, false, true].map((c) => answer('bio-01-q01', c))
+    expect(reasonOf(events, 'a-response')).toBe('最近 5 次答錯 3 次，建議先看教材複習')
+  })
+
+  it('sends a point answered wrong twice in a row back to the lesson, even with 2 answers', () => {
+    const twice = [answer('bio-01-q01', false), answer('bio-01-q01', false)]
+    expect(reasonOf(twice, 'a-response')).toBe('連續答錯 2 次，建議先看教材複習')
+  })
+})
+
+describe('needsLesson', () => {
+  const masteryOf = (events: LearningEvent[]) => point(report(events), 'a-response').mastery
+  const answers = (...c: boolean[]) => c.map((x) => answer('bio-01-q01', x))
+
+  // §5.5: 不得將單次偶發錯誤直接視為能力不足 — one mistake is not a reason to relearn.
+  it('not after a single mistake', () => {
+    expect(needsLesson(masteryOf(answers(false)))).toBe(false)
+    expect(needsLesson(masteryOf(answers(true, true, false)))).toBe(false)
+  })
+
+  it('after the same point is answered wrong twice in a row', () => {
+    expect(RELEARN_RULES.wrongStreak).toBe(2)
+    expect(masteryOf(answers(true, false, false)).wrongStreak).toBe(2)
+    expect(needsLesson(masteryOf(answers(true, false, false)))).toBe(true)
+    // Right again, and 3 of the latest 5 right: the streak is over.
+    expect(needsLesson(masteryOf(answers(true, true, false, false, true, true)))).toBe(false)
+  })
+
+  it('when the latest answers are under 50% right, once there are enough of them', () => {
+    // 2 of 5 right (40%), the latest right: no streak.
+    expect(needsLesson(masteryOf(answers(false, true, false, false, true)))).toBe(true)
+    // Not with fewer than 3 answers: 1 of 2 is one slip.
+    expect(needsLesson(masteryOf(answers(false, true)))).toBe(false)
+    // 50% is enough to keep practising instead (2 of 4).
+    expect(needsLesson(masteryOf(answers(true, false, true, false)))).toBe(false)
   })
 })

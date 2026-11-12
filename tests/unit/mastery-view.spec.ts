@@ -61,7 +61,7 @@ describe('MasteryView (v1.1 step 5)', () => {
     ])
     const { w } = await mountView()
     const weak = w.find('[data-testid="mastery-weak"]')
-    expect(weak.text()).toContain('感應與反應：最近 3 次答錯 3 次')
+    expect(weak.text()).toContain('感應與反應：最近 3 次答錯 3 次，建議先看教材複習')
     expect(weak.text()).not.toContain('細胞質') // 1/1 right is not weak
     expect(weak.find('a[href="/review"]').exists()).toBe(true)
     expect(row(w, 'a-response').text()).toContain('答對 0 / 3 次（0%）')

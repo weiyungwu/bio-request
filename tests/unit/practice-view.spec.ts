@@ -124,6 +124,10 @@ describe('PracticeView', () => {
     await w.find('[data-testid="practice-again"]').trigger('click')
     expect(quiz.finished).toBe(false)
     expect(quiz.index).toBe(0)
+    // All wrong: the lesson cards come first (§20 5.2), then the questions.
+    expect(w.find('[data-testid="practice-lesson"]').exists()).toBe(true)
+    expect(w.find('[data-testid="quiz-submit"]').exists()).toBe(false)
+    await w.find('[data-testid="practice-start"]').trigger('click')
     expect(w.find('[data-testid="quiz-submit"]').exists()).toBe(true)
   })
 
