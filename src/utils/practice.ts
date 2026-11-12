@@ -13,7 +13,8 @@ export const PRACTICE_SIZE = QUIZ_SIZE
 export const PRACTICE_POINTS = 3
 
 /**
- * The points to practise (up to PRACTICE_POINTS): the one the student chose, or the report's weak points, then the other
+ * The points to practise. Only the chosen point when one is given (and has questions);
+ * otherwise up to PRACTICE_POINTS: the report's weak points, then the other
  * points not yet mastered, answered ones first (§20 5.4: 已學習但尚未達到 Mastery; an
  * unanswered point is 尚未開始, for which the lesson comes first), lowest recent accuracy
  * first, then the fewest answers, so a point answered wrong too few times to be called weak

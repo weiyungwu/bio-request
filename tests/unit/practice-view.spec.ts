@@ -171,6 +171,15 @@ describe('PracticeView', () => {
     })
 
     // Review I2: 再練一次 disappears with the result; focus must stay in the page.
+    // §20 5.2 still applies to a point the student chose.
+    it('a chosen point answered wrong twice shows its card first', async () => {
+      wrongTwice()
+      const { w } = await mountAt('/practice/bio-01?k=a-response', PracticeView)
+      expect(w.find('[data-testid="practice-targets"]').text()).toContain('你選的知識點')
+      expect(w.find('[data-testid="practice-card"]').text()).toContain('感應與反應')
+      expect(w.find('[data-testid="quiz-submit"]').exists()).toBe(false)
+    })
+
     it('再練一次 back to the card moves focus to its heading', async () => {
       wrongTwice()
       const { w, quiz } = await mountAt('/practice/bio-01', PracticeView)
@@ -197,6 +206,23 @@ describe('PracticeView', () => {
     ])
     expect(quiz.questions).toHaveLength(5)
     expect(quiz.questions.every((q) => q.knowledgeIds.includes('b-nucleus'))).toBe(true)
+  })
+
+  it('follows a change of chosen point, and 再練一次 keeps the choice', async () => {
+    const { w, quiz, router } = await mountAt('/practice/bio-01?k=b-nucleus', PracticeView)
+    await router.push('/practice/bio-01?k=a-response')
+    await flushPromises()
+    expect(w.find('[data-testid="practice-reason"]').text()).toContain('感應與反應')
+    expect(quiz.questions.every((q) => q.knowledgeIds.includes('a-response'))).toBe(true)
+    for (let i = 0; i < 5; i++) play(quiz, true)
+    await flushPromises()
+    await w.find('[data-testid="practice-again"]').trigger('click')
+    expect(quiz.questions.every((q) => q.knowledgeIds.includes('a-response'))).toBe(true)
+    // Without ?k the usual pick (3 points) comes back.
+    await router.push('/practice/bio-01')
+    await flushPromises()
+    expect(w.findAll('[data-testid="practice-reason"]')).toHaveLength(3)
+    expect(w.find('[data-testid="practice-targets"]').text()).not.toContain('你選的')
   })
 
   it('a locked stage cannot be practised', async () => {

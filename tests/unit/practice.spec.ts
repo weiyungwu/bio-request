@@ -141,7 +141,9 @@ describe('practiceTargets with a point the student chose', () => {
       [],
       { playerId: PLAYER, now },
     )
-    expect(practiceTargets(none, 'b-nucleus').map((p) => p.id)).not.toContain('b-nucleus')
+    const fallback = practiceTargets(none, 'b-nucleus').map((p) => p.id)
+    expect(fallback).toHaveLength(3)
+    expect(fallback).toEqual(practiceTargets(none).map((p) => p.id))
   })
 })
 

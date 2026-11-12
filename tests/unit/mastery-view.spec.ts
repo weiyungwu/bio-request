@@ -3,6 +3,7 @@ import { mount, flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { createMemoryHistory } from 'vue-router'
 import { createAppRouter } from '@/router'
+import { getLessonData } from '@/data/lessons'
 import { getQuestionBank } from '@/data/questions'
 import type { LearningEvent } from '@/types/learningEvent'
 import { EVENTS_KEY } from '@/utils/learningEventStorage'
@@ -105,7 +106,13 @@ describe('MasteryView (v1.1 step 5)', () => {
   it('lets the student practise any point with questions', async () => {
     const { w } = await mountView()
     const links = w.findAll('[data-testid="mastery-point-practice"]')
-    expect(links).toHaveLength(23)
+    // Every point with questions (all of stage 1's do now).
+    const withQuestions = getLessonData('bio-01')!
+      .lessons.flatMap((l) => l.knowledgePoints)
+      .filter((k) =>
+        getQuestionBank('bio-01')!.questions.some((q) => q.knowledgeIds.includes(k.id)),
+      )
+    expect(links).toHaveLength(withQuestions.length)
     const link = row(w, 'b-nucleus').find('[data-testid="mastery-point-practice"]')
     expect(link.attributes('href')).toBe('/practice/bio-01?k=b-nucleus')
     // 23 links read "練這個"; each names its point for screen readers.
