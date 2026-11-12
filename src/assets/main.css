@@ -43,6 +43,21 @@
   --shadow-glow-explore: 0 0 0 1px rgb(45 212 191 / 0.4), 0 8px 24px -6px rgb(45 212 191 / 0.45);
   --shadow-glow-reward: 0 0 0 1px rgb(250 204 21 / 0.4), 0 8px 24px -6px rgb(250 204 21 / 0.45);
 
+  /* Story dialog: the speaker bobs while talking; ▼ nudges once a line is done. */
+  --animate-talk: talk 0.28s ease-in-out infinite alternate;
+  --animate-nudge: nudge 0.9s ease-in-out infinite;
+  @keyframes talk {
+    to {
+      transform: translateY(-4px) rotate(-4deg);
+    }
+  }
+  @keyframes nudge {
+    50% {
+      transform: translateY(3px);
+      opacity: 0.6;
+    }
+  }
+
   /*
    * Breakpoints (Tailwind defaults kept):
    *   mobile  < 640px   (base styles)

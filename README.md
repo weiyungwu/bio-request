@@ -206,5 +206,10 @@ Handover notes (current status, workflow, next task): [`docs/handoff.md`](docs/h
   (title + objectives + 接受任務), confirmed by the Human (2026-11-12).
   略過故事 (Human request, 2026-11-12), after 下一段 in the story dialog, skips the remaining
   lines and this card straight to 探險者訓練; it ignores clicks during the opening cooldown.
+  Story lines type out (`STORY_TYPE_MS` per character; Human request, 2026-11-13): 下一段
+  mid-line shows the whole line first, ▼ marks a finished line, reduced motion shows it at once,
+  and screen readers get the full line from a hidden live region. 說話音效 (generated blips,
+  `src/utils/talkSound.ts`) is off by default and remembered in `bio-quest:sound`. E2E waits
+  out a line with `page.clock.runFor` (`fastForward` fires the typing interval only once).
 - E2E: `CI=1 npm run test:e2e` builds first, then tests the production preview (a stale
   `dist/` would otherwise test old code). Run new E2E with `--retries=0` a few times to catch flakiness.

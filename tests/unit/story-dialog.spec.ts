@@ -2,7 +2,11 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import StoryDialog from '@/components/lesson/StoryDialog.vue'
-import { STORY_ADVANCE_COOLDOWN_MS } from '@/components/lesson/storyDialog'
+import {
+  STORY_ADVANCE_COOLDOWN_MS,
+  STORY_TYPE_MS,
+  storyLineMs,
+} from '@/components/lesson/storyDialog'
 import type { Story } from '@/types/lesson'
 
 const story: Story = {
@@ -135,5 +139,111 @@ describe('StoryDialog', () => {
     }
     await w.find('[data-testid="mission-start"]').trigger('click')
     expect(w.emitted('complete')).toBeUndefined()
+  })
+})
+
+// Human request (2026-11-13): lines type out like a character talking.
+describe('StoryDialog typing', () => {
+  const long: Story = {
+    ...story,
+    lines: [
+      { speaker: 'a', text: '探險隊員，緊急任務！總部收到一則神秘訊息，請立刻出發調查。' },
+      { speaker: 'b', text: '收到！' },
+    ],
+  }
+  const typed = (w: ReturnType<typeof mount>) => w.find('[data-testid="story-typed"]').text()
+  let blips: number
+  beforeEach(() => {
+    vi.useFakeTimers()
+    localStorage.clear()
+    blips = 0
+    // Counts generated blips without real audio (jsdom has none).
+    vi.stubGlobal(
+      'AudioContext',
+      class {
+        state = 'running'
+        currentTime = 0
+        destination = {}
+        createOscillator() {
+          return {
+            frequency: {},
+            connect: (g: unknown) => g,
+            start: () => blips++,
+            stop() {},
+          }
+        }
+        createGain() {
+          return {
+            gain: { setValueAtTime() {}, exponentialRampToValueAtTime() {} },
+            connect: (d: unknown) => d,
+          }
+        }
+        close() {}
+      },
+    )
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+    vi.unstubAllGlobals()
+  })
+
+  it('types the line out one character at a time, then shows ▼', async () => {
+    const w = mount(StoryDialog, { props: { story: long } })
+    expect(typed(w)).toBe('')
+    vi.advanceTimersByTime(STORY_TYPE_MS * 2)
+    await nextTick()
+    expect(typed(w)).toBe('探險')
+    expect(w.find('[data-testid="story-more"]').exists()).toBe(false)
+    vi.advanceTimersByTime(storyLineMs(long.lines[0]!.text))
+    await nextTick()
+    expect(typed(w)).toBe(long.lines[0]!.text)
+    expect(w.find('[data-testid="story-more"]').exists()).toBe(true)
+  })
+
+  // Screen readers must not hear the line letter by letter.
+  it('gives screen readers the whole line at once, and hides the typing bubble', () => {
+    const w = mount(StoryDialog, { props: { story: long } })
+    expect(w.find('[data-testid="story-line"]').text()).toContain(long.lines[0]!.text)
+    expect(w.find('[data-testid="story-typed"]').element.closest('[aria-hidden="true"]')).not.toBe(
+      null,
+    )
+  })
+
+  // A quick reader is not held back, but one press never both finishes and skips a line.
+  it('下一段 while typing shows the whole line first, without moving on', async () => {
+    const w = mount(StoryDialog, { props: { story: long } })
+    wait()
+    await next(w)
+    expect(typed(w)).toBe(long.lines[0]!.text)
+    expect(w.text()).toContain('1 / 2')
+    await next(w)
+    expect(w.text()).toContain('1 / 2')
+    wait()
+    await next(w)
+    expect(w.text()).toContain('2 / 2')
+  })
+
+  it('shows the whole line at once when the device asks for reduced motion', () => {
+    vi.stubGlobal('matchMedia', (q: string) => ({ matches: q.includes('reduce') }))
+    const w = mount(StoryDialog, { props: { story: long } })
+    expect(typed(w)).toBe(long.lines[0]!.text)
+  })
+
+  // Human decision: sound is off by default (classrooms); the student's choice is remembered.
+  it('makes no sound unless the student turns it on, and remembers the choice', async () => {
+    const w = mount(StoryDialog, { props: { story: long } })
+    const toggle = w.find('[data-testid="story-sound"]')
+    expect(toggle.attributes('aria-pressed')).toBe('false')
+    vi.advanceTimersByTime(storyLineMs(long.lines[0]!.text))
+    expect(blips).toBe(0)
+
+    await toggle.trigger('click')
+    expect(toggle.attributes('aria-pressed')).toBe('true')
+    w.unmount()
+    const again = mount(StoryDialog, { props: { story: long } })
+    expect(again.find('[data-testid="story-sound"]').attributes('aria-pressed')).toBe('true')
+    const before = blips
+    vi.advanceTimersByTime(storyLineMs(long.lines[0]!.text))
+    expect(blips).toBeGreaterThan(before)
   })
 })

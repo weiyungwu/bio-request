@@ -1,8 +1,11 @@
 import { readFileSync } from 'node:fs'
 import { expect, type Page } from '@playwright/test'
-import { STORY_ADVANCE_COOLDOWN_MS } from '../../src/components/lesson/storyDialog'
+import { STORY_ADVANCE_COOLDOWN_MS, STORY_TYPE_MS } from '../../src/components/lesson/storyDialog'
 
 const PAST_COOLDOWN = STORY_ADVANCE_COOLDOWN_MS + 50
+// Past a line's typing too (lines are under 100 characters). Use runFor, not fastForward:
+// fastForward fires each timer once, so the typing interval would add only one character.
+const PAST_LINE = STORY_ADVANCE_COOLDOWN_MS + 100 * STORY_TYPE_MS
 
 /**
  * Opens stage 1 with a fake clock, chooses 上篇 and plays through the story into the lesson.
@@ -18,11 +21,11 @@ export async function playStory(page: Page, { open = true } = {}) {
   const counter = page.getByText(/^\d+ \/ 6$/)
   await expect(counter).toHaveText('1 / 6')
   for (let n = 2; n <= 6; n++) {
-    await page.clock.fastForward(PAST_COOLDOWN)
+    await page.clock.runFor(PAST_LINE)
     await page.getByTestId('story-next').click()
     await expect(counter).toHaveText(`${n} / 6`)
   }
-  await page.clock.fastForward(PAST_COOLDOWN)
+  await page.clock.runFor(PAST_LINE)
   await page.getByTestId('story-next').click()
   await expect(page.getByTestId('mission-card')).toBeVisible()
   await page.clock.fastForward(PAST_COOLDOWN)

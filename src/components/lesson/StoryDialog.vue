@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import BaseCard from '@/components/common/BaseCard.vue'
 import type { Story } from '@/types/lesson'
-import { STORY_ADVANCE_COOLDOWN_MS } from './storyDialog'
+import { createTalkVoice, readSoundOn, writeSoundOn } from '@/utils/talkSound'
+import { STORY_ADVANCE_COOLDOWN_MS, STORY_TYPE_MS } from './storyDialog'
 
 const props = defineProps<{ story: Story }>()
 const emit = defineEmits<{ complete: [] }>()
@@ -26,17 +27,80 @@ startCooldown()
 // story), not the per-line ones: a deliberate skip right after 下一段 should work.
 const settled = ref(false)
 const settleTimer = setTimeout(() => (settled.value = true), STORY_ADVANCE_COOLDOWN_MS)
-onBeforeUnmount(() => {
-  clearTimeout(timer)
-  clearTimeout(settleTimer)
-})
 
 const line = computed(() => props.story.lines[index.value]!)
 const speaker = computed(() => props.story.characters.find((c) => c.id === line.value.speaker))
 const isLast = computed(() => index.value === props.story.lines.length - 1)
 
+// Each speaker gets a name-tag colour and a voice pitch, by order in the story's cast.
+const TONES = [
+  { tag: 'bg-explore text-on-accent', border: 'border-explore', pitch: 520 },
+  { tag: 'bg-bio text-on-accent', border: 'border-bio', pitch: 780 },
+] as const
+const tone = computed(() => {
+  const i = props.story.characters.findIndex((c) => c.id === line.value.speaker)
+  return TONES[Math.max(i, 0) % TONES.length]!
+})
+
+// Typewriter (Human request 2026-11-13). Screen readers get the whole line at once from the
+// live region; only the visible bubble types out.
+const chars = computed(() => Array.from(line.value.text))
+const shown = ref(0)
+const typing = computed(() => shown.value < chars.value.length)
+const typed = computed(() => chars.value.slice(0, shown.value).join(''))
+let typeTimer: ReturnType<typeof setInterval> | undefined
+
+const soundOn = ref(readSoundOn())
+const voice = createTalkVoice()
+
+const reduceMotion = () =>
+  globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+
+function finishLine() {
+  clearInterval(typeTimer)
+  shown.value = chars.value.length
+}
+
+function typeLine() {
+  clearInterval(typeTimer)
+  shown.value = 0
+  if (reduceMotion()) return finishLine()
+  typeTimer = setInterval(() => {
+    shown.value++
+    // A blip every other letter, none for punctuation: chatter, not a buzz.
+    const c = chars.value[shown.value - 1] ?? ''
+    if (soundOn.value && shown.value % 2 === 1 && /[\p{L}\p{N}]/u.test(c)) {
+      voice.blip(tone.value.pitch)
+    }
+    if (!typing.value) clearInterval(typeTimer)
+  }, STORY_TYPE_MS)
+}
+watch(index, typeLine)
+typeLine()
+
+onBeforeUnmount(() => {
+  clearTimeout(timer)
+  clearTimeout(settleTimer)
+  clearInterval(typeTimer)
+  voice.close()
+})
+
+function toggleSound() {
+  soundOn.value = !soundOn.value
+  writeSoundOn(soundOn.value)
+  // Sample blip; also lets the browser start audio inside this click.
+  if (soundOn.value) voice.blip(tone.value.pitch)
+}
+
 function next() {
   if (!ready.value) return
+  // First press while typing shows the whole line; the cooldown then stops the same
+  // double click from also skipping it.
+  if (typing.value) {
+    finishLine()
+    startCooldown()
+    return
+  }
   if (isLast.value) {
     showMission.value = true
     // The card replaces the dialog; move focus in so keyboard and screen-reader
@@ -66,11 +130,37 @@ function start() {
   <!-- tabindex: LessonView moves focus here after the part choice (the clicked button is gone). -->
   <section data-testid="story-dialog" aria-label="故事對話" tabindex="-1" class="space-y-4">
     <BaseCard v-if="!showMission" as="div" highlight="explore" class="space-y-4">
-      <div data-testid="story-line" aria-live="polite" aria-atomic="true" class="flex gap-4">
-        <span aria-hidden="true" class="text-5xl leading-none">{{ speaker?.avatar }}</span>
-        <div class="min-w-0 space-y-1">
-          <p class="font-bold text-explore">{{ speaker?.name }}</p>
-          <p class="text-lg">{{ line.text }}</p>
+      <p data-testid="story-line" aria-live="polite" aria-atomic="true" class="sr-only">
+        {{ speaker?.name }}：{{ line.text }}
+      </p>
+      <div aria-hidden="true" class="flex items-end gap-3 pt-3">
+        <span
+          data-testid="story-avatar"
+          :class="['shrink-0 text-5xl leading-none', typing && 'motion-safe:animate-talk']"
+          >{{ speaker?.avatar }}</span
+        >
+        <div
+          :class="[
+            'relative min-w-0 flex-1 rounded-card border-2 bg-surface-2 px-4 pt-5 pb-7',
+            tone.border,
+          ]"
+        >
+          <span
+            data-testid="story-name"
+            :class="['absolute -top-3.5 left-4 rounded-pill px-3 text-sm font-bold', tone.tag]"
+            >{{ speaker?.name }}</span
+          >
+          <!-- The full line, invisible, holds the bubble's height while the text types out. -->
+          <p class="grid text-lg">
+            <span class="invisible col-start-1 row-start-1">{{ line.text }}</span>
+            <span data-testid="story-typed" class="col-start-1 row-start-1">{{ typed }}</span>
+          </p>
+          <span
+            v-if="!typing"
+            data-testid="story-more"
+            class="absolute right-4 bottom-1.5 text-reward motion-safe:animate-nudge"
+            >▼</span
+          >
         </div>
       </div>
       <!-- 下一段 first: the first Tab must not land on 略過故事 (review I1); wraps on narrow phones. -->
@@ -87,6 +177,16 @@ function start() {
             @click="skip"
           >
             略過故事<span aria-hidden="true"> ⏭</span>
+          </BaseButton>
+          <BaseButton
+            data-testid="story-sound"
+            variant="ghost"
+            class="whitespace-nowrap"
+            :aria-pressed="soundOn"
+            @click="toggleSound"
+          >
+            <span aria-hidden="true">{{ soundOn ? '🔈' : '🔇' }}</span
+            >說話音效
           </BaseButton>
         </span>
       </div>
