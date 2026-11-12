@@ -190,9 +190,10 @@ Handover notes (current status, workflow, next task): [`docs/handoff.md`](docs/h
   answers), then other points not yet mastered, answered ones first, lowest recent accuracy
   first. Questions are spread over the points in turn, unanswered first, then last answered
   wrong (`drawPractice`, `src/utils/practice.ts`). Each point shows why it was picked
-  (`pointReason`, also on 知識掌握度; SPEC v1.1 §20 5.4). A point under 50% right (after 3
-  answers) or wrong twice in a row shows its lesson card before the questions (`needsLesson`,
-  thresholds in `RELEARN_RULES`; §20 5.2); the cards are not shown beside the questions. Runs in the quiz store's practice mode
+  (`pointReason`, also on 知識掌握度; SPEC v1.1 §20 5.4). A point not mastered, under 50%
+  right (after 3 answers) or wrong twice in a row, shows its lesson card (`KnowledgeCard`;
+  its 考試重點 is the hint) before the questions (`needsLesson`, thresholds in
+  `RELEARN_RULES`; §20 5.2). Not beside them, and the practice starts only on 開始練習. Runs in the quiz store's practice mode
   (`startPractice`; shared `QuizPlayer` with the stage quiz): answers are logged with
   `activityId: practice:<courseId>:<id>`, wrong ones go to the 錯題本, EXP is the quiz-score
   reward within the daily cap shared with stage quizzes (`recordPracticeResult`, saved in

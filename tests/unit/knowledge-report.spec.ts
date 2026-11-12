@@ -182,6 +182,16 @@ describe('pointReason', () => {
     expect(reasonOf(events, 'a-response')).toBe('最近 5 次答錯 3 次，建議先看教材複習')
   })
 
+  // Review S2: same counts, different advice; the reason must say what made the difference.
+  it('names the streak when it, not the accuracy, sends the point to the lesson', () => {
+    const streak = [true, true, true, false, false].map((c) => answer('bio-01-q01', c))
+    expect(reasonOf(streak, 'a-response')).toBe(
+      '最近 5 次答錯 2 次，最後連續答錯 2 次，建議先看教材複習',
+    )
+    const early = [false, false, true, true, true].map((c) => answer('bio-01-q01', c))
+    expect(reasonOf(early, 'a-response')).toBe('最近 5 次答錯 2 次')
+  })
+
   it('sends a point answered wrong twice in a row back to the lesson, even with 2 answers', () => {
     const twice = [answer('bio-01-q01', false), answer('bio-01-q01', false)]
     expect(reasonOf(twice, 'a-response')).toBe('連續答錯 2 次，建議先看教材複習')

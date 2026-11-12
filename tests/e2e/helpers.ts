@@ -103,12 +103,15 @@ export async function finishClassification(page: Page) {
 }
 
 type Q = {
+  id: string
+  knowledgeIds: string[]
   question: string
   type: string
   options: string[] | { left: string[] }
   answer: number | number[]
 }
-const bank: Q[] = JSON.parse(readFileSync('src/data/questions/bio-01.json', 'utf8'))
+/** Stage 1's question bank, read from the data file. */
+export const bank: Q[] = JSON.parse(readFileSync('src/data/questions/bio-01.json', 'utf8'))
 
 /** Answers the shown question from the key (or deliberately wrong) and submits. */
 export async function answer(page: Page, wrong: boolean, submit = 'quiz-submit') {

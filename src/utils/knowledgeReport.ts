@@ -111,8 +111,13 @@ export function pointReason(
   if (mastery.masteryLevel === 'mastered')
     return `已精熟，最近 ${recent} 次答對 ${right} 次，複習一下保持熟練`
   const lesson = needsLesson(mastery, rules) ? '，建議先看教材複習' : ''
+  // Say the streak when it, not the accuracy, is why the lesson comes first (review S2).
+  const streak =
+    lesson && mastery.recentAccuracy >= RELEARN_RULES.accuracyBelow
+      ? `，最後連續答錯 ${mastery.wrongStreak} 次`
+      : ''
   if (total >= rules.practicingFrom && mastery.recentAccuracy < rules.recentAccuracy)
-    return `最近 ${recent} 次答錯 ${recent - right} 次${lesson}`
+    return `最近 ${recent} 次答錯 ${recent - right} 次${streak}${lesson}`
   // Too few answers to judge accuracy, but the same mistake twice in a row is not a slip.
   if (lesson) return `連續答錯 ${mastery.wrongStreak} 次${lesson}`
   if (total < rules.practicingFrom)

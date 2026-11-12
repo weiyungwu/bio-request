@@ -13,6 +13,7 @@ import { useProgressStore } from '@/stores/progress'
 import { useQuizStore } from '@/stores/quiz'
 import type { Course } from '@/types/course'
 import type { KnowledgePoint } from '@/types/lesson'
+import type { Question } from '@/types/question'
 import type { MasteryLevel } from '@/types/mastery'
 import { DAILY_QUIZ_EXP_CAP } from '@/utils/exp'
 import { courseReport, needsLesson, pointReason } from '@/utils/knowledgeReport'
@@ -62,6 +63,10 @@ const empty = ref(false)
 // §20 5.2: points answered badly get their lesson card first. Shown before the questions,
 // not beside them, so the practice still measures what the student remembers.
 const reading = ref(false)
+// The drawn questions wait while the student reads: the practice (and its quiz_started event)
+// begins on 開始練習, so leaving mid-read logs nothing.
+let pending: Question[] = []
+const lessonHeading = ref<HTMLElement | null>(null)
 
 function start() {
   const r = report()
@@ -75,8 +80,17 @@ function start() {
     reason: pointReason(p.mastery),
     card: needsLesson(p.mastery) ? r?.cards.find((k) => k.id === p.id) : undefined,
   }))
-  reading.value = targets.value.some((t) => t.card)
-  if (empty.value) return quiz.reset()
+  reading.value = !empty.value && targets.value.some((t) => t.card)
+  if (empty.value || reading.value) {
+    pending = drawn
+    quiz.reset()
+    // 再練一次 is gone with the result; keep focus in the page (Phase C review I2).
+    if (reading.value) void nextTick(() => lessonHeading.value?.focus())
+    return
+  }
+  begin(drawn)
+}
+function begin(drawn: Question[]) {
   quiz.startPractice(courseId.value, drawn)
   round.value++
 }
@@ -101,6 +115,7 @@ const cards = computed(() => targets.value.flatMap((t) => (t.card ? [t.card] : [
 // QuizPlayer mounts the first question, which takes focus.
 function startQuestions() {
   reading.value = false
+  begin(pending)
 }
 
 const resultHeading = ref<HTMLElement | null>(null)
@@ -143,7 +158,9 @@ const link =
         class="space-y-4"
         aria-labelledby="practice-lesson-title"
       >
-        <h2 id="practice-lesson-title" class="text-lg">開始練習前，先看一下教材</h2>
+        <h2 id="practice-lesson-title" ref="lessonHeading" tabindex="-1" class="text-lg">
+          開始練習前，先看一下教材
+        </h2>
         <BaseCard v-for="c in cards" :key="c.id" data-testid="practice-card">
           <KnowledgeCard :point="c" />
         </BaseCard>

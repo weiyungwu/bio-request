@@ -9,6 +9,7 @@ import { useQuizStore } from '@/stores/quiz'
 import type { LearningEvent } from '@/types/learningEvent'
 import type { Question } from '@/types/question'
 import { EVENTS_KEY } from '@/utils/learningEventStorage'
+import { PLAYER_KEY } from '@/utils/learningEvents'
 import HomeView from '@/views/HomeView.vue'
 import MasteryView from '@/views/MasteryView.vue'
 import PracticeView from '@/views/PracticeView.vue'
@@ -118,17 +119,73 @@ describe('PracticeView', () => {
 
   it('再練一次 starts a new practice', async () => {
     const { w, quiz } = await mountAt('/practice/bio-01', PracticeView)
-    for (let i = 0; i < 5; i++) play(quiz, false)
+    for (let i = 0; i < 5; i++) play(quiz, true)
     await flushPromises()
-    expect(w.find('[data-testid="practice-to-review"]').exists()).toBe(true)
     await w.find('[data-testid="practice-again"]').trigger('click')
     expect(quiz.finished).toBe(false)
     expect(quiz.index).toBe(0)
-    // All wrong: the lesson cards come first (§20 5.2), then the questions.
-    expect(w.find('[data-testid="practice-lesson"]').exists()).toBe(true)
-    expect(w.find('[data-testid="quiz-submit"]').exists()).toBe(false)
-    await w.find('[data-testid="practice-start"]').trigger('click')
     expect(w.find('[data-testid="quiz-submit"]').exists()).toBe(true)
+  })
+
+  // §20 5.2: 同一 Knowledge 連續答錯 → 推薦對應教材與提示. Seeded, not played: which points a
+  // played practice reaches depends on the draw (Phase C review I1).
+  describe('lesson card first', () => {
+    const wrongTwice = () => {
+      localStorage.setItem(PLAYER_KEY, 'me')
+      const at = (s: number) => new Date(Date.UTC(2026, 10, 10, 0, 0, s)).toISOString()
+      const wrong = (id: string, s: number): LearningEvent => ({
+        id: `seed${s}`,
+        playerId: 'me',
+        sessionId: 's',
+        eventType: 'question_answered',
+        knowledgeIds: ['a-response'],
+        questionId: id,
+        isCorrect: false,
+        source: '2d',
+        occurredAt: at(s),
+        recordedAt: at(s),
+      })
+      const [a, b] = bank.filter((q) => q.knowledgeIds.join() === 'a-response')
+      localStorage.setItem(
+        EVENTS_KEY,
+        JSON.stringify({ version: 1, events: [wrong(a!.id, 1), wrong(b!.id, 2)] }),
+      )
+    }
+
+    it('shows the card before the questions, and starts the practice only after it', async () => {
+      wrongTwice()
+      const { w, quiz } = await mountAt('/practice/bio-01', PracticeView)
+      expect(w.find('[data-testid="practice-reason"]').text()).toBe(
+        '感應與反應：連續答錯 2 次，建議先看教材複習',
+      )
+      expect(w.findAll('[data-testid="practice-card"]')).toHaveLength(1)
+      expect(w.find('[data-testid="practice-card"]').text()).toContain('感應與反應')
+      // Not beside the questions, and nothing started yet: leaving now logs nothing.
+      expect(w.find('[data-testid="quiz-submit"]').exists()).toBe(false)
+      expect(events().filter((e) => e.eventType === 'quiz_started')).toHaveLength(0)
+      await w.find('[data-testid="practice-start"]').trigger('click')
+      expect(w.find('[data-testid="practice-lesson"]').exists()).toBe(false)
+      expect(quiz.kind).toBe('practice')
+      expect(quiz.questions).toHaveLength(5)
+      expect(events().filter((e) => e.eventType === 'quiz_started')).toHaveLength(1)
+    })
+
+    // Review I2: 再練一次 disappears with the result; focus must stay in the page.
+    it('再練一次 back to the card moves focus to its heading', async () => {
+      wrongTwice()
+      const { w, quiz } = await mountAt('/practice/bio-01', PracticeView)
+      await w.find('[data-testid="practice-start"]').trigger('click')
+      // a-response (0% with 2 answers) is the first target, so it reaches 3 wrong: weak.
+      for (let i = 0; i < 5; i++) play(quiz, false)
+      await flushPromises()
+      document.body.append(w.element)
+      ;(w.find('[data-testid="practice-again"]').element as HTMLElement).focus()
+      await w.find('[data-testid="practice-again"]').trigger('click')
+      await flushPromises()
+      expect(w.find('[data-testid="practice-lesson"]').exists()).toBe(true)
+      expect(document.activeElement?.id).toBe('practice-lesson-title')
+      w.unmount()
+    })
   })
 
   it('a locked stage cannot be practised', async () => {

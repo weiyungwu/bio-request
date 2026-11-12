@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { answer } from './helpers'
+import { answer, bank } from './helpers'
 
 // v1.1 Phase 2 弱點練習: from home, 5 questions on the weakest points, a result with each
 // point's change, and mistakes on the 錯題本.
@@ -29,32 +29,59 @@ test.describe('弱點練習', () => {
     await expect(page.getByTestId('stage-status').first()).toContainText('可挑戰')
   })
 
-  test('知識掌握度 offers practice on the weak points', async ({ page }) => {
-    const allWrong = async () => {
-      for (let n = 1; n <= 5; n++) {
-        await answer(page, true)
-        await page.getByTestId('quiz-next').click()
-      }
-    }
-    // All wrong, twice: one practice gives a point too few answers to call it weak (§20 5.5);
-    // the second practice returns to the same points, so they reach 3 answers.
-    await page.goto('/practice/bio-01')
-    await allWrong()
-    // 5 wrong answers over 3 points: one point is wrong twice in a row, so its lesson card
-    // comes before the questions (§20 5.2), and the first question then takes focus.
+  test('a point wrong twice in a row: lesson card first, then 知識掌握度 names it', async ({
+    page,
+  }) => {
+    // Seeded, not played: which points a played practice reaches depends on the draw, and
+    // multi-point questions can spread one practice's mistakes (Phase C review I1).
+    const [q1, q2] = bank.filter((q) => q.knowledgeIds.join() === 'a-response')
+    await page.goto('/')
+    await page.evaluate(
+      ({ ids }) => {
+        const at = (s: number) => new Date(Date.UTC(2026, 10, 10, 0, 0, s)).toISOString()
+        localStorage.setItem('bio-quest:player', 'me')
+        localStorage.setItem(
+          'bio-quest:events',
+          JSON.stringify({
+            version: 1,
+            events: ids.map((id, i) => ({
+              id: `seed${i}`,
+              playerId: 'me',
+              sessionId: 's',
+              eventType: 'question_answered',
+              knowledgeIds: ['a-response'],
+              questionId: id,
+              isCorrect: false,
+              source: '2d',
+              occurredAt: at(i),
+              recordedAt: at(i),
+            })),
+          }),
+        )
+      },
+      { ids: [q1!.id, q2!.id] },
+    )
+
+    // §20 5.2: the card comes before the questions; the first question then takes focus.
     await page.goto('/practice/bio-01')
     await expect(page.getByTestId('practice-lesson')).toBeVisible()
-    await expect(page.getByTestId('practice-targets')).toContainText('建議先看教材複習')
+    await expect(page.getByTestId('practice-targets')).toContainText(
+      '感應與反應：連續答錯 2 次，建議先看教材複習',
+    )
     await page.getByTestId('practice-start').click()
     await expect(page.getByTestId('quiz-question')).toBeFocused()
-    await allWrong()
+    // All wrong: a-response, the first target, reaches 3 answers and is weak (§20 5.5).
+    for (let n = 1; n <= 5; n++) {
+      await answer(page, true)
+      await page.getByTestId('quiz-next').click()
+    }
 
     await page.goto('/mastery')
     const weak = page.getByTestId('mastery-weak')
-    await expect(weak).toBeVisible()
+    await expect(weak).toContainText('感應與反應：最近')
     await expect(weak).toContainText('建議先看教材複習')
     await weak.getByTestId('mastery-practice').click()
     await expect(page).toHaveURL(/\/practice\/bio-01$/)
-    await expect(page.getByTestId('practice-card').first()).toBeVisible()
+    await expect(page.getByTestId('practice-card').first()).toContainText('感應與反應')
   })
 })
