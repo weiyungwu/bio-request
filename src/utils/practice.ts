@@ -13,14 +13,20 @@ export const PRACTICE_SIZE = QUIZ_SIZE
 export const PRACTICE_POINTS = 3
 
 /**
- * The points to practise (up to PRACTICE_POINTS): the report's weak points, then the other
+ * The points to practise (up to PRACTICE_POINTS): the one the student chose, or the report's weak points, then the other
  * points not yet mastered, answered ones first (§20 5.4: 已學習但尚未達到 Mastery; an
  * unanswered point is 尚未開始, for which the lesson comes first), lowest recent accuracy
  * first, then the fewest answers, so a point answered wrong too few times to be called weak
  * comes before unanswered ones; when all are mastered, the lowest recent accuracy, so
  * practice is always possible.
  */
-export function practiceTargets(report: CourseReport): PointReport[] {
+export function practiceTargets(report: CourseReport, chosen?: string): PointReport[] {
+  // §20 5.5: 必須允許學生自行選擇其他學習內容. A point the student picked, if it has questions;
+  // otherwise (an old or mistyped link) the usual pick.
+  const picked = report.units
+    .flatMap((u) => u.points)
+    .find((p) => p.id === chosen && p.questionCount > 0)
+  if (picked) return [picked]
   const weak = report.weakest.slice(0, PRACTICE_POINTS)
   const points = report.units.flatMap((u) => u.points).filter((p) => p.questionCount > 0)
   const open = points.filter((p) => p.mastery.masteryLevel !== 'mastered' && !weak.includes(p))

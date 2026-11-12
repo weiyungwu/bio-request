@@ -188,6 +188,17 @@ describe('PracticeView', () => {
     })
   })
 
+  // §20 5.5: 必須允許學生自行選擇其他學習內容 — from 知識掌握度's 練這個.
+  it('practises the point chosen in the link', async () => {
+    const { w, quiz } = await mountAt('/practice/bio-01?k=b-nucleus', PracticeView)
+    expect(w.find('[data-testid="practice-targets"]').text()).toContain('你選的知識點')
+    expect(w.findAll('[data-testid="practice-reason"]').map((r) => r.text())).toEqual([
+      '細胞核：還沒作答過',
+    ])
+    expect(quiz.questions).toHaveLength(5)
+    expect(quiz.questions.every((q) => q.knowledgeIds.includes('b-nucleus'))).toBe(true)
+  })
+
   it('a locked stage cannot be practised', async () => {
     const { router } = await mountAt('/practice/bio-02', PracticeView)
     expect(router.currentRoute.value.name).toBe('map')

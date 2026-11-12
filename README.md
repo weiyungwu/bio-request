@@ -193,7 +193,9 @@ Handover notes (current status, workflow, next task): [`docs/handoff.md`](docs/h
   (`pointReason`, also on 知識掌握度; SPEC v1.1 §20 5.4). A point not mastered, under 50%
   right (after 3 answers) or wrong twice in a row, shows its lesson card (`KnowledgeCard`;
   its 考試重點 is the hint) before the questions (`needsLesson`, thresholds in
-  `RELEARN_RULES`; §20 5.2). Not beside them, and the practice starts only on 開始練習. Runs in the quiz store's practice mode
+  `RELEARN_RULES`; §20 5.2). Not beside them, and the practice starts only on 開始練習.
+  `?k=<knowledge id>` (知識掌握度's 練這個 on each point with questions) practises that point
+  only (§20 5.5: students may choose); an unknown or empty point falls back to the usual pick. Runs in the quiz store's practice mode
   (`startPractice`; shared `QuizPlayer` with the stage quiz): answers are logged with
   `activityId: practice:<courseId>:<id>`, wrong ones go to the 錯題本, EXP is the quiz-score
   reward within the daily cap shared with stage quizzes (`recordPracticeResult`, saved in

@@ -114,6 +114,15 @@ onMounted(() => heading.value?.focus())
                 <BaseTag :tone="MASTERY_LEVEL[p.mastery.masteryLevel].tone">
                   {{ MASTERY_LEVEL[p.mastery.masteryLevel].label }}
                 </BaseTag>
+                <!-- §20 5.5: 必須允許學生自行選擇其他學習內容. -->
+                <RouterLink
+                  v-if="p.questionCount > 0"
+                  :to="{ path: `/practice/${r.course.id}`, query: { k: p.id } }"
+                  data-testid="mastery-point-practice"
+                  :aria-label="`練這個：${p.term}`"
+                  class="inline-flex min-h-11 items-center font-semibold text-explore hover:underline"
+                  >練這個</RouterLink
+                >
               </span>
               <p
                 v-if="!p.enoughQuestions"

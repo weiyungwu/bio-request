@@ -117,6 +117,34 @@ describe('practiceTargets', () => {
   })
 })
 
+// §20 5.5: 必須允許學生自行選擇其他學習內容.
+describe('practiceTargets with a point the student chose', () => {
+  it('practises only that point, even when other points are weaker', () => {
+    const [a, b, c] = only('a-response')
+    const r = report([answer(a!.id, false), answer(b!.id, false), answer(c!.id, false)])
+    expect(r.weakest.map((p) => p.id)).toEqual(['a-response'])
+    const targets = practiceTargets(r, 'b-nucleus')
+    expect(targets.map((p) => p.id)).toEqual(['b-nucleus'])
+    // All 5 questions on it.
+    const drawn = drawPractice(targets, questions, [], PLAYER)
+    expect(drawn).toHaveLength(PRACTICE_SIZE)
+    expect(drawn.every((q) => q.knowledgeIds.includes('b-nucleus'))).toBe(true)
+  })
+
+  it('falls back to the usual pick for an unknown point or one without questions', () => {
+    const r = report([])
+    const usual = practiceTargets(r).map((p) => p.id)
+    expect(practiceTargets(r, 'no-such-point').map((p) => p.id)).toEqual(usual)
+    const none = courseReport(
+      lesson,
+      questions.filter((q) => !q.knowledgeIds.includes('b-nucleus')),
+      [],
+      { playerId: PLAYER, now },
+    )
+    expect(practiceTargets(none, 'b-nucleus').map((p) => p.id)).not.toContain('b-nucleus')
+  })
+})
+
 describe('drawPractice', () => {
   const targets = (ids: string[]) => {
     const points = report([]).units.flatMap((u) => u.points)

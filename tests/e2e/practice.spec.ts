@@ -29,6 +29,15 @@ test.describe('弱點練習', () => {
     await expect(page.getByTestId('stage-status').first()).toContainText('可挑戰')
   })
 
+  // §20 5.5: 必須允許學生自行選擇其他學習內容.
+  test('知識掌握度 lets the student pick a point to practise', async ({ page }) => {
+    await page.goto('/mastery')
+    await page.getByRole('link', { name: '練這個：細胞核' }).click()
+    await expect(page).toHaveURL(/\/practice\/bio-01\?k=b-nucleus$/)
+    await expect(page.getByTestId('practice-reason')).toHaveText(['細胞核：還沒作答過'])
+    await expect(page.getByTestId('quiz-question')).toBeFocused()
+  })
+
   test('a point wrong twice in a row: lesson card first, then 知識掌握度 names it', async ({
     page,
   }) => {

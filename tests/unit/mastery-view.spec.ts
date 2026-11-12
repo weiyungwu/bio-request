@@ -94,9 +94,23 @@ describe('MasteryView (v1.1 step 5)', () => {
     try {
       const { w } = await mountView()
       expect(row(w, 'a-growth').find('[data-testid="mastery-few"]').text()).toContain('還沒有題目')
+      // Nothing to practise there, so no link to an empty practice.
+      expect(row(w, 'a-growth').find('[data-testid="mastery-point-practice"]').exists()).toBe(false)
     } finally {
       bank.questions = all
     }
+  })
+
+  // SPEC v1.1 §20 5.5: 必須允許學生自行選擇其他學習內容 — not only the points picked for them.
+  it('lets the student practise any point with questions', async () => {
+    const { w } = await mountView()
+    const links = w.findAll('[data-testid="mastery-point-practice"]')
+    expect(links).toHaveLength(23)
+    const link = row(w, 'b-nucleus').find('[data-testid="mastery-point-practice"]')
+    expect(link.attributes('href')).toBe('/practice/bio-01?k=b-nucleus')
+    // 23 links read "練這個"; each names its point for screen readers.
+    expect(link.text()).toBe('練這個')
+    expect(link.attributes('aria-label')).toBe('練這個：細胞核')
   })
 
   it("ignores another player's answers on a shared device", async () => {

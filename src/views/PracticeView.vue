@@ -28,6 +28,10 @@ const quiz = useQuizStore()
 const progress = useProgressStore()
 const courseId = computed(() => String(route.params.courseId))
 const course = computed(() => (courses as Course[]).find((c) => c.id === courseId.value))
+/** `?k=<knowledge id>`: a point the student chose on 知識掌握度 (§20 5.5). */
+const chosen = computed(() => (typeof route.query.k === 'string' ? route.query.k : undefined))
+// Whether the chosen point was found; set per start.
+const ownPick = ref(false)
 
 interface Target {
   id: string
@@ -70,7 +74,9 @@ const lessonHeading = ref<HTMLElement | null>(null)
 
 function start() {
   const r = report()
-  const points = r ? practiceTargets(r) : []
+  const points = r ? practiceTargets(r, chosen.value) : []
+  ownPick.value =
+    chosen.value !== undefined && points.length === 1 && points[0]!.id === chosen.value
   const drawn = r ? drawPractice(points, r.bank.questions, r.events, r.options.playerId) : []
   empty.value = drawn.length === 0
   targets.value = points.map((p) => ({
@@ -94,7 +100,7 @@ function begin(drawn: Question[]) {
   quiz.startPractice(courseId.value, drawn)
   round.value++
 }
-watch(courseId, start, { immediate: true })
+watch([courseId, chosen], start, { immediate: true })
 
 const done = computed(
   () => quiz.finished && quiz.kind === 'practice' && quiz.courseId === courseId.value,
@@ -144,7 +150,8 @@ const link =
 
     <template v-else-if="!done">
       <div id="practice-targets" data-testid="practice-targets" class="text-muted">
-        <p>這次練習的知識點和原因：</p>
+        <p v-if="ownPick">這次練習你選的知識點：</p>
+        <p v-else>這次練習的知識點和原因：</p>
         <ul class="list-disc pl-6">
           <li v-for="t in targets" :key="t.id" data-testid="practice-reason">
             <span class="font-semibold text-text">{{ t.term }}</span
