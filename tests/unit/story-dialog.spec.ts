@@ -7,7 +7,9 @@ import {
   STORY_TYPE_MS,
   storyLineMs,
 } from '@/components/lesson/storyDialog'
+import { getLessonData } from '@/data/lessons'
 import type { Story } from '@/types/lesson'
+import { SOUND_KEY } from '@/utils/talkSound'
 
 const story: Story = {
   title: '測試任務',
@@ -25,6 +27,9 @@ const story: Story = {
 
 const next = (w: ReturnType<typeof mount>) => w.find('[data-testid="story-next"]').trigger('click')
 const wait = () => vi.advanceTimersByTime(STORY_ADVANCE_COOLDOWN_MS)
+
+// The sound choice is saved; no test may leave it on for the next.
+afterEach(() => localStorage.clear())
 
 describe('StoryDialog', () => {
   beforeEach(() => vi.useFakeTimers())
@@ -153,15 +158,23 @@ describe('StoryDialog typing', () => {
   }
   const typed = (w: ReturnType<typeof mount>) => w.find('[data-testid="story-typed"]').text()
   let blips: number
+  let contexts: number
   beforeEach(() => {
     vi.useFakeTimers()
-    localStorage.clear()
     blips = 0
+    contexts = 0
     // Counts generated blips without real audio (jsdom has none).
     vi.stubGlobal(
       'AudioContext',
       class {
-        state = 'running'
+        state = 'suspended'
+        constructor() {
+          contexts++
+        }
+        resume() {
+          this.state = 'running'
+          return Promise.resolve()
+        }
         currentTime = 0
         destination = {}
         createOscillator() {
@@ -178,7 +191,9 @@ describe('StoryDialog typing', () => {
             connect: (d: unknown) => d,
           }
         }
-        close() {}
+        close() {
+          return Promise.resolve()
+        }
       },
     )
   })
@@ -194,10 +209,14 @@ describe('StoryDialog typing', () => {
     await nextTick()
     expect(typed(w)).toBe('探險')
     expect(w.find('[data-testid="story-more"]').exists()).toBe(false)
+    // The speaker bobs only while talking.
+    const avatar = () => w.find('[data-testid="story-avatar"]').classes()
+    expect(avatar()).toContain('motion-safe:animate-talk')
     vi.advanceTimersByTime(storyLineMs(long.lines[0]!.text))
     await nextTick()
     expect(typed(w)).toBe(long.lines[0]!.text)
     expect(w.find('[data-testid="story-more"]').exists()).toBe(true)
+    expect(avatar()).not.toContain('motion-safe:animate-talk')
   })
 
   // Screen readers must not hear the line letter by letter.
@@ -221,12 +240,36 @@ describe('StoryDialog typing', () => {
     wait()
     await next(w)
     expect(w.text()).toContain('2 / 2')
+    // The new line types out from its start, not shown whole.
+    expect(typed(w)).toBe('')
+    vi.advanceTimersByTime(STORY_TYPE_MS)
+    await nextTick()
+    expect(typed(w)).toBe('收')
   })
 
   it('shows the whole line at once when the device asks for reduced motion', () => {
     vi.stubGlobal('matchMedia', (q: string) => ({ matches: q.includes('reduce') }))
     const w = mount(StoryDialog, { props: { story: long } })
     expect(typed(w)).toBe(long.lines[0]!.text)
+    expect(w.find('[data-testid="story-more"]').exists()).toBe(true)
+  })
+
+  // Review: with reduced motion nothing types, so sound on must still be heard (once a line).
+  it('with reduced motion and sound on, each line gives one blip', () => {
+    vi.stubGlobal('matchMedia', (q: string) => ({ matches: q.includes('reduce') }))
+    localStorage.setItem(SOUND_KEY, 'on')
+    mount(StoryDialog, { props: { story: long } }).unmount()
+    expect(blips).toBe(1)
+  })
+
+  // Review: iPad Safari starts audio only inside a click; typing ticks are not clicks.
+  it('with sound saved on, 下一段 starts the audio inside the click', async () => {
+    localStorage.setItem(SOUND_KEY, 'on')
+    const w = mount(StoryDialog, { props: { story: long } })
+    expect(contexts).toBe(0)
+    await next(w)
+    expect(contexts).toBe(1)
+    w.unmount()
   })
 
   // Human decision: sound is off by default (classrooms); the student's choice is remembered.
@@ -245,5 +288,13 @@ describe('StoryDialog typing', () => {
     const before = blips
     vi.advanceTimersByTime(storyLineMs(long.lines[0]!.text))
     expect(blips).toBeGreaterThan(before)
+    again.unmount()
+  })
+
+  // E2E waits out a line with a fixed budget of 100 characters (tests/e2e/helpers.ts).
+  it('stage 1 story lines stay under 100 characters', () => {
+    for (const l of getLessonData('bio-01')!.story.lines) {
+      expect(Array.from(l.text).length).toBeLessThan(100)
+    }
   })
 })

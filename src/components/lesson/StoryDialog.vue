@@ -64,7 +64,11 @@ function finishLine() {
 function typeLine() {
   clearInterval(typeTimer)
   shown.value = 0
-  if (reduceMotion()) return finishLine()
+  if (reduceMotion()) {
+    // No typing to chatter along to: one blip per line, so the toggle still does something.
+    if (soundOn.value) voice.blip(tone.value.pitch)
+    return finishLine()
+  }
   typeTimer = setInterval(() => {
     shown.value++
     // A blip every other letter, none for punctuation: chatter, not a buzz.
@@ -93,6 +97,8 @@ function toggleSound() {
 }
 
 function next() {
+  // A saved "on" needs a click to start audio on iPad Safari (typing ticks are not clicks).
+  if (soundOn.value) voice.unlock()
   if (!ready.value) return
   // First press while typing shows the whole line; the cooldown then stops the same
   // double click from also skipping it.

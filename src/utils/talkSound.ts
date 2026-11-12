@@ -20,28 +20,44 @@ export function writeSoundOn(on: boolean) {
   }
 }
 
+type ContextClass = typeof AudioContext
+
 /** One blip per call, around `pitch` Hz; the AudioContext is made on first use. */
 export function createTalkVoice() {
   let ctx: AudioContext | undefined
+  // Older iPads (iOS < 14.5) only have the prefixed name.
+  const Context: ContextClass | undefined =
+    globalThis.AudioContext ??
+    (globalThis as unknown as { webkitAudioContext?: ContextClass }).webkitAudioContext
+
+  function ready() {
+    if (!Context) return undefined
+    ctx ??= new Context()
+    if (ctx.state === 'suspended') ctx.resume().catch(() => {})
+    return ctx
+  }
+
   return {
+    /** Call inside a click: Safari only lets audio start from a user gesture. */
+    unlock() {
+      ready()
+    },
     blip(pitch: number) {
-      const Context = globalThis.AudioContext
-      if (!Context) return
-      ctx ??= new Context()
-      if (ctx.state === 'suspended') void ctx.resume()
-      const t = ctx.currentTime
-      const osc = ctx.createOscillator()
-      const gain = ctx.createGain()
+      const ac = ready()
+      if (!ac) return
+      const t = ac.currentTime
+      const osc = ac.createOscillator()
+      const gain = ac.createGain()
       osc.type = 'triangle'
       osc.frequency.value = pitch * (0.85 + Math.random() * 0.3)
       gain.gain.setValueAtTime(0.06, t)
       gain.gain.exponentialRampToValueAtTime(0.001, t + 0.06)
-      osc.connect(gain).connect(ctx.destination)
+      osc.connect(gain).connect(ac.destination)
       osc.start(t)
       osc.stop(t + 0.06)
     },
     close() {
-      void ctx?.close()
+      ctx?.close().catch(() => {})
       ctx = undefined
     },
   }
