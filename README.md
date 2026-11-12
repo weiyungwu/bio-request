@@ -203,6 +203,6 @@ Handover notes (current status, workflow, next task): [`docs/handoff.md`](docs/h
   badge); `/result` ignores it. The result, on the same page, shows each point's level before
   and after.
 - 「任務完成提示」(TASK-005) is read as the mission briefing card shown after the opening story
-  (title + objectives + 接受任務). Pending Human confirmation (see `docs/known-issues.md`).
+  (title + objectives + 接受任務), confirmed by the Human (2026-11-12).
 - E2E: `CI=1 npm run test:e2e` builds first, then tests the production preview (a stale
   `dist/` would otherwise test old code). Run new E2E with `--retries=0` a few times to catch flakiness.
