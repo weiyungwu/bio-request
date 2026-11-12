@@ -142,7 +142,8 @@ const link =
       class="inline-flex min-h-11 items-center text-sm font-semibold text-muted hover:text-text"
       >← 回知識掌握度</RouterLink
     >
-    <h1>{{ course?.storyTitle }}：弱點練習</h1>
+    <!-- A point the student chose may not be weak (Human decision 2026-11-12). -->
+    <h1>{{ course?.storyTitle }}：{{ ownPick ? '練習' : '弱點練習' }}</h1>
 
     <BaseCard v-if="empty" as="section" data-testid="practice-empty" class="space-y-3">
       <p>這一關目前沒有可以練習的題目。</p>

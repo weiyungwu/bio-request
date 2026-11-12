@@ -201,6 +201,8 @@ describe('PracticeView', () => {
   it('practises the point chosen in the link', async () => {
     const { w, quiz } = await mountAt('/practice/bio-01?k=b-nucleus', PracticeView)
     expect(w.find('[data-testid="practice-targets"]').text()).toContain('你選的知識點')
+    // The student's own pick may not be a weak point: the title says 練習, not 弱點練習.
+    expect(w.find('h1').text()).toMatch(/：練習$/)
     expect(w.findAll('[data-testid="practice-reason"]').map((r) => r.text())).toEqual([
       '細胞核：還沒作答過',
     ])
@@ -223,6 +225,7 @@ describe('PracticeView', () => {
     await flushPromises()
     expect(w.findAll('[data-testid="practice-reason"]')).toHaveLength(3)
     expect(w.find('[data-testid="practice-targets"]').text()).not.toContain('你選的')
+    expect(w.find('h1').text()).toMatch(/：弱點練習$/)
   })
 
   it('a locked stage cannot be practised', async () => {
