@@ -277,6 +277,36 @@ describe('StoryDialog typing', () => {
     expect(typed(w)).toBe('收')
   })
 
+  // Review: 上一段 follows the same rule as 下一段 for consistency. The long line has to be
+  // second here (unlike `long` above) so it is still typing after the cooldown wait that
+  // unlocks 上一段 — a short second line would always finish typing during that same wait.
+  const longSecond: Story = {
+    ...story,
+    lines: [
+      { speaker: 'a', text: '短' },
+      { speaker: 'b', text: '探險隊員，緊急任務！總部收到一則神秘訊息，請立刻出發調查。' },
+    ],
+  }
+
+  it('上一段 while typing shows the whole line first, without moving back', async () => {
+    const w = mount(StoryDialog, { props: { story: longSecond } })
+    wait() // "短" finishes typing well within the cooldown
+    await next(w)
+    expect(w.text()).toContain('2 / 2')
+    expect(typed(w)).toBe('')
+
+    vi.advanceTimersByTime(STORY_TYPE_MS * 2)
+    await nextTick()
+    wait() // unlocks 上一段, but the long line 2 is still typing after this
+    const prev = () => w.find('[data-testid="story-prev"]').trigger('click')
+    await prev()
+    expect(w.text()).toContain('2 / 2')
+    expect(typed(w)).toBe(longSecond.lines[1]!.text)
+    wait()
+    await prev()
+    expect(w.text()).toContain('1 / 2')
+  })
+
   it('shows the whole line at once when the device asks for reduced motion', () => {
     vi.stubGlobal('matchMedia', (q: string) => ({ matches: q.includes('reduce') }))
     const w = mount(StoryDialog, { props: { story: long } })

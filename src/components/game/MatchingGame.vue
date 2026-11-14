@@ -21,21 +21,34 @@ const pairById = computed(() => new Map(props.pairs.map((p) => [p.pointId, p])))
 const nameOf = (id: string) => pointById.value.get(id)?.term.zh ?? id
 
 // Both columns are keyed by pointId; functions are shuffled so the list order doesn't
-// give the answer away. Shuffled once: the parent remounts (:key) for new pairs.
+// give the answer away. The parent remounts (:key) for new pairs, so only a round (not
+// new pairs) ever needs re-shuffling here.
 const structureIds = computed(() => props.pairs.map((p) => p.pointId))
-const functionIds = ref(shuffle(structureIds.value))
 const letter = (i: number) => String.fromCharCode(65 + i)
 
+type Feedback = { correct: true; id: string } | { correct: false; structure: string; fn: string }
+const functionIds = ref<string[]>([])
 const selectedStructure = ref<string | null>(null)
 const selectedFunction = ref<string | null>(null)
 // A Set: re-picking a finished pair can never count it twice.
 const matched = ref(new Set<string>())
 const wrongCount = ref(0)
-// Bumped per attempt so the live region re-announces a repeated identical answer.
+const feedback = ref<Feedback | null>(null)
+
+// Everything that defines one round, shared by initial setup and 重新挑戰 (review finding
+// reuse: keeps the two from drifting apart as state is added).
+function start() {
+  functionIds.value = shuffle(structureIds.value)
+  selectedStructure.value = selectedFunction.value = null
+  matched.value = new Set()
+  wrongCount.value = 0
+  feedback.value = null
+}
+start()
+
+// Bumped per attempt so the live region re-announces a repeated identical answer; not part
+// of a round's state (it never needs to reset), just a render key.
 const attempt = ref(0)
-const feedback = ref<
-  { correct: true; id: string } | { correct: false; structure: string; fn: string } | null
->(null)
 const finished = computed(() => matched.value.size === props.pairs.length)
 const titleEl = ref<HTMLElement | null>(null)
 const resultHeading = ref<HTMLElement | null>(null)
@@ -70,11 +83,7 @@ function pick(column: 'structure' | 'function', id: string) {
 // Phase 3 review S-01: replay without a page reload. Completing again re-emits `finished`,
 // same as the first time; the parent's claim() is idempotent, so the reward is paid only once.
 function retry() {
-  functionIds.value = shuffle(structureIds.value)
-  selectedStructure.value = selectedFunction.value = null
-  matched.value = new Set()
-  wrongCount.value = 0
-  feedback.value = null
+  start()
   nextTick(() => titleEl.value?.focus())
 }
 

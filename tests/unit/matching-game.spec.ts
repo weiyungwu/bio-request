@@ -172,6 +172,9 @@ describe('MatchingGame (TASK-008)', () => {
     expect(w.find('[data-testid="matching-result"]').exists()).toBe(false)
     expect(progress(w)).toContain('0 / 4')
     expect(feedback(w)).toBe('')
+    // Keyboard and screen-reader users land back at the top of the game, not mid-page.
+    await new Promise((r) => setTimeout(r))
+    expect(document.activeElement?.id).toBe('matching-title')
     for (const p of pairs) await pair(w, p.pointId, p.pointId)
     expect(w.find('[data-testid="matching-summary"]').text()).toContain('一次都沒有配錯')
     // claim() in the parent is idempotent, so a second completion paying no extra EXP

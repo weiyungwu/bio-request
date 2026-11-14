@@ -121,6 +121,12 @@ function next() {
 /** Phase 2 review S-02: look back at an earlier line before the mission card appears. */
 function prev() {
   if (!ready.value || index.value === 0) return
+  // Same rule as 下一段: a press while typing finishes the line instead of also navigating.
+  if (typing.value) {
+    finishLine()
+    startCooldown()
+    return
+  }
   index.value--
   startCooldown()
 }
