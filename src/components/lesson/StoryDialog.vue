@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import BaseCard from '@/components/common/BaseCard.vue'
+import CharacterAvatar from '@/components/common/CharacterAvatar.vue'
 import type { Story } from '@/types/lesson'
 import { createTalkVoice, readSoundOn, writeSoundOn } from '@/utils/talkSound'
 import { STORY_ADVANCE_COOLDOWN_MS, STORY_TYPE_MS } from './storyDialog'
@@ -155,9 +156,13 @@ function start() {
       <div aria-hidden="true" class="flex items-end gap-3 pt-3">
         <span
           data-testid="story-avatar"
-          :class="['shrink-0 text-5xl leading-none', typing && 'motion-safe:animate-talk']"
-          >{{ speaker?.avatar }}</span
+          :class="[
+            'flex h-12 w-12 shrink-0 items-center justify-center',
+            typing && 'motion-safe:animate-talk',
+          ]"
         >
+          <CharacterAvatar :character-id="speaker?.id ?? ''" :fallback="speaker?.avatar ?? ''" />
+        </span>
         <div
           :class="[
             'relative min-w-0 flex-1 rounded-card border-2 bg-surface-2 px-4 pt-5 pb-7',
