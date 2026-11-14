@@ -51,7 +51,8 @@
 
 - MVP（第一關）已部署。正式網址部署成 Cloudflare Worker（規格寫 Pages；兩者皆可，深層連結已確認正常）。Worker 的建置設定在 Human 的 dashboard，不在 repo 裡。
 - 對正式網址跑 E2E：暫時建一個 config 匯入 `playwright.config.ts`，`webServer` 設為 `undefined`、每個 project 的 `baseURL` 改成正式網址，跑完刪掉。本機若開著 dev server，只改最上層 `baseURL` 不夠保險；用 `DEBUG=pw:api` 確認導覽的網址都是正式網址。
-- 之後的方向：v1.1 學習地基，依 `docs/audit/v1.1-learning-foundation-audit.md` 第 8 節的順序；文末「Human 決定」已回答（對照表正確、現有內容視為已確認、課本為新文京《生物學》第四版、補題由 Claude 出草稿）。另一個方向是規格 M8 第二至第八關。
+- 之後的方向：v1.1 學習地基，依 `docs/audit/v1.1-learning-foundation-audit.md` 第 8 節的順序；文末「Human 決定」已回答（對照表正確、現有內容視為已確認、課本為新文京《生物學》、補題由 Claude 出草稿）。另一個方向是規格 M8 第二至第八關。
+- 課本版次更正為第五版（2026-11-14 核對實體書），目錄和當初擴充第一關單元 C、D 時引用的「第四版」目錄對不起來；兩版內容都保留，待重新規劃 `CurriculumMapping`，見 `known-issues.md`「延後到對應任務」與稽核文件 2026-11-14 決定。
 - 主流程 E2E 全程點擊、不直接輸入網址；`playStory(page, { open: false })` 從目前頁面開始玩故事，呼叫前要先 `page.clock.install()`。
 - 學習事件（v1.1）：`src/types/learningEvent.ts`、`src/utils/learningEventStorage.ts`。存在 `bio-quest:events`，與 `bio-quest:progress` 分開；遇到較新版本只讀不寫；看不懂的事件（未來新增的類型）原樣寫回，不刪除；讀取失敗時不寫入。第 3 步已接到測驗與錯題本，Human 決定（2026-11-10）：
   - `playerId`：第一次使用時隨機產生，存在 `bio-quest:player`，不含個人資料；`sessionId` 每次載入頁面一個。
