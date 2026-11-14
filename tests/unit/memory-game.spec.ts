@@ -1,6 +1,8 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import MemoryGame from '@/components/game/MemoryGame.vue'
+import { MEMORY_PREVIEW_MS } from '@/components/game/memoryGame'
 import { getLessonData } from '@/data/lessons'
 
 const data = getLessonData('bio-01')!
@@ -16,9 +18,12 @@ const card = (w: W, pointId: string, kind: 'icon' | 'term') =>
   w.find(`[data-testid="memory-card"][data-pair-id="${pointId}"][data-kind="${kind}"]`)
 const progress = (w: W) => w.find('[data-testid="memory-progress"]').text()
 const feedback = (w: W) => w.find('[data-testid="memory-feedback"]').text()
+/** Human request (2026-11-15): the deck previews face up for a moment before play starts. */
+const skipPreview = () => vi.advanceTimersByTime(MEMORY_PREVIEW_MS)
 
-/** Flips every pair correctly, in point order. */
+/** Skips the preview, then flips every pair correctly, in point order. */
 async function matchAll(w: W) {
+  skipPreview()
   for (const p of points) {
     await card(w, p.id, 'icon').trigger('click')
     await card(w, p.id, 'term').trigger('click')
@@ -26,9 +31,26 @@ async function matchAll(w: W) {
 }
 
 describe('MemoryGame', () => {
-  it('starts with every card face down', () => {
+  beforeEach(() => vi.useFakeTimers())
+  afterEach(() => vi.useRealTimers())
+
+  it('previews the whole deck face up, then flips every card face down', async () => {
     const w = mountGame()
     expect(w.findAll('[data-testid="memory-card"]')).toHaveLength(points.length * 2)
+    expect(w.find('[data-testid="memory-preview-notice"]').exists()).toBe(true)
+    for (const p of points) {
+      const icon = card(w, p.id, 'icon')
+      expect(icon.attributes('aria-pressed')).toBe('true')
+      expect(icon.attributes('aria-disabled')).toBe('true')
+      expect(icon.text()).toBe(p.icon)
+    }
+    // Clicking during the preview does nothing.
+    await card(w, points[0]!.id, 'icon').trigger('click')
+    expect(progress(w)).toContain(`0 / ${points.length}`)
+
+    skipPreview()
+    await nextTick()
+    expect(w.find('[data-testid="memory-preview-notice"]').exists()).toBe(false)
     for (const p of points) {
       expect(card(w, p.id, 'icon').attributes('aria-pressed')).toBe('false')
       expect(card(w, p.id, 'term').attributes('aria-pressed')).toBe('false')
@@ -38,6 +60,7 @@ describe('MemoryGame', () => {
 
   it('flipping a matching pair locks both cards face up and advances progress', async () => {
     const w = mountGame()
+    skipPreview()
     const [p] = points
     await card(w, p!.id, 'icon').trigger('click')
     await card(w, p!.id, 'term').trigger('click')
@@ -52,6 +75,7 @@ describe('MemoryGame', () => {
   // marker, the aria-label wording and the border classes, not just aria-pressed.
   it('marks selected, matched and mismatched cards differently, not by colour alone', async () => {
     const w = mountGame()
+    skipPreview()
     const [a, b] = points
     const first = card(w, a!.id, 'icon')
     await first.trigger('click')
@@ -88,6 +112,7 @@ describe('MemoryGame', () => {
   // No timer: the mismatched pair stays visible, with a reason, until the student dismisses it.
   it('a mismatched pair stays face up with feedback until 繼續 is pressed', async () => {
     const w = mountGame()
+    skipPreview()
     const [a, b] = points
     await card(w, a!.id, 'icon').trigger('click')
     await card(w, b!.id, 'term').trigger('click')
@@ -106,13 +131,13 @@ describe('MemoryGame', () => {
     expect(card(w, b!.id, 'term').attributes('aria-pressed')).toBe('false')
     // Review finding: 繼續 removes itself from the DOM; keyboard/screen-reader focus must not
     // fall back to <body>.
-    await new Promise((r) => setTimeout(r))
     expect(document.activeElement?.id).toBe('memory-title')
     w.unmount()
   })
 
   it('a matched pair cannot be re-picked or counted twice', async () => {
     const w = mountGame()
+    skipPreview()
     const [p] = points
     await card(w, p!.id, 'icon').trigger('click')
     await card(w, p!.id, 'term').trigger('click')
@@ -123,17 +148,20 @@ describe('MemoryGame', () => {
 
   it('shows the result with the mistake count once every pair is matched', async () => {
     const w = mountGame()
+    skipPreview()
     await card(w, points[0]!.id, 'icon').trigger('click')
     await card(w, points[1]!.id, 'term').trigger('click')
     await w.find('[data-testid="memory-dismiss"]').trigger('click')
     expect(w.find('[data-testid="memory-result"]').exists()).toBe(false)
 
-    await matchAll(w)
+    for (const p of points) {
+      await card(w, p.id, 'icon').trigger('click')
+      await card(w, p.id, 'term').trigger('click')
+    }
     const result = w.find('[data-testid="memory-result"]')
     expect(result.exists()).toBe(true)
     expect(w.find('[data-testid="memory-summary"]').text()).toContain('翻錯 1 次')
     for (const p of points) expect(result.text()).toContain(p.term.zh)
-    await new Promise((r) => setTimeout(r))
     expect(document.activeElement?.id).toBe('memory-result-title')
     w.unmount()
   })
@@ -147,6 +175,7 @@ describe('MemoryGame', () => {
 
   it('emits finished once, when the last pair is matched', async () => {
     const w = mountGame()
+    skipPreview()
     for (const p of points.slice(0, -1)) {
       await card(w, p.id, 'icon').trigger('click')
       await card(w, p.id, 'term').trigger('click')
@@ -160,18 +189,20 @@ describe('MemoryGame', () => {
   })
 
   // Phase 3 review S-01 parity: replay without a page reload.
-  it('重新挑戰 resets the board for another round', async () => {
+  it('重新挑戰 resets the board, including a fresh preview, for another round', async () => {
     const w = mountGame()
     await matchAll(w)
     expect(w.emitted('finished')).toHaveLength(1)
     await w.find('[data-testid="memory-retry"]').trigger('click')
     expect(w.find('[data-testid="memory-result"]').exists()).toBe(false)
     expect(progress(w)).toContain(`0 / ${points.length}`)
+    // 重新挑戰 previews the new round too, not just resets straight to face down.
+    expect(w.find('[data-testid="memory-preview-notice"]').exists()).toBe(true)
     for (const p of points) {
-      expect(card(w, p.id, 'icon').attributes('aria-pressed')).toBe('false')
+      expect(card(w, p.id, 'icon').attributes('aria-pressed')).toBe('true')
     }
-    await new Promise((r) => setTimeout(r))
     expect(document.activeElement?.id).toBe('memory-title')
+
     await matchAll(w)
     expect(w.emitted('finished')).toHaveLength(2)
     w.unmount()

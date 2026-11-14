@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
+import { MEMORY_PREVIEW_MS } from '../../src/components/game/memoryGame'
 import {
   finishClassification,
   finishExplorer,
@@ -33,6 +34,14 @@ test.describe('Memory game', () => {
       .evaluateAll((els) => [...new Set(els.map((el) => el.getAttribute('data-pair-id')!))])
     expect(ids).toHaveLength(7)
 
+    // Human request (2026-11-15): the whole deck previews face up first, and isn't clickable
+    // (the "click does nothing during the preview" guard itself is unit-tested).
+    await expect(page.getByTestId('memory-preview-notice')).toBeVisible()
+    await expect(card(page, ids[0]!, 'icon')).toHaveAttribute('aria-pressed', 'true')
+    await page.clock.runFor(MEMORY_PREVIEW_MS)
+    await expect(page.getByTestId('memory-preview-notice')).toHaveCount(0)
+    await expect(card(page, ids[0]!, 'icon')).toHaveAttribute('aria-pressed', 'false')
+
     // A deliberate mismatch: the icon from one pair, the name from another.
     await card(page, ids[0]!, 'icon').click()
     await card(page, ids[1]!, 'term').click()
@@ -57,12 +66,15 @@ test.describe('Memory game', () => {
     expect(errors).toEqual([])
   })
 
-  test('has no horizontal overflow', async ({ page }) => {
+  test('has no horizontal overflow, during the preview or after', async ({ page }) => {
     await openGame(page)
-    const [scrollWidth, clientWidth] = await page.evaluate(() => [
-      document.documentElement.scrollWidth,
-      document.documentElement.clientWidth,
-    ])
-    expect(scrollWidth).toBeLessThanOrEqual(clientWidth)
+    const overflow = () =>
+      page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      )
+    // The preview shows every card's full-size content at once (bigger icon text included).
+    expect(await overflow()).toBeLessThanOrEqual(0)
+    await page.clock.runFor(MEMORY_PREVIEW_MS)
+    expect(await overflow()).toBeLessThanOrEqual(0)
   })
 })

@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { expect, type Page } from '@playwright/test'
 import { STORY_ADVANCE_COOLDOWN_MS, STORY_TYPE_MS } from '../../src/components/lesson/storyDialog'
+import { MEMORY_PREVIEW_MS } from '../../src/components/game/memoryGame'
 
 const PAST_COOLDOWN = STORY_ADVANCE_COOLDOWN_MS + 50
 // Past a line's typing too (lines are under 100 characters). Use runFor, not fastForward:
@@ -112,6 +113,8 @@ export async function finishMemory(page: Page) {
   const ids = await page
     .getByTestId('memory-card')
     .evaluateAll((els) => [...new Set(els.map((el) => el.getAttribute('data-pair-id')!))])
+  // Human request (2026-11-15): the deck previews face up briefly before cards are clickable.
+  await page.clock.runFor(MEMORY_PREVIEW_MS)
   for (const id of ids) {
     await page
       .locator(`[data-testid="memory-card"][data-pair-id="${id}"][data-kind="icon"]`)

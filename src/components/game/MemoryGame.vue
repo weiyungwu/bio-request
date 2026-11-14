@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import BaseButton from '@/components/common/BaseButton.vue'
 import BaseCard from '@/components/common/BaseCard.vue'
 import type { KnowledgePoint } from '@/types/lesson'
 import { shuffle } from '@/utils/shuffle'
+import { MEMORY_PREVIEW_MS } from './memoryGame'
 
 const props = defineProps<{
   /** One pair of cards (icon + name) per point; every point needs a non-empty `icon`. */
@@ -44,18 +45,32 @@ const finished = computed(() => matched.value.size === props.points.length)
 // (ClassificationGame does the same for matching -> classification).
 onMounted(() => titleEl.value?.focus())
 
+// Human request (2026-11-15): show the whole deck face up for a moment before play starts,
+// so there's something to actually memorise. Cards aren't clickable meanwhile.
+const previewing = ref(true)
+let previewTimer: ReturnType<typeof setTimeout> | undefined
+function startPreview() {
+  clearTimeout(previewTimer)
+  previewing.value = true
+  previewTimer = setTimeout(() => (previewing.value = false), MEMORY_PREVIEW_MS)
+}
+onBeforeUnmount(() => clearTimeout(previewTimer))
+startPreview()
+
 function start() {
   deck.value = buildDeck()
   matched.value = new Set()
   selected.value = []
   mismatch.value = null
   wrongCount.value = 0
+  startPreview()
 }
 
-// Single source of truth for a card's visual/accessible state, so "matched" and "selected,
-// awaiting a second pick" (review finding: both were plain face-up text, told apart only by
-// colour) each get their own marker and aria-label text, and `mismatch?.includes(...)` (which
-// is undefined, not false, with no mismatch) is read in exactly one place.
+// Single source of truth for a card's actual game state (not what it looks like right now —
+// see viewState for that), so "matched" and "selected, awaiting a second pick" (review
+// finding: both were plain face-up text, told apart only by colour) each get their own marker
+// and aria-label text, and `mismatch?.includes(...)` (which is undefined, not false, with no
+// mismatch) is read in exactly one place.
 type CardState = 'matched' | 'mismatched' | 'selected' | 'facedown'
 function cardState(card: Card): CardState {
   if (matched.value.has(card.pointId)) return 'matched'
@@ -64,36 +79,50 @@ function cardState(card: Card): CardState {
   return 'facedown'
 }
 
+// What the card actually renders as: during the opening preview every card shows face up
+// (cardState is always 'facedown' then, since pick() can't run yet), otherwise it's cardState.
+type ViewState = CardState | 'preview'
+function viewState(card: Card): ViewState {
+  return previewing.value ? 'preview' : cardState(card)
+}
+
 function cardLabel(card: Card) {
   const point = pointById.value.get(card.pointId)
   return card.kind === 'icon' ? (point?.icon ?? '') : (point?.term.zh ?? card.pointId)
 }
 
-const MARKERS: Record<Exclude<CardState, 'facedown'>, string> = {
+const MARKERS: Record<Exclude<ViewState, 'facedown' | 'preview'>, string> = {
   matched: '✓',
   mismatched: '✗',
   selected: '▶',
 }
-const STATE_WORDS: Record<Exclude<CardState, 'facedown'>, string> = {
+const STATE_WORDS: Record<Exclude<ViewState, 'facedown'>, string> = {
   matched: '，已配對',
   mismatched: '，不是一對',
   selected: '',
+  preview: '',
 }
 function cardAriaLabel(card: Card, i: number) {
-  const state = cardState(card)
+  const state = viewState(card)
   if (state === 'facedown') return `卡片 ${i + 1}，蓋著`
   return `卡片 ${i + 1}：${cardLabel(card)}${STATE_WORDS[state]}`
 }
 /** Visual-only (aria-hidden) marker so matched/mismatched/selected never rely on colour alone. */
 function marker(card: Card) {
-  const state = cardState(card)
-  return state === 'facedown' ? '' : MARKERS[state]
+  const state = viewState(card)
+  return state === 'facedown' || state === 'preview' ? '' : MARKERS[state]
 }
 
 function pick(card: Card) {
   // A pending mismatch must be dismissed (繼續) before picking again — no auto-flip-back,
-  // so the reason stays on screen until the student is done reading it.
-  if (mismatch.value || matched.value.has(card.pointId) || selected.value.includes(card.id)) {
+  // so the reason stays on screen until the student is done reading it. Cards aren't
+  // clickable during the opening preview either.
+  if (
+    previewing.value ||
+    mismatch.value ||
+    matched.value.has(card.pointId) ||
+    selected.value.includes(card.id)
+  ) {
     return
   }
   selected.value.push(card.id)
@@ -135,6 +164,14 @@ function retry() {
       <p data-testid="memory-progress" class="text-sm font-semibold text-muted">
         已配對 {{ matched.size }} / {{ points.length }}
       </p>
+      <p
+        v-if="previewing"
+        data-testid="memory-preview-notice"
+        aria-live="polite"
+        class="text-sm font-semibold text-explore"
+      >
+        先記住每張卡片的位置，馬上蓋牌…
+      </p>
     </div>
 
     <div class="grid grid-cols-3 gap-2 sm:grid-cols-4" role="group" aria-label="卡片">
@@ -145,25 +182,26 @@ function retry() {
         data-testid="memory-card"
         :data-pair-id="card.pointId"
         :data-kind="card.kind"
-        :aria-pressed="cardState(card) !== 'facedown'"
-        :aria-disabled="cardState(card) === 'matched'"
+        :aria-pressed="viewState(card) !== 'facedown'"
+        :aria-disabled="viewState(card) === 'matched' || previewing"
         :aria-label="cardAriaLabel(card, i)"
         :class="[
-          'flex aspect-square min-h-11 items-center justify-center gap-1 rounded-control border text-2xl font-semibold transition-colors motion-reduce:transition-none',
+          'flex aspect-square min-h-11 items-center justify-center gap-1 rounded-control border font-semibold transition-colors motion-reduce:transition-none',
           {
             matched: 'cursor-default border-success/60 bg-success/10 text-success',
             mismatched: 'border-danger bg-danger/15 text-danger-text',
             selected: 'border-reward bg-reward/15 text-reward ring-2 ring-reward',
+            preview: 'cursor-default border-explore/50 bg-surface-2 text-text',
             facedown: 'border-border text-muted hover:border-explore',
-          }[cardState(card)],
+          }[viewState(card)],
         ]"
         @click="pick(card)"
       >
-        <template v-if="cardState(card) !== 'facedown'">
-          <span aria-hidden="true">{{ marker(card) }}</span>
-          <span :class="card.kind === 'term' && 'text-base'">{{ cardLabel(card) }}</span>
+        <template v-if="viewState(card) !== 'facedown'">
+          <span aria-hidden="true" class="text-sm">{{ marker(card) }}</span>
+          <span :class="card.kind === 'icon' ? 'text-4xl' : 'text-sm'">{{ cardLabel(card) }}</span>
         </template>
-        <span v-else aria-hidden="true">?</span>
+        <span v-else aria-hidden="true" class="text-2xl">?</span>
       </button>
     </div>
 
