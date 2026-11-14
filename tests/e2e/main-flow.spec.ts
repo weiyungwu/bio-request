@@ -5,6 +5,7 @@ import {
   finishExplorer,
   finishLesson,
   finishMatching,
+  finishMemory,
   playStory,
 } from './helpers'
 
@@ -30,13 +31,14 @@ test('main flow: home → stage 1 → quiz → result → 錯題本, kept after 
   await playStory(page, { open: false })
   await finishLesson(page)
 
-  // 5. 完成互動遊戲: cell explorer, matching, classification.
+  // 5. 完成互動遊戲: cell explorer, matching, classification, memory.
   await finishExplorer(page)
   await finishMatching(page)
   await finishClassification(page)
+  await finishMemory(page)
 
   // 6. 進入考試.
-  await page.getByTestId('classification-to-quiz').click()
+  await page.getByTestId('memory-to-quiz').click()
   await expect(page).toHaveURL(/\/quiz\/bio-01$/)
 
   // 7. 完成測驗: question 2 wrong, so the 錯題本 has something in it.

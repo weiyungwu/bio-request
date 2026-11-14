@@ -91,7 +91,7 @@ export const CLASSIFICATION_KEY: Record<string, string> = {
   細胞壁: '植物細胞',
 }
 
-/** Sorts all 7 structures correctly and waits for the game's result. */
+/** Sorts all 7 structures correctly and opens the memory game. */
 export async function finishClassification(page: Page) {
   for (let n = 1; n <= 7; n++) {
     const name = (await page.getByTestId('classification-item').textContent())!.trim()
@@ -103,6 +103,24 @@ export async function finishClassification(page: Page) {
     await page.getByTestId('classification-next').click()
   }
   await expect(page.getByRole('heading', { name: '分類完成！' })).toBeFocused()
+  await page.getByTestId('classification-done').click()
+  await expect(page.getByRole('heading', { name: '記憶力配對' })).toBeFocused()
+}
+
+/** Flips every icon/name pair correctly (shuffle-order independent) and waits for the result. */
+export async function finishMemory(page: Page) {
+  const ids = await page
+    .getByTestId('memory-card')
+    .evaluateAll((els) => [...new Set(els.map((el) => el.getAttribute('data-pair-id')!))])
+  for (const id of ids) {
+    await page
+      .locator(`[data-testid="memory-card"][data-pair-id="${id}"][data-kind="icon"]`)
+      .click()
+    await page
+      .locator(`[data-testid="memory-card"][data-pair-id="${id}"][data-kind="term"]`)
+      .click()
+  }
+  await expect(page.getByRole('heading', { name: '記憶力配對完成！' })).toBeFocused()
 }
 
 type Q = {

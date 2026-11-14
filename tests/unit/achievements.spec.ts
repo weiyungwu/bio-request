@@ -160,7 +160,7 @@ describe('reward events and badge display', () => {
       await w.find('[data-testid="classification-choice"]').trigger('click')
       await w.find('[data-testid="classification-next"]').trigger('click')
     }
-    expect(w.emitted('complete')).toHaveLength(1)
+    expect(w.emitted('finished')).toHaveLength(1)
   })
 
   // Earned and locked badges differ by icon and words, not colour alone.

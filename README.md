@@ -148,7 +148,7 @@ Handover notes (current status, workflow, next task): [`docs/handoff.md`](docs/h
   已熟悉. Order is fixed per visit. `progress.reviewable` / `toReviewCount` include only questions
   still in a bank (others are counted on the page as missing). Linked from the result page and home.
 - Achievements (TASK-015, rules in `docs/progression.md` §2–§5): `progress.claim(key, exp)` pays a
-  first-time reward once (units via LessonCard `unit-complete`, games via `complete`, 錯題補強 when a
+  first-time reward once (units via LessonCard `unit-complete`, games via `finished`, 錯題補強 when a
   stage's wrong questions are all re-answered right); quiz EXP is capped at 100 per local day using
   `records[].exp`; badges (`src/utils/achievements.ts`) are derived from progress and added once.
   Home lists all badges (已取得／未取得); the result page shows new ones and the cap.

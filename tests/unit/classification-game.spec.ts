@@ -85,15 +85,27 @@ describe('ClassificationGame (TASK-009)', () => {
     expect(paragraphs).toEqual(['✓ 答對了！正確答案是「植物細胞」。', it.explanation])
   })
 
-  // Phase 3 review I-03: the result must offer a way forward, chosen by the parent.
-  it("renders the parent's next step beside retry on the result", async () => {
-    const w = mount(ClassificationGame, {
-      props: { items, points },
-      slots: { next: '<a data-testid="next-step">回關卡地圖</a>' },
-    })
-    expect(w.find('[data-testid="next-step"]').exists()).toBe(false)
+  // Phase 3 review I-03: the result must offer a way forward (now 記憶力配對, TASK with MemoryGame).
+  it('emits finished once, when the last item is answered', async () => {
+    const w = mountGame()
+    for (let n = 0; n < items.length - 1; n++) {
+      await choice(w, current(w).category).trigger('click')
+      await next(w)
+    }
+    expect(w.emitted('finished')).toBeUndefined()
+    await choice(w, current(w).category).trigger('click')
+    await next(w)
+    expect(w.emitted('finished')).toHaveLength(1)
+    w.unmount()
+  })
+
+  it('emits complete from the result, not before', async () => {
+    const w = mountGame()
+    expect(w.find('[data-testid="classification-done"]').exists()).toBe(false)
     await playAll(w as unknown as W)
-    expect(w.find('[data-testid="next-step"]').exists()).toBe(true)
+    await w.find('[data-testid="classification-done"]').trigger('click')
+    expect(w.emitted('complete')).toHaveLength(1)
+    w.unmount()
   })
 
   // Review I3: ✓ / ✗ are aria-hidden, so screen readers need the state in words.

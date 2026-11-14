@@ -5,6 +5,7 @@ import BaseButton from '@/components/common/BaseButton.vue'
 import BaseCard from '@/components/common/BaseCard.vue'
 import ClassificationGame from '@/components/game/ClassificationGame.vue'
 import MatchingGame from '@/components/game/MatchingGame.vue'
+import MemoryGame from '@/components/game/MemoryGame.vue'
 import CellExplorer from '@/components/lesson/CellExplorer.vue'
 import LessonCard from '@/components/lesson/LessonCard.vue'
 import StoryDialog from '@/components/lesson/StoryDialog.vue'
@@ -19,9 +20,16 @@ const courseId = computed(() => String(route.params.courseId))
 const course = computed(() => (courses as Course[]).find((c) => c.id === courseId.value))
 const lesson = computed(() => getLessonData(courseId.value))
 const points = computed(() => lesson.value?.lessons.flatMap((l) => l.knowledgePoints) ?? [])
+// MemoryGame uses the stage's first unit (unit A: 生命的特徵) so its content never overlaps
+// with the matching/classification games (unit B/C structures). Some later units also have
+// an `icon` (known-issues.md), but MemoryGame is scoped to unit A on purpose.
+const memoryPoints = computed(() =>
+  (lesson.value?.lessons[0]?.knowledgePoints ?? []).filter((p) => p.icon),
+)
 
-// [choose ->] story -> lesson -> explore (cell diagram) -> game (matching TASK-008 -> classification
-// TASK-009). A lesson in parts (上篇／下篇) first asks where to start; a later part skips the story.
+// [choose ->] story -> lesson -> explore (cell diagram) -> game (matching TASK-008 ->
+// classification TASK-009 -> memory). A lesson in parts (上篇／下篇) first asks where to
+// start; a later part skips the story.
 type Phase = 'choose' | 'story' | 'lesson' | 'explore' | 'game'
 const firstPhase = (): Phase => (lesson.value?.parts?.length ? 'choose' : 'story')
 const phase = ref<Phase>(firstPhase())
@@ -32,7 +40,7 @@ const pointCount = (lessonIds: string[]) =>
   lesson.value?.lessons
     .filter((l) => lessonIds.includes(l.id))
     .reduce((n, l) => n + l.knowledgePoints.length, 0) ?? 0
-const game = ref<'matching' | 'classification'>('matching')
+const game = ref<'matching' | 'classification' | 'memory'>('matching')
 const storyDialog = ref<{ $el: HTMLElement } | null>(null)
 const lessonHeading = ref<HTMLElement | null>(null)
 const exploreHeading = ref<HTMLElement | null>(null)
@@ -68,9 +76,12 @@ function enterGame() {
   nextTick(() => gameHeading.value?.focus())
 }
 
-// ClassificationGame focuses its own title when it mounts.
+// ClassificationGame and MemoryGame each focus their own title when they mount.
 function enterClassification() {
   game.value = 'classification'
+}
+function enterMemory() {
+  game.value = 'memory'
 }
 
 // First-time rewards (docs/progression.md §2, TASK-015): +10 per unit, +15 per game; claim()
@@ -184,22 +195,29 @@ function rewardGame(id: string, name: string) {
         @complete="enterClassification"
       />
       <ClassificationGame
-        v-else
+        v-else-if="game === 'classification'"
         :key="courseId"
         :items="lesson.classification.items"
         :points="points"
-        @complete="rewardGame('classification', '植物還是動物？')"
+        @finished="rewardGame('classification', '植物還是動物？')"
+        @complete="enterMemory"
+      />
+      <MemoryGame
+        v-else
+        :key="courseId"
+        :points="memoryPoints"
+        @finished="rewardGame('memory', '記憶力配對')"
       >
         <!-- The games lead into the stage quiz (TASK-011). -->
         <template #next>
           <RouterLink
             :to="`/quiz/${courseId}`"
-            data-testid="classification-to-quiz"
+            data-testid="memory-to-quiz"
             class="inline-flex min-h-11 items-center justify-center rounded-control bg-explore px-5 font-bold text-on-accent hover:bg-explore-strong"
             >進入關卡測驗 →</RouterLink
           >
         </template>
-      </ClassificationGame>
+      </MemoryGame>
     </section>
   </main>
 </template>

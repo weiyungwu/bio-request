@@ -6,7 +6,9 @@ import type { CellCategory, ClassificationItem, KnowledgePoint } from '@/types/l
 import { shuffle } from '@/utils/shuffle'
 
 const emit = defineEmits<{
-  /** The result was reached (TASK-015: 完成互動小遊戲). Fires again after 重新挑戰. */
+  /** All items answered (TASK-015: 完成互動小遊戲). Fires again after 重新挑戰. */
+  finished: []
+  /** 下一個挑戰 pressed, from the result (mirrors MatchingGame's finished/complete split). */
   complete: []
 }>()
 
@@ -66,7 +68,7 @@ function next() {
     nextTick(() => itemEl.value?.focus())
   } else {
     showResult.value = true
-    emit('complete')
+    emit('finished')
     nextTick(() => resultHeading.value?.focus())
   }
 }
@@ -209,8 +211,9 @@ const choiceClass = (c: CellCategory) => {
         </li>
       </ul>
       <div class="flex flex-wrap gap-3">
-        <!-- What comes next is the parent's call (map now; the quiz from TASK-011). -->
-        <slot name="next" />
+        <BaseButton data-testid="classification-done" @click="emit('complete')">
+          下一個挑戰：記憶力配對 →
+        </BaseButton>
         <BaseButton data-testid="classification-retry" variant="secondary" @click="retry">
           ↺ 重新挑戰
         </BaseButton>

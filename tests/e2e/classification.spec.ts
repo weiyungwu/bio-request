@@ -40,8 +40,9 @@ test.describe('Classification game (TASK-009)', () => {
     await expect(page.getByTestId('classification-review')).toHaveCount(7)
     await expect(page.getByTestId('classification-result')).toContainText('你的答案：動物細胞')
 
-    // Phase 3 review I-03: the end of the games leads somewhere — the stage quiz (TASK-011).
-    await expect(page.getByTestId('classification-to-quiz')).toBeVisible()
+    // Phase 3 review I-03: the result must offer a way forward — now 記憶力配對
+    // (tests/e2e/memory.spec.ts proves end-to-end that it leads on to the quiz).
+    await expect(page.getByTestId('classification-done')).toContainText('記憶力配對')
     await page.getByTestId('classification-retry').click()
     await expect(page.getByTestId('classification-progress')).toHaveText('第 1 / 7 題')
     await expect(item).toBeFocused()
@@ -49,8 +50,7 @@ test.describe('Classification game (TASK-009)', () => {
       await page.getByTestId('classification-choice').first().click()
       await page.getByTestId('classification-next').click()
     }
-    await page.getByTestId('classification-to-quiz').click()
-    await expect(page).toHaveURL(/\/quiz\/bio-01$/)
+    await expect(page.getByRole('heading', { name: '分類完成！' })).toBeFocused()
     expect(errors).toEqual([])
   })
 
