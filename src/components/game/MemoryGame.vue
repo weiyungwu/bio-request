@@ -52,19 +52,42 @@ function start() {
   wrongCount.value = 0
 }
 
-function faceUp(card: Card) {
-  // Boolean(...): `mismatch.value?.includes(...)` is undefined (not false) when there's no
-  // mismatch, which would drop the aria-pressed attribute entirely instead of setting "false".
-  return Boolean(
-    matched.value.has(card.pointId) ||
-    selected.value.includes(card.id) ||
-    mismatch.value?.includes(card.id),
-  )
+// Single source of truth for a card's visual/accessible state, so "matched" and "selected,
+// awaiting a second pick" (review finding: both were plain face-up text, told apart only by
+// colour) each get their own marker and aria-label text, and `mismatch?.includes(...)` (which
+// is undefined, not false, with no mismatch) is read in exactly one place.
+type CardState = 'matched' | 'mismatched' | 'selected' | 'facedown'
+function cardState(card: Card): CardState {
+  if (matched.value.has(card.pointId)) return 'matched'
+  if (mismatch.value?.includes(card.id)) return 'mismatched'
+  if (selected.value.includes(card.id)) return 'selected'
+  return 'facedown'
 }
 
 function cardLabel(card: Card) {
   const point = pointById.value.get(card.pointId)
   return card.kind === 'icon' ? (point?.icon ?? '') : (point?.term.zh ?? card.pointId)
+}
+
+const MARKERS: Record<Exclude<CardState, 'facedown'>, string> = {
+  matched: '✓',
+  mismatched: '✗',
+  selected: '▶',
+}
+const STATE_WORDS: Record<Exclude<CardState, 'facedown'>, string> = {
+  matched: '，已配對',
+  mismatched: '，不是一對',
+  selected: '',
+}
+function cardAriaLabel(card: Card, i: number) {
+  const state = cardState(card)
+  if (state === 'facedown') return `卡片 ${i + 1}，蓋著`
+  return `卡片 ${i + 1}：${cardLabel(card)}${STATE_WORDS[state]}`
+}
+/** Visual-only (aria-hidden) marker so matched/mismatched/selected never rely on colour alone. */
+function marker(card: Card) {
+  const state = cardState(card)
+  return state === 'facedown' ? '' : MARKERS[state]
 }
 
 function pick(card: Card) {
@@ -93,6 +116,9 @@ function pick(card: Card) {
 
 function dismiss() {
   mismatch.value = null
+  // Review finding: the 繼續 button removed itself from the DOM here with nothing to pick up
+  // focus, dropping keyboard/screen-reader users back to <body>.
+  nextTick(() => titleEl.value?.focus())
 }
 
 function retry() {
@@ -119,24 +145,24 @@ function retry() {
         data-testid="memory-card"
         :data-pair-id="card.pointId"
         :data-kind="card.kind"
-        :aria-pressed="faceUp(card)"
-        :aria-disabled="matched.has(card.pointId)"
-        :aria-label="faceUp(card) ? `卡片 ${i + 1}：${cardLabel(card)}` : `卡片 ${i + 1}，蓋著`"
+        :aria-pressed="cardState(card) !== 'facedown'"
+        :aria-disabled="cardState(card) === 'matched'"
+        :aria-label="cardAriaLabel(card, i)"
         :class="[
-          'flex aspect-square min-h-11 items-center justify-center rounded-control border text-2xl font-semibold transition-colors motion-reduce:transition-none',
-          matched.has(card.pointId)
-            ? 'cursor-default border-success/60 bg-success/10 text-success'
-            : faceUp(card)
-              ? mismatch?.includes(card.id)
-                ? 'border-danger bg-danger/15 text-danger-text'
-                : 'border-reward bg-reward/15 text-reward ring-2 ring-reward'
-              : 'border-border text-muted hover:border-explore',
+          'flex aspect-square min-h-11 items-center justify-center gap-1 rounded-control border text-2xl font-semibold transition-colors motion-reduce:transition-none',
+          {
+            matched: 'cursor-default border-success/60 bg-success/10 text-success',
+            mismatched: 'border-danger bg-danger/15 text-danger-text',
+            selected: 'border-reward bg-reward/15 text-reward ring-2 ring-reward',
+            facedown: 'border-border text-muted hover:border-explore',
+          }[cardState(card)],
         ]"
         @click="pick(card)"
       >
-        <span v-if="faceUp(card)" :class="card.kind === 'term' && 'text-base'">{{
-          cardLabel(card)
-        }}</span>
+        <template v-if="cardState(card) !== 'facedown'">
+          <span aria-hidden="true">{{ marker(card) }}</span>
+          <span :class="card.kind === 'term' && 'text-base'">{{ cardLabel(card) }}</span>
+        </template>
         <span v-else aria-hidden="true">?</span>
       </button>
     </div>

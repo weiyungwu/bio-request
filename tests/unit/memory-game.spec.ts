@@ -4,8 +4,10 @@ import MemoryGame from '@/components/game/MemoryGame.vue'
 import { getLessonData } from '@/data/lessons'
 
 const data = getLessonData('bio-01')!
-// MemoryGame needs an icon per card; only unit A currently has them (known-issues.md).
-const points = data.lessons.flatMap((l) => l.knowledgePoints).filter((p) => p.icon)
+// Mirrors LessonView's memoryPoints: unit A only, not every icon-bearing point in the lesson
+// (known-issues.md — some unit B/C/D points also have an icon, but MemoryGame is scoped to
+// unit A on purpose, so the test data must match that scope, not just "has an icon").
+const points = data.lessons[0]!.knowledgePoints.filter((p) => p.icon)
 
 const mountGame = () => mount(MemoryGame, { props: { points }, attachTo: document.body })
 type W = ReturnType<typeof mountGame>
@@ -45,6 +47,44 @@ describe('MemoryGame', () => {
     expect(progress(w)).toContain(`1 / ${points.length}`)
   })
 
+  // Review finding: "matched" and "selected, waiting for a second pick" are both plain
+  // face-up text — the only thing distinguishing them must not be colour alone, so check the
+  // marker, the aria-label wording and the border classes, not just aria-pressed.
+  it('marks selected, matched and mismatched cards differently, not by colour alone', async () => {
+    const w = mountGame()
+    const [a, b] = points
+    const first = card(w, a!.id, 'icon')
+    await first.trigger('click')
+    expect(first.attributes('aria-pressed')).toBe('true')
+    expect(first.attributes('aria-disabled')).toBe('false')
+    expect(first.text()).toContain('▶')
+    expect(first.attributes('aria-label')).toContain(a!.icon)
+    expect(first.attributes('aria-label')).not.toContain('已配對')
+    expect(first.attributes('aria-label')).not.toContain('不是一對')
+    expect(first.classes().join(' ')).toContain('border-reward')
+    expect(progress(w)).toContain(`0 / ${points.length}`)
+
+    // Completing the pair turns the same card into "matched": a different marker, label and
+    // border, not just a different fill of the same look.
+    await card(w, a!.id, 'term').trigger('click')
+    expect(first.text()).toContain('✓')
+    expect(first.attributes('aria-label')).toContain('已配對')
+    expect(first.classes().join(' ')).toContain('border-success')
+
+    // A mismatch gets its own marker/label/border too.
+    await card(w, b!.id, 'icon').trigger('click')
+    const mismatched = card(w, b!.id, 'icon')
+    await card(w, points[2]!.id, 'term').trigger('click')
+    expect(mismatched.text()).toContain('✗')
+    expect(mismatched.attributes('aria-label')).toContain('不是一對')
+    expect(mismatched.classes().join(' ')).toContain('border-danger')
+
+    // Face down cards carry none of the above.
+    const untouched = card(w, points[3]!.id, 'icon')
+    expect(untouched.text()).not.toMatch(/[✓✗▶]/)
+    expect(untouched.classes().join(' ')).toContain('border-border')
+  })
+
   // No timer: the mismatched pair stays visible, with a reason, until the student dismisses it.
   it('a mismatched pair stays face up with feedback until 繼續 is pressed', async () => {
     const w = mountGame()
@@ -64,6 +104,11 @@ describe('MemoryGame', () => {
     expect(feedback(w)).toBe('')
     expect(card(w, a!.id, 'icon').attributes('aria-pressed')).toBe('false')
     expect(card(w, b!.id, 'term').attributes('aria-pressed')).toBe('false')
+    // Review finding: 繼續 removes itself from the DOM; keyboard/screen-reader focus must not
+    // fall back to <body>.
+    await new Promise((r) => setTimeout(r))
+    expect(document.activeElement?.id).toBe('memory-title')
+    w.unmount()
   })
 
   it('a matched pair cannot be re-picked or counted twice', async () => {

@@ -41,6 +41,8 @@ test.describe('Memory game', () => {
     await page.getByTestId('memory-dismiss').click()
     await expect(card(page, ids[0]!, 'icon')).toHaveAttribute('aria-pressed', 'false')
     await expect(page.getByTestId('memory-progress')).toHaveText('已配對 0 / 7')
+    // 繼續 removes itself from the DOM; keyboard focus must not fall back to <body>.
+    await expect(page.getByRole('heading', { name: '記憶力配對', exact: true })).toBeFocused()
 
     for (const id of ids) {
       await card(page, id, 'icon').click()
