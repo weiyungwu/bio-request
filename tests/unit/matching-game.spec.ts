@@ -162,6 +162,24 @@ describe('MatchingGame (TASK-008)', () => {
     expect(w.find('[data-testid="matching-feedback"] > div').element).not.toBe(first)
   })
 
+  // Phase 3 review S-01: replay without a page reload.
+  it('重新挑戰 resets the board for another round', async () => {
+    const w = mountGame()
+    await pair(w, 'b-membrane', 'b-nucleus') // one mistake to show in the result summary
+    for (const p of pairs) await pair(w, p.pointId, p.pointId)
+    expect(w.emitted('finished')).toHaveLength(1)
+    await w.find('[data-testid="matching-retry"]').trigger('click')
+    expect(w.find('[data-testid="matching-result"]').exists()).toBe(false)
+    expect(progress(w)).toContain('0 / 4')
+    expect(feedback(w)).toBe('')
+    for (const p of pairs) await pair(w, p.pointId, p.pointId)
+    expect(w.find('[data-testid="matching-summary"]').text()).toContain('一次都沒有配錯')
+    // claim() in the parent is idempotent, so a second completion paying no extra EXP
+    // is fine; finished just reflects "all pairs matched" each time.
+    expect(w.emitted('finished')).toHaveLength(2)
+    w.unmount()
+  })
+
   it('does not list functions in the structure order', () => {
     const ids = (w: W, col: string) =>
       w.findAll(`[data-testid="match-${col}"]`).map((b) => b.attributes('data-id'))

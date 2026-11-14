@@ -118,6 +118,13 @@ function next() {
   startCooldown()
 }
 
+/** Phase 2 review S-02: look back at an earlier line before the mission card appears. */
+function prev() {
+  if (!ready.value || index.value === 0) return
+  index.value--
+  startCooldown()
+}
+
 /** Human request (2026-11-12): skip the story and the mission card, straight to 探險者訓練. */
 function skip() {
   if (!settled.value || completed.value) return
@@ -175,6 +182,15 @@ function start() {
         <span class="flex flex-wrap items-center justify-end gap-2">
           <BaseButton data-testid="story-next" class="whitespace-nowrap" @click="next">
             {{ isLast ? '查看任務' : '下一段' }} →
+          </BaseButton>
+          <BaseButton
+            v-if="index > 0"
+            data-testid="story-prev"
+            variant="ghost"
+            class="whitespace-nowrap"
+            @click="prev"
+          >
+            ← 上一段
           </BaseButton>
           <BaseButton
             data-testid="story-skip"

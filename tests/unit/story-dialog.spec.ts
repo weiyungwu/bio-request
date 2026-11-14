@@ -104,6 +104,36 @@ describe('StoryDialog', () => {
     expect(w.find('[data-testid="story-line"]').text()).toContain('第二句')
   })
 
+  // Phase 2 review S-02: look back at an earlier line before the mission card appears.
+  it('上一段 is hidden on the first line and goes back to the previous one otherwise', async () => {
+    const w = mount(StoryDialog, { props: { story } })
+    expect(w.find('[data-testid="story-prev"]').exists()).toBe(false)
+    wait()
+    await next(w)
+    expect(w.find('[data-testid="story-line"]').text()).toContain('第二句')
+    const prev = w.find('[data-testid="story-prev"]')
+    expect(prev.exists()).toBe(true)
+    wait()
+    await prev.trigger('click')
+    expect(w.find('[data-testid="story-line"]').text()).toContain('第一句')
+    expect(w.find('[data-testid="story-prev"]').exists()).toBe(false)
+  })
+
+  // Same double-tap guard as 下一段, so rapid clicks cannot jump back several lines at once.
+  it('ignores rapid 上一段 clicks', async () => {
+    const w = mount(StoryDialog, { props: { story } })
+    wait()
+    await next(w)
+    wait()
+    await next(w)
+    expect(w.find('[data-testid="story-line"]').text()).toContain('第三句')
+    wait()
+    const prev = () => w.find('[data-testid="story-prev"]').trigger('click')
+    await prev()
+    await prev()
+    expect(w.find('[data-testid="story-line"]').text()).toContain('第二句')
+  })
+
   it('shows the mission card after the last line, not before', async () => {
     const w = mount(StoryDialog, { props: { story } })
     for (let i = 0; i < story.lines.length - 1; i++) {

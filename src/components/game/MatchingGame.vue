@@ -37,6 +37,7 @@ const feedback = ref<
   { correct: true; id: string } | { correct: false; structure: string; fn: string } | null
 >(null)
 const finished = computed(() => matched.value.size === props.pairs.length)
+const titleEl = ref<HTMLElement | null>(null)
 const resultHeading = ref<HTMLElement | null>(null)
 const feedbackEl = ref<HTMLElement | null>(null)
 
@@ -66,6 +67,17 @@ function pick(column: 'structure' | 'function', id: string) {
   }
 }
 
+// Phase 3 review S-01: replay without a page reload. Completing again re-emits `finished`,
+// same as the first time; the parent's claim() is idempotent, so the reward is paid only once.
+function retry() {
+  functionIds.value = shuffle(structureIds.value)
+  selectedStructure.value = selectedFunction.value = null
+  matched.value = new Set()
+  wrongCount.value = 0
+  feedback.value = null
+  nextTick(() => titleEl.value?.focus())
+}
+
 // Selection also swaps the number/letter for ▶, so it never relies on colour alone.
 const marker = (id: string, selected: boolean, label: string) =>
   matched.value.has(id) ? '✓' : selected ? '▶' : `${label}.`
@@ -83,7 +95,7 @@ const choiceClass = (selected: boolean, done: boolean) => [
 <template>
   <BaseCard as="section" class="space-y-5" aria-labelledby="matching-title">
     <div class="space-y-1">
-      <h3 id="matching-title">細胞器配對</h3>
+      <h3 id="matching-title" ref="titleEl" tabindex="-1">細胞器配對</h3>
       <p class="text-muted">先點一個構造，再點它的功能（順序反過來也可以）。</p>
       <p data-testid="matching-progress" class="text-sm font-semibold text-muted">
         已配對 {{ matched.size }} / {{ pairs.length }}
@@ -176,9 +188,14 @@ const choiceClass = (selected: boolean, done: boolean) => [
           >：{{ pair.function }}
         </li>
       </ul>
-      <BaseButton data-testid="matching-done" @click="emit('complete')">
-        下一個挑戰：植物還是動物？ →
-      </BaseButton>
+      <div class="flex flex-wrap gap-3">
+        <BaseButton data-testid="matching-done" @click="emit('complete')">
+          下一個挑戰：植物還是動物？ →
+        </BaseButton>
+        <BaseButton data-testid="matching-retry" variant="secondary" @click="retry">
+          ↺ 重新挑戰
+        </BaseButton>
+      </div>
     </section>
   </BaseCard>
 </template>
