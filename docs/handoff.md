@@ -1,7 +1,7 @@
 # 交接筆記
 
 換電腦或開新 session 時先讀這份，再讀 [`known-issues.md`](known-issues.md) 和 `git log --oneline -15`。
-最後更新：2026-11-12（弱點練習對照 SPEC v1.1 §20，已部署；Phase v1.1-3 審查已處理）。
+最後更新：2026-11-15（課本版次更正為第五版；配對遊戲「重新挑戰」與故事「上一段」；方向轉為先把 2D 做得更有趣，v1.1 3D 整合規格與正式 CurriculumMapping 暫時擱置）。
 
 ## 目前進度
 
@@ -44,6 +44,7 @@
 | v1.1  | 弱點練習對照 SPEC v1.1 §20：顯示原因、答滿 3 次才算弱點、先看教材卡、學生自選「練這個」                                                               | 完成，任務審查已處理                         |
 | v1.1  | 部署至 commit e526c14（課本擴充、第四批補題、上下篇、弱點練習與 §20 對照）：正式網址的 JS、CSS 與本機建置逐檔相同                                     | 完成；60 個 E2E 對正式網址通過（2026-11-12） |
 | v1.1  | Phase v1.1-3 審查（Codex，CONDITIONAL PASS，0 項問題）：弱點練習對照 §20；條件為 E2E（Codex sandbox 無法開本機 server），已在本機補跑兩次各 60 個通過 | 已處理（2026-11-12）                         |
+| —     | 好玩度：配對遊戲「重新挑戰」、故事「上一段」（上一段比照下一段，打字中先把該行打完才生效）                                                            | 完成，審查已處理（commit a6d2f1e）           |
 
 第一關流程（`src/views/LessonView.vue`）：選擇上篇或下篇（下篇跳過故事，從單元 C 開始）→ 故事（逐字打出的對話泡泡，可開「說話音效」，預設關閉；可按「略過故事」直接跳到探險者訓練，連任務指令卡一起略過）→ 探險者訓練（4 個單元、23 個知識點＋重點整理）→ 細胞城市探險（細胞互動圖）→ 互動挑戰（配對遊戲 → 分類遊戲）→ 關卡測驗（`QuizView`，5 題；第一關至少 2 題是細胞題，見 `QUIZ_TOPIC_QUOTAS`；每關最多 3 題 hard，見 `QUIZ_MAX_HARD`）。Phase 3 審查（Gemini）已處理。
 
@@ -51,7 +52,7 @@
 
 - MVP（第一關）已部署。正式網址部署成 Cloudflare Worker（規格寫 Pages；兩者皆可，深層連結已確認正常）。Worker 的建置設定在 Human 的 dashboard，不在 repo 裡。
 - 對正式網址跑 E2E：暫時建一個 config 匯入 `playwright.config.ts`，`webServer` 設為 `undefined`、每個 project 的 `baseURL` 改成正式網址，跑完刪掉。本機若開著 dev server，只改最上層 `baseURL` 不夠保險；用 `DEBUG=pw:api` 確認導覽的網址都是正式網址。
-- 之後的方向：v1.1 學習地基，依 `docs/audit/v1.1-learning-foundation-audit.md` 第 8 節的順序；文末「Human 決定」已回答（對照表正確、現有內容視為已確認、課本為新文京《生物學》、補題由 Claude 出草稿）。另一個方向是規格 M8 第二至第八關。
+- 之後的方向（Human 決定 2026-11-15）：先把現有 2D 第一關做得更有趣，「2D → 3D 整合重構 SPEC v1.1」整套（Curriculum Mapping 正式資料結構、Learning Analytics、Adaptive Learning、Teacher Dashboard）與 3D（SPEC v2.1／v2.2）範圍都偏大，暫時擱置，只看不照做；v1.1 稽核文件第 8 節第 7 步「3D 技術驗證」與規格 M8 第二至第八關兩個方向也都先不排。已完成第一批好玩度項目（見上表）；接下來還想做的方向：新互動小遊戲（已選定「記憶翻牌配對」玩法，待設計任務）、角色頭像換成向量插畫（已選定先小範圍試做，待動手）。`known-issues.md`「延後到對應任務」的 `CurriculumMapping` 重新規劃也先擱置，真要對課本時再用簡化版，不用 SPEC v1.1 §18 那套正式資料結構（Curriculum/CurriculumUnit/CurriculumMapping、審查狀態機、importance 分級）。
 - 課本版次更正為第五版（2026-11-14 核對實體書），目錄和當初擴充第一關單元 C、D 時引用的「第四版」目錄對不起來；兩版內容都保留，待重新規劃 `CurriculumMapping`，見 `known-issues.md`「延後到對應任務」與稽核文件 2026-11-14 決定。
 - 主流程 E2E 全程點擊、不直接輸入網址；`playStory(page, { open: false })` 從目前頁面開始玩故事，呼叫前要先 `page.clock.install()`。
 - 學習事件（v1.1）：`src/types/learningEvent.ts`、`src/utils/learningEventStorage.ts`。存在 `bio-quest:events`，與 `bio-quest:progress` 分開；遇到較新版本只讀不寫；看不懂的事件（未來新增的類型）原樣寫回，不刪除；讀取失敗時不寫入。第 3 步已接到測驗與錯題本，Human 決定（2026-11-10）：
