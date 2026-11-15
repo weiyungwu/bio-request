@@ -50,7 +50,7 @@
 | —     | 記憶力配對：icon 放大（`text-4xl`）、開始前整副牌預覽 2 秒再蓋牌（`MEMORY_PREVIEW_MS`，`src/components/game/memoryGame.ts`，Human 要求 2026-11-15）                                                              | 完成                                         |
 | —     | 記憶力配對：預覽改為 5 秒並加上明顯倒數（`memory-preview-countdown`，Human 要求 2026-11-15）                                                                                                                     | 完成（commit afcf1fc）                       |
 | —     | 細胞互動圖修正：粒線體摺痕被選取時變白、植物細胞膜點擊誤差落到細胞壁／動物細胞點不到                                                                                                                             | 完成（commit 7b94ef4）                       |
-| —     | 單元 A「生命的特徵」7 個知識點新增向量示意圖（`public/images/life/*.svg`），取代原本只有 emoji 的畫面                                                                                                            | 完成，待審查                                 |
+| —     | 單元 A「生命的特徵」7 個知識點新增向量示意圖（`public/images/life/*.svg`），取代原本只有 emoji 的畫面                                                                                                            | 完成，任務審查已處理（commit 27fa996）       |
 
 第一關流程（`src/views/LessonView.vue`）：選擇上篇或下篇（下篇跳過故事，從單元 C 開始）→ 故事（逐字打出的對話泡泡，可開「說話音效」，預設關閉；可按「略過故事」直接跳到探險者訓練，連任務指令卡一起略過）→ 探險者訓練（4 個單元、23 個知識點＋重點整理）→ 細胞城市探險（細胞互動圖）→ 互動挑戰（配對遊戲 → 分類遊戲 → 記憶力配對，2026-11-15 新增）→ 關卡測驗（`QuizView`，5 題；第一關至少 2 題是細胞題，見 `QUIZ_TOPIC_QUOTAS`；每關最多 3 題 hard，見 `QUIZ_MAX_HARD`）。Phase 3 審查（Gemini）已處理。
 
