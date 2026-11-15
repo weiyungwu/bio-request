@@ -63,7 +63,7 @@ describe('bio-01 lessons', () => {
   })
 
   // KnowledgeCard shows the images, or else the icon; a point with neither has an empty picture
-  // slot. The textbook points (2026-11-11) have only icons.
+  // slot.
   it('every knowledge point has images or an icon', () => {
     const bare = lessons
       .flatMap((l) => l.knowledgePoints)

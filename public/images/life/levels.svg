@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240">
+  <!-- Levels of organization: cell -> tissue -> organ -> organ system -> individual.
+       No text: meaning is carried by the caption. -->
+  <rect width="320" height="240" fill="#0b1b3a"/>
+  <circle cx="35" cy="120" r="14" fill="#2dd4bf"/>
+  <path d="M55 120 L75 120" stroke="#a3b8d8" stroke-width="2" marker-end="url(#a6)"/>
+  <g transform="translate(100,120)">
+    <circle cx="-8" cy="-8" r="10" fill="#2dd4bf"/>
+    <circle cx="8" cy="-8" r="10" fill="#2dd4bf"/>
+    <circle cx="-8" cy="8" r="10" fill="#2dd4bf"/>
+    <circle cx="8" cy="8" r="10" fill="#2dd4bf"/>
+  </g>
+  <path d="M130 120 L150 120" stroke="#a3b8d8" stroke-width="2" marker-end="url(#a6)"/>
+  <ellipse cx="180" cy="120" rx="20" ry="26" fill="#facc15"/>
+  <path d="M205 120 L225 120" stroke="#a3b8d8" stroke-width="2" marker-end="url(#a6)"/>
+  <g transform="translate(250,120)">
+    <ellipse cx="0" cy="-15" rx="12" ry="16" fill="#facc15"/>
+    <ellipse cx="0" cy="18" rx="14" ry="18" fill="#facc15" opacity="0.6"/>
+  </g>
+  <path d="M275 120 L295 120" stroke="#a3b8d8" stroke-width="2" marker-end="url(#a6)"/>
+  <defs><marker id="a6" markerWidth="8" markerHeight="8" refX="5" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5 Z" fill="#a3b8d8"/></marker></defs>
+  <g transform="translate(305,115)">
+    <circle cx="0" cy="-18" r="9" fill="#a3e635"/>
+    <path d="M0 -9 L0 20 M-12 0 L12 0 M0 20 L-10 40 M0 20 L10 40" stroke="#a3e635" stroke-width="5" stroke-linecap="round" fill="none"/>
+  </g>
+</svg>

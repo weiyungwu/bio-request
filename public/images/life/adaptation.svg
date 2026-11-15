@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240">
+  <!-- Adaptation: barrel cactus — ribs and spines reduce water loss. No text: meaning is carried by the caption. -->
+  <rect width="320" height="240" fill="#0b1b3a"/>
+  <g transform="translate(160,145)">
+    <ellipse cx="0" cy="0" rx="58" ry="68" fill="#a3e635"/>
+    <path d="M6 -22 Q14 -10 14 12 Q14 34 8 48" fill="#facc15"/>
+    <g stroke="#0b1b3a" stroke-opacity="0.35" stroke-width="3" fill="none">
+      <path d="M-38 -58 Q-50 0 -38 58"/>
+      <path d="M-14 -67 Q-20 0 -14 67"/>
+      <path d="M14 -67 Q20 0 14 67"/>
+      <path d="M38 -58 Q50 0 38 58"/>
+    </g>
+    <g stroke="#132a52" stroke-width="2.5" stroke-linecap="round">
+      <line x1="-38" y1="-40" x2="-48" y2="-48"/>
+      <line x1="-14" y1="-65" x2="-14" y2="-77"/>
+      <line x1="14" y1="-65" x2="14" y2="-77"/>
+      <line x1="38" y1="-40" x2="48" y2="-48"/>
+      <line x1="-38" y1="0" x2="-50" y2="0"/>
+      <line x1="38" y1="0" x2="50" y2="0"/>
+      <line x1="-38" y1="40" x2="-48" y2="48"/>
+      <line x1="38" y1="40" x2="48" y2="48"/>
+      <line x1="-14" y1="65" x2="-14" y2="77"/>
+      <line x1="14" y1="65" x2="14" y2="77"/>
+    </g>
+  </g>
+</svg>
