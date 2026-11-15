@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
 import MemoryGame from '@/components/game/MemoryGame.vue'
-import { MEMORY_PREVIEW_MS } from '@/components/game/memoryGame'
+import { MEMORY_PREVIEW_MS, MEMORY_PREVIEW_TICK_MS } from '@/components/game/memoryGame'
 import { getLessonData } from '@/data/lessons'
 
 const data = getLessonData('bio-01')!
@@ -38,6 +38,9 @@ describe('MemoryGame', () => {
     const w = mountGame()
     expect(w.findAll('[data-testid="memory-card"]')).toHaveLength(points.length * 2)
     expect(w.find('[data-testid="memory-preview-notice"]').exists()).toBe(true)
+    expect(w.find('[data-testid="memory-preview-countdown"]').text()).toBe(
+      String(MEMORY_PREVIEW_MS / MEMORY_PREVIEW_TICK_MS),
+    )
     for (const p of points) {
       const icon = card(w, p.id, 'icon')
       expect(icon.attributes('aria-pressed')).toBe('true')
@@ -56,6 +59,23 @@ describe('MemoryGame', () => {
       expect(card(w, p.id, 'term').attributes('aria-pressed')).toBe('false')
     }
     expect(progress(w)).toContain(`0 / ${points.length}`)
+  })
+
+  // Human request (2026-11-15): 明顯的倒數計時 — a visible, ticking countdown, not just a static notice.
+  it('counts the preview down one second at a time, never reaching 0', async () => {
+    const w = mountGame()
+    const countdown = () => w.find('[data-testid="memory-preview-countdown"]').text()
+    const seconds = MEMORY_PREVIEW_MS / MEMORY_PREVIEW_TICK_MS
+    expect(countdown()).toBe(String(seconds))
+    for (let left = seconds - 1; left >= 1; left--) {
+      vi.advanceTimersByTime(MEMORY_PREVIEW_TICK_MS)
+      await nextTick()
+      expect(countdown()).toBe(String(left))
+    }
+    // One more tick lands exactly on the preview's own end, not a displayed 0.
+    vi.advanceTimersByTime(MEMORY_PREVIEW_TICK_MS)
+    await nextTick()
+    expect(w.find('[data-testid="memory-preview-notice"]').exists()).toBe(false)
   })
 
   it('flipping a matching pair locks both cards face up and advances progress', async () => {

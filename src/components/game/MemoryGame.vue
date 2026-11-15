@@ -4,7 +4,7 @@ import BaseButton from '@/components/common/BaseButton.vue'
 import BaseCard from '@/components/common/BaseCard.vue'
 import type { KnowledgePoint } from '@/types/lesson'
 import { shuffle } from '@/utils/shuffle'
-import { MEMORY_PREVIEW_MS } from './memoryGame'
+import { MEMORY_PREVIEW_MS, MEMORY_PREVIEW_TICK_MS } from './memoryGame'
 
 const props = defineProps<{
   /** One pair of cards (icon + name) per point; every point needs a non-empty `icon`. */
@@ -46,15 +46,31 @@ const finished = computed(() => matched.value.size === props.points.length)
 onMounted(() => titleEl.value?.focus())
 
 // Human request (2026-11-15): show the whole deck face up for a moment before play starts,
-// so there's something to actually memorise. Cards aren't clickable meanwhile.
+// so there's something to actually memorise, with a visible countdown. Cards aren't clickable
+// meanwhile. The countdown never shows 0: the preview-ending timeout hides it at the same
+// moment the last second would otherwise tick over.
+const PREVIEW_SECONDS = Math.ceil(MEMORY_PREVIEW_MS / MEMORY_PREVIEW_TICK_MS)
 const previewing = ref(true)
+const previewSecondsLeft = ref(PREVIEW_SECONDS)
 let previewTimer: ReturnType<typeof setTimeout> | undefined
+let previewTick: ReturnType<typeof setInterval> | undefined
 function startPreview() {
   clearTimeout(previewTimer)
+  clearInterval(previewTick)
   previewing.value = true
-  previewTimer = setTimeout(() => (previewing.value = false), MEMORY_PREVIEW_MS)
+  previewSecondsLeft.value = PREVIEW_SECONDS
+  previewTick = setInterval(() => {
+    previewSecondsLeft.value = Math.max(1, previewSecondsLeft.value - 1)
+  }, MEMORY_PREVIEW_TICK_MS)
+  previewTimer = setTimeout(() => {
+    previewing.value = false
+    clearInterval(previewTick)
+  }, MEMORY_PREVIEW_MS)
 }
-onBeforeUnmount(() => clearTimeout(previewTimer))
+onBeforeUnmount(() => {
+  clearTimeout(previewTimer)
+  clearInterval(previewTick)
+})
 startPreview()
 
 function start() {
@@ -164,13 +180,18 @@ function retry() {
       <p data-testid="memory-progress" class="text-sm font-semibold text-muted">
         已配對 {{ matched.size }} / {{ points.length }}
       </p>
+      <!-- No aria-live: a live region re-announcing every second would spam screen readers.
+           The text is still ordinary page content, so it's read normally if landed on. -->
       <p
         v-if="previewing"
         data-testid="memory-preview-notice"
-        aria-live="polite"
-        class="text-sm font-semibold text-explore"
+        class="flex items-center gap-2 text-sm font-semibold text-explore"
       >
-        先記住每張卡片的位置，馬上蓋牌…
+        <span>先記住每張卡片的位置，</span>
+        <span data-testid="memory-preview-countdown" class="text-2xl font-bold tabular-nums">{{
+          previewSecondsLeft
+        }}</span>
+        <span>秒後蓋牌…</span>
       </p>
     </div>
 

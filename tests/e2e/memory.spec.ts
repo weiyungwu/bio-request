@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { MEMORY_PREVIEW_MS } from '../../src/components/game/memoryGame'
+import { MEMORY_PREVIEW_MS, MEMORY_PREVIEW_TICK_MS } from '../../src/components/game/memoryGame'
 import {
   finishClassification,
   finishExplorer,
@@ -34,11 +34,15 @@ test.describe('Memory game', () => {
       .evaluateAll((els) => [...new Set(els.map((el) => el.getAttribute('data-pair-id')!))])
     expect(ids).toHaveLength(7)
 
-    // Human request (2026-11-15): the whole deck previews face up first, and isn't clickable
-    // (the "click does nothing during the preview" guard itself is unit-tested).
+    // Human request (2026-11-15): the whole deck previews face up first, with a visible
+    // countdown, and isn't clickable (the click-does-nothing guard itself is unit-tested).
     await expect(page.getByTestId('memory-preview-notice')).toBeVisible()
     await expect(card(page, ids[0]!, 'icon')).toHaveAttribute('aria-pressed', 'true')
-    await page.clock.runFor(MEMORY_PREVIEW_MS)
+    const countdown = page.getByTestId('memory-preview-countdown')
+    await expect(countdown).toHaveText(String(MEMORY_PREVIEW_MS / MEMORY_PREVIEW_TICK_MS))
+    await page.clock.runFor(MEMORY_PREVIEW_TICK_MS)
+    await expect(countdown).toHaveText(String(MEMORY_PREVIEW_MS / MEMORY_PREVIEW_TICK_MS - 1))
+    await page.clock.runFor(MEMORY_PREVIEW_MS - MEMORY_PREVIEW_TICK_MS)
     await expect(page.getByTestId('memory-preview-notice')).toHaveCount(0)
     await expect(card(page, ids[0]!, 'icon')).toHaveAttribute('aria-pressed', 'false')
 
