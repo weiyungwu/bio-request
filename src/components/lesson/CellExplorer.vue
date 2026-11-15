@@ -99,7 +99,6 @@ const hitProps = (id: StructureId) => ({
 
 const uid = useId()
 const plantInsideId = `${uid}-plant-inside`
-const animalInsideId = `${uid}-animal-inside`
 const hintId = `${uid}-hint`
 const ANIMAL_OUTLINE =
   'M60 120 C55 60 120 28 175 34 C240 40 282 78 272 132 C264 186 210 214 150 208 C92 202 64 172 60 120 Z'
@@ -150,9 +149,12 @@ const ANIMAL_OUTLINE =
             fill="#1c3a6b"
           />
           <!-- membrane: visible line plus a wide transparent hit area clipped to the
-               inside, so it never takes taps from the cell wall band (x 34–48). -->
+               inside, so it never takes taps from the cell wall band (x 34–48). The clip
+               rect is 1.5 units wider than the membrane's own rect on every side (review
+               TASK-007 複審 S-b), so the membrane keeps a sliver of its outer half instead
+               of handing every outer-edge tap straight to the wall underneath. -->
           <clipPath :id="plantInsideId">
-            <rect x="48" y="38" width="224" height="164" rx="6" />
+            <rect x="46.5" y="36.5" width="227" height="167" rx="6" />
           </clipPath>
           <g v-bind="hitProps('membrane')">
             <rect
@@ -206,15 +208,22 @@ const ANIMAL_OUTLINE =
           <g v-bind="hitProps('mitochondrion')" fill="#f59e0b" stroke="#7c2d12" stroke-width="2">
             <ellipse cx="226" cy="192" rx="13" ry="6.5" />
             <ellipse cx="66" cy="170" rx="6.5" ry="13" />
+            <!-- fold: own stroke colour/width so it neither inherits nor gets overridden by
+                 the 4px white .is-selected outline below (review TASK-007 複審 S-a) — that
+                 swamped these thin creases and the mitochondrion turned mostly white. -->
             <path
+              class="fold"
               d="M218 193 q2.5 -5 5 0 t5 0 t5 0"
               fill="none"
+              stroke="#7c2d12"
               stroke-width="1.5"
               pointer-events="none"
             />
             <path
+              class="fold"
               d="M67 162 q-5 2.5 0 5 t0 5 t0 5"
               fill="none"
+              stroke="#7c2d12"
               stroke-width="1.5"
               pointer-events="none"
             />
@@ -223,12 +232,12 @@ const ANIMAL_OUTLINE =
 
         <template v-else>
           <path v-bind="hitProps('cytoplasm')" :d="ANIMAL_OUTLINE" fill="#1c3a6b" />
-          <clipPath :id="animalInsideId">
-            <path :d="ANIMAL_OUTLINE" />
-          </clipPath>
           <g v-bind="hitProps('membrane')">
-            <!-- Outer half of this stroke is outside the cell (nothing else there), inner
-                 half overlaps the cytoplasm edge; clipped inside like the plant cell. -->
+            <!-- Unlike the plant cell, nothing sits just outside this outline (no wall), so
+               the hit stroke isn't clipped: both halves are membrane (review TASK-007
+               複審 S-b — previously the clipped-away outer half left clicks there with no
+               response at all). The inner half still loses to nucleus/mitochondrion/vacuole,
+               which paint later. -->
             <path
               class="hit-area"
               :d="ANIMAL_OUTLINE"
@@ -236,7 +245,6 @@ const ANIMAL_OUTLINE =
               stroke="transparent"
               stroke-width="14"
               pointer-events="stroke"
-              :clip-path="`url(#${animalInsideId})`"
             />
             <path
               :d="ANIMAL_OUTLINE"
@@ -254,7 +262,8 @@ const ANIMAL_OUTLINE =
             <ellipse cx="104" cy="94" rx="13" ry="6.5" transform="rotate(-20 104 94)" />
             <ellipse cx="226" cy="150" rx="13" ry="6.5" transform="rotate(15 226 150)" />
             <ellipse cx="122" cy="168" rx="13" ry="6.5" transform="rotate(25 122 168)" />
-            <g fill="none" stroke-width="1.5" pointer-events="none">
+            <!-- fold: own stroke colour/width, see the plant mitochondrion comment above. -->
+            <g class="fold" fill="none" stroke="#7c2d12" stroke-width="1.5" pointer-events="none">
               <path d="M96 95 q2.5 -5 5 0 t5 0 t5 0" transform="rotate(-20 104 94)" />
               <path d="M218 151 q2.5 -5 5 0 t5 0 t5 0" transform="rotate(15 226 150)" />
               <path d="M114 169 q2.5 -5 5 0 t5 0 t5 0" transform="rotate(25 122 168)" />
@@ -342,9 +351,11 @@ const ANIMAL_OUTLINE =
 
 <style scoped>
 /* White: distinct from every fill and from the (yellow) cell-wall border.
-   Hit areas keep their transparent wide stroke, or selecting would shrink them. */
+   Hit areas keep their transparent wide stroke, or selecting would shrink them.
+   Folds (mitochondrion creases) keep their own thin stroke, or this 4px white
+   outline swamps them and the mitochondrion turns mostly white (review S-a). */
 .is-selected,
-.is-selected > :not(.hit-area) {
+.is-selected > :not(.hit-area):not(.fold) {
   stroke: #ffffff;
   stroke-width: 4px;
 }

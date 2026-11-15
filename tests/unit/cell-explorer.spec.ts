@@ -88,6 +88,45 @@ describe('CellExplorer', () => {
     expect(w.find('svg [data-structure="nucleus"]').classes()).not.toContain('is-selected')
   })
 
+  // Review TASK-007 複審 S-a: the mitochondrion's crease lines must not turn white (nearly
+  // invisible against the orange fill) when the .is-selected 4px white outline is applied —
+  // they need their own stroke colour, not just their own stroke-width.
+  it.each(['plant', 'animal'] as const)(
+    '%s mitochondrion folds keep their own colour, independent of .is-selected',
+    async (kind) => {
+      const w = mountExplorer()
+      await showCell(w, kind)
+      await tapShape(w, 'mitochondrion')
+      const folds = w.find('svg [data-structure="mitochondrion"]').findAll('.fold')
+      expect(folds.length).toBeGreaterThan(0)
+      for (const fold of folds) {
+        expect(fold.attributes('stroke')).toBe('#7c2d12')
+      }
+    },
+  )
+
+  // Review TASK-007 複審 S-b: a tap just outside the membrane line must not silently fall
+  // through to the wall (plant) or do nothing (animal, no wall to fall through to).
+  it('widens the plant membrane hit area past its own line, and removes the animal clip entirely', async () => {
+    const w = mountExplorer()
+    const plantClipRect = w.find('svg clipPath rect')
+    expect(plantClipRect.attributes()).toMatchObject({
+      x: '46.5',
+      y: '36.5',
+      width: '227',
+      height: '167',
+    })
+    // The membrane's own visible line is unchanged (x 48, width 224) — only the clip grew.
+    const visibleMembraneLine = w.findAll('svg [stroke="#2dd4bf"]')[0]!
+    expect(visibleMembraneLine.attributes('x')).toBe('48')
+    expect(visibleMembraneLine.attributes('width')).toBe('224')
+
+    await showCell(w, 'animal')
+    expect(w.find('svg clipPath').exists()).toBe(false)
+    const animalMembraneHit = w.find('svg [data-structure="membrane"] .hit-area')
+    expect(animalMembraneHit.attributes('clip-path')).toBeUndefined()
+  })
+
   it('chips select the same structure as the shapes', async () => {
     const w = mountExplorer()
     await tapChip(w, 'mitochondrion')
